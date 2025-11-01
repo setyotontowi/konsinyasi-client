@@ -1,11 +1,38 @@
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { Link, useLocation } from 'react-router-dom'
 
 export default function PageHeader({ title, onAdd, search, setSearch, addLabel, AddIcon }) {
+  
+  const location = useLocation();
+  const paths = location.pathname.split("/").filter(Boolean);
+
   return (
     <div>
       {/* Title */}
-      <div className="p-6 flex items-center">
+      <div className="p-6 flex items-center justify-between">
         <h2 className="text-lg font-semibold">{title}</h2>
+
+        {/* Breadcrumb */}
+        <nav className="flex items-center text-sm text-gray-600">
+          <Link to="/" className="hover:text-blue-500 font-medium">Dashboard</Link>
+          {paths.map((path, index) => {
+            const routeTo = "/" + paths.slice(0, index + 1).join("/");
+            const isLast = index === paths.length - 1;
+
+            return (
+              <div key={index} className="flex items-center">
+                <span className="mx-2 text-gray-400">/</span>
+                {isLast ? (
+                  <span className="text-gray-800 capitalize">{path}</span>
+                ) : (
+                  <Link to={routeTo} className="hover:text-blue-500 capitalize">
+                    {path}
+                  </Link>
+                )}
+              </div>
+            );
+          })}
+        </nav>
       </div>
 
       <div className="pt-6 pl-6 pr-6 flex justify-between items-center border-t border-gray-200">
