@@ -1,11 +1,27 @@
 import React from 'react'
-
-const sample = [
-  { id: 1, name: 'Alice', email: 'alice@example.com' },
-  { id: 2, name: 'Bob', email: 'bob@example.com' }
-]
+import { useState, useEffect } from 'react'
+import axios from '../api/axiosClient'
 
 export default function Users() {
+  const [users, setUsers] = useState([])      // store fetched data
+  const [loading, setLoading] = useState(true) // show loading state
+  const [error, setError] = useState(null)     // handle errors
+
+  useEffect(() => {
+    axios.get('http://localhost:3000/user') // your backend URL
+      .then(response => {
+        setUsers(response.data.data)  // assuming response.data is an array
+      })
+      .catch(err => {
+        console.error(err)
+        setError('Failed to fetch users')
+      })
+      .finally(() => setLoading(false))
+  }, [])
+
+  if (loading) return <p>Loading...</p>
+  if (error) return <p>{error}</p>
+
   return (
     <div>
       <h2 className="text-xl font-semibold mb-4">Users</h2>
@@ -15,15 +31,19 @@ export default function Users() {
             <tr className="bg-gray-50">
               <th className="p-3 text-left">ID</th>
               <th className="p-3 text-left">Name</th>
-              <th className="p-3 text-left">Email</th>
+              <th className="p-3 text-left">Username</th>
+              <th className="p-3 text-left">Role</th>
+              <th className="p-3 text-left">Unit</th>
             </tr>
           </thead>
           <tbody>
-            {sample.map(u => (
+            {users.map(u => (
               <tr key={u.id} className="border-t">
                 <td className="p-3">{u.id}</td>
-                <td className="p-3">{u.name}</td>
-                <td className="p-3">{u.email}</td>
+                <td className="p-3">{u.nama}</td>
+                <td className="p-3">{u.username}</td>
+                <td className="p-3">{u.group_nama}</td>
+                <td className="p-3">{u.nama_unit}</td>
               </tr>
             ))}
           </tbody>
