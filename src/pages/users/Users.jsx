@@ -1,42 +1,35 @@
+import { useDispatch, useSelector } from "react-redux";
+import {
+  openAddModal,
+  openEditModal,
+  closeUserModal,
+  triggerReload,
+  openDeleteConfirm,
+  closeDeleteConfirm,
+} from "../../store/userSlice"
+
 import { useState } from "react";
 import { UserPlusIcon } from "@heroicons/react/24/outline";
 import PageHeader from "../../components/PageHeader";
 import UserTable from "./UserTable";
-import UserModal from "./UserModal"
+import UserModal from "./UserModal";
 import ConfirmModal from "../../components/ConfirmationModal";
 import axiosClient from "../../api/axiosClient";
 import { toast } from "react-toastify";
 
 export default function Users() {
+  const dispatch = useDispatch();
+  const {
+    modalOpen,
+    confirmOpen,
+    mode,
+    selectedUser,
+    userToDelete,
+    listReload,
+  } = useSelector((state) => state.user);
+
   const [search, setSearch] = useState("");
-  const [openAddModal, setOpenAddModal] = useState(false);
-  const [reloadTrigger, setReloadTrigger] = useState(0);
-  const [selectedUser, setSelectedUser] = useState(null);
-  const [mode, setMode] = useState("add");
-  const [confirmOpen, setConfirmOpen] = useState(false);
-  const [userToDelete, setUserToDelete] = useState(null);
   const [deleting, setDeleting] = useState(false);
-
-  const handleAddUser = () => {
-    setMode("add");
-    setSelectedUser(null);
-    setOpenAddModal(true);
-  };
-
-  const handleSuccess = () => {
-    setReloadTrigger((prev) => prev + 1);
-  };
-
-  const handleEditUser = (user) => {
-    setSelectedUser(user);
-    setMode("edit");
-    setOpenAddModal(true);
-  };
-
-  const handleDeleteRequest = (user) => {
-    setUserToDelete(user);
-    setConfirmOpen(true);
-  };
 
   const handleDeleteConfirm = () => {
     if (!userToDelete) return;
@@ -46,22 +39,14 @@ export default function Users() {
       .delete(`/user/${userToDelete.id}`)
       .then(() => {
         toast.success("Pengguna berhasil dihapus!");
-        setReloadTrigger((prev) => prev + 1); // refresh table
-        setConfirmOpen(false);
+        dispatch(triggerReload());
+        dispatch(closeDeleteConfirm());
       })
       .catch((err) => {
-        console.error(err);
         const msg = err.response?.data?.message || "Gagal menghapus pengguna.";
         toast.error(msg);
       })
       .finally(() => setDeleting(false));
-  };
-
-  // add this in your component
-  const closeModal = () => {
-    setOpenAddModal(false);
-    setMode("add");
-    setSelectedUser(null);
   };
 
   return (
@@ -69,26 +54,26 @@ export default function Users() {
       <div className="masterdata titlerounded-2xl bg-white border border-gray-200">
         <PageHeader
           title="Data Pengguna"
-          onAdd={handleAddUser}
+          onAdd={() => dispatch(openAddModal())}
           search={search}
           setSearch={setSearch}
           addLabel="Tambah Pengguna"
           AddIcon={UserPlusIcon}
         />
 
-        {/* Pass reloadTrigger down to UserTable */}
-        <UserTable 
-          search={search} 
-          reloadTrigger={reloadTrigger} 
-          onEdit={handleEditUser} 
-          onDelete={handleDeleteRequest}/>
+        <UserTable
+          search={search}
+          reloadTrigger={listReload}
+          onEdit={(user) => dispatch(openEditModal(user))}
+          onDelete={(user) => dispatch(openDeleteConfirm(user))}
+        />
 
         <UserModal
-          open={openAddModal}
-          onClose={closeModal}
-          onSuccess={handleSuccess}
+          open={modalOpen}
           mode={mode}
           user={selectedUser}
+          onClose={() => dispatch(closeUserModal())}
+          onSuccess={() => dispatch(triggerReload())}
         />
       </div>
 
@@ -101,7 +86,7 @@ export default function Users() {
             : "Apakah Anda yakin ingin menghapus pengguna ini?"
         }
         onConfirm={handleDeleteConfirm}
-        onClose={() => setConfirmOpen(false)}
+        onClose={() => dispatch(closeDeleteConfirm())}
         loading={deleting}
       />
     </>
