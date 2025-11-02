@@ -16,9 +16,16 @@ export default function Users() {
   const [totalItems, setTotalItems] = useState(0);
 
   useEffect(() => {
+    const delay = setTimeout(() => {
+      fetchUsers();
+    }, 500); // wait 0.5s after typing before fetching
+    return () => clearTimeout(delay);
+  }, [currentPage, search]);
+
+  const fetchUsers = () => {
     setLoading(true);
     axiosClient
-      .get(`/user?page=${currentPage}&limit=${limit}`)
+      .get(`/user?page=${currentPage}&limit=${limit}&user=${encodeURIComponent(search)}`)
       .then(response => {
         setUsers(response.data.data);
         setTotalPages(response.data.pagination.total_pages || 1);
@@ -29,7 +36,7 @@ export default function Users() {
         setError('Failed to fetch users');
       })
       .finally(() => setLoading(false));
-  }, [currentPage, limit]);
+  };
 
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) {
