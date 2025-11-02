@@ -13,7 +13,12 @@ export default function App() {
 
       <Route path="/" element={<ProtectedRoute />}>
         <Route index element={<Dashboard />} />
-        <Route path="users" element={<Users />} />
+
+        {/* Masterdata section */}
+        <Route path="masterdata">
+          <Route path="users" element={<Users />} />
+        </Route>
+
         <Route path="settings" element={<Settings />} />
       </Route>
 

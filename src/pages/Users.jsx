@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import axios from '../api/axiosClient'
+import axiosClient from '../api/axiosClient'
 import { UserPlusIcon,  PencilIcon, TrashIcon } from '@heroicons/react/24/outline'
 import PageHeader from '../components/PageHeader'
 
@@ -11,7 +11,8 @@ export default function Users() {
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    axios.get('http://localhost:3000/user') // your backend URL
+    axiosClient
+      .get('/user') // your backend URL
       .then(response => {
         setUsers(response.data.data)  // assuming response.data is an array
       })
@@ -33,7 +34,7 @@ export default function Users() {
     <div className="masterdata titlerounded-2xl bg-white border border-gray-200">
       {/* Header Section */}
       <PageHeader
-        title="Masterdata User"
+        title = "Data Pengguna"
         onAdd={handleAddUser}
         search={search}
         setSearch={setSearch}
@@ -58,24 +59,24 @@ export default function Users() {
             <tbody>
               {users.map((u, index) => (
                 <tr key={u.id} className="hover:bg-gray-50 transition">
-                  <td className="border border-gray-200 px-6 py-4 text-gray-600 text-center">
+                  <td className="border border-gray-200 px-6 py-2 text-gray-600 text-center">
                     {index + 1}
                   </td>
-                  <td className="border border-gray-200 px-6 py-4 ">
+                  <td className="border border-gray-200 px-6 py-2 ">
                     {u.nama}
                   </td>
-                  <td className="border border-gray-200 px-6 py-4 text-gray-700 italic">
+                  <td className="border border-gray-200 px-6 py-2 text-gray-700 italic">
                     {u.username}
                   </td>
-                  <td className="border border-gray-200 px-6 py-4 text-gray-700">
+                  <td className="border border-gray-200 px-6 py-2 text-gray-700">
                     {u.group_nama}
                   </td>
-                  <td className="border border-gray-200 px-6 py-4 text-gray-700">
+                  <td className="border border-gray-200 px-6 py-2 text-gray-700">
                     {u.nama_unit}
                   </td>
 
                   {/* Actions */}
-                  <td className="border border-gray-200 px-6 py-4 text-center">
+                  <td className="border border-gray-200 px-6 py-2 text-center">
                     <div className="flex justify-center gap-2">
                       <button className="flex items-center gap-1 px-3 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded text-sm transition">
                         <PencilIcon className="h-4 w-4" /> Edit

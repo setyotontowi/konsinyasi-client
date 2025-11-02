@@ -1,5 +1,6 @@
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { Link, useLocation } from 'react-router-dom'
+import capitalizeFirstLetter from "capitalize-first-letter";
 
 export default function PageHeader({ title, onAdd, search, setSearch, addLabel, AddIcon }) {
   
@@ -10,7 +11,7 @@ export default function PageHeader({ title, onAdd, search, setSearch, addLabel, 
     <div>
       {/* Title */}
       <div className="p-6 flex items-center justify-between">
-        <h2 className="text-lg font-semibold">{title}</h2>
+        <h2 className="text-lg font-semibold">{title ? title : capitalizeFirstLetter(paths[paths.length - 1])}</h2>
 
         {/* Breadcrumb */}
         <nav className="flex items-center text-sm text-gray-600">
