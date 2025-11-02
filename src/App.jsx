@@ -5,24 +5,29 @@ import Dashboard from './pages/Dashboard'
 import Users from './pages/users/Users'
 import Settings from './pages/Settings'
 import ProtectedRoute from './components/ProtectedRoute'
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 export default function App() {
   return (
-    <Routes>
-      <Route path="/login" element={<Login />} />
+    <>
+      <Routes>
+        <Route path="/login" element={<Login />} />
 
-      <Route path="/" element={<ProtectedRoute />}>
-        <Route index element={<Dashboard />} />
+        <Route path="/" element={<ProtectedRoute />}>
+          <Route index element={<Dashboard />} />
 
-        {/* Masterdata section */}
-        <Route path="masterdata">
-          <Route path="users" element={<Users />} />
+          {/* Masterdata section */}
+          <Route path="masterdata">
+            <Route path="users" element={<Users />} />
+          </Route>
+
+          <Route path="settings" element={<Settings />} />
         </Route>
 
-        <Route path="settings" element={<Settings />} />
-      </Route>
-
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+      <ToastContainer position="top-right" autoClose={2500} theme="colored" />
+    </>
   )
 }

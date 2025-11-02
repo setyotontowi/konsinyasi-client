@@ -3,7 +3,7 @@ import axiosClient from "../../api/axiosClient";
 import Pagination from "../../components/Pagination";
 import { PencilIcon, TrashIcon } from '@heroicons/react/24/outline'
 
-export default function UserTable({ search }) {
+export default function UserTable({ search, reloadTrigger }) {
   const [users, setUsers] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -15,7 +15,7 @@ export default function UserTable({ search }) {
   useEffect(() => {
     const delay = setTimeout(() => fetchUsers(), 400);
     return () => clearTimeout(delay);
-  }, [currentPage, search]);
+  }, [currentPage, search, reloadTrigger]);
 
   const fetchUsers = () => {
     setLoading(true);
@@ -49,6 +49,7 @@ export default function UserTable({ search }) {
                 <th className="px-6 py-3 font-medium border border-gray-200">Username</th>
                 <th className="px-6 py-3 font-medium border border-gray-200">Role</th>
                 <th className="px-6 py-3 font-medium border border-gray-200">Unit</th>
+                <th className="px-6 py-3 font-medium border border-gray-200">Keterangan</th>
                 <th className="px-6 py-3 font-medium border border-gray-200 w-10">Aksi</th>
               </tr>
             </thead>
@@ -69,6 +70,9 @@ export default function UserTable({ search }) {
                   </td>
                   <td className="border border-gray-200 px-6 py-2 text-gray-700">
                     {u.nama_unit}
+                  </td>
+                  <td className="border border-gray-200 px-6 py-2 text-gray-700">
+                    {u.keterangan}
                   </td>
 
                   {/* Actions */}
