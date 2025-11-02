@@ -2,7 +2,7 @@ import React from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
-import Users from './pages/Users'
+import Users from './pages/users/Users'
 import Settings from './pages/Settings'
 import ProtectedRoute from './components/ProtectedRoute'
 

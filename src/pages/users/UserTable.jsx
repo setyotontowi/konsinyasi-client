@@ -1,24 +1,19 @@
-import { useState, useEffect, useRef } from 'react'
-import axiosClient from '../api/axiosClient'
-import { UserPlusIcon,  PencilIcon, TrashIcon } from '@heroicons/react/24/outline'
-import PageHeader from '../components/PageHeader'
-import Pagination from '../components/Pagination'
+import { useEffect, useState } from "react";
+import axiosClient from "../../api/axiosClient";
+import Pagination from "../../components/Pagination";
+import { PencilIcon, TrashIcon } from '@heroicons/react/24/outline'
 
-
-export default function Users() {
+export default function UserTable({ search }) {
   const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [limit] = useState(20);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [fade, setFade] = useState(false);
+  const limit = 20;
 
   useEffect(() => {
-    const delay = setTimeout(() => {
-      fetchUsers();
-    }, 500); // wait 0.5s after typing before fetching
+    const delay = setTimeout(() => fetchUsers(), 400);
     return () => clearTimeout(delay);
   }, [currentPage, search]);
 
@@ -26,45 +21,25 @@ export default function Users() {
     setLoading(true);
     axiosClient
       .get(`/user?page=${currentPage}&limit=${limit}&user=${encodeURIComponent(search)}`)
-      .then(response => {
-        setUsers(response.data.data);
-        setTotalPages(response.data.pagination.total_pages || 1);
-        setTotalItems(response.data.pagination.total || 0);
-      })
-      .catch(err => {
-        console.error(err);
-        setError('Failed to fetch users');
+      .then((res) => {
+        setUsers(res.data.data);
+        setTotalPages(res.data.pagination.total_pages);
+        setTotalItems(res.data.pagination.total);
+        setFade(true);
+        setTimeout(() => setFade(false), 300); // remove fade after 0.3s
       })
       .finally(() => setLoading(false));
   };
 
-  const handlePageChange = (page) => {
-    if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page);
-    }
-  };
-
-  const handleAddUser = () => {
-    console.log("Add user clicked");
-  };
-
-  if (loading) return <p>Loading...</p>
-  if (error) return <p>{error}</p>
+  if (loading)
+    return (
+      <div className="p-6">
+        <p className="text-gray-500 animate-pulse">Loading users...</p>
+      </div>
+    );
 
   return (
-    <div className="masterdata titlerounded-2xl bg-white border border-gray-200">
-      {/* Header Section */}
-      <PageHeader
-        title = "Data Pengguna"
-        onAdd={handleAddUser}
-        search={search}
-        setSearch={setSearch}
-        addLabel="Tambah Pengguna"
-        AddIcon={UserPlusIcon}
-      />
-
-      {/* User Table */}
-      <div className="m-6 bg-white ">
+    <div className="m-6 bg-white ">
         <div className="overflow-x-auto ">
           <table className="min-w-full text-sm text-left border border-gray-200 overflow-hidden">
             <thead className="bg-blue-50 text-gray-700 text-xs uppercase">
@@ -117,10 +92,9 @@ export default function Users() {
             totalPages={totalPages}
             perPage={limit}
             totalItems={totalItems}
-            onPageChange={handlePageChange}
+            onPageChange={setCurrentPage}
           />
         </div>
       </div>
-    </div>
   );
 }
