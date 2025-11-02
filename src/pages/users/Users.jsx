@@ -1,32 +1,25 @@
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   openAddModal,
   openEditModal,
   closeUserModal,
-  triggerReload,
   openDeleteConfirm,
   closeDeleteConfirm,
-} from "../../store/userSlice"
+} from "../../store/userSlice";
+import { deleteUser } from "../../store/userSlice";
 
-import { useState } from "react";
 import { UserPlusIcon } from "@heroicons/react/24/outline";
 import PageHeader from "../../components/PageHeader";
 import UserTable from "./UserTable";
 import UserModal from "./UserModal";
 import ConfirmModal from "../../components/ConfirmationModal";
-import axiosClient from "../../api/axiosClient";
-import { toast } from "react-toastify";
 
 export default function Users() {
   const dispatch = useDispatch();
-  const {
-    modalOpen,
-    confirmOpen,
-    mode,
-    selectedUser,
-    userToDelete,
-    listReload,
-  } = useSelector((state) => state.user);
+  const { modalOpen, confirmOpen, mode, selectedUser, userToDelete } = useSelector(
+    (state) => state.user
+  );
 
   const [search, setSearch] = useState("");
   const [deleting, setDeleting] = useState(false);
@@ -34,19 +27,7 @@ export default function Users() {
   const handleDeleteConfirm = () => {
     if (!userToDelete) return;
     setDeleting(true);
-
-    axiosClient
-      .delete(`/user/${userToDelete.id}`)
-      .then(() => {
-        toast.success("Pengguna berhasil dihapus!");
-        dispatch(triggerReload());
-        dispatch(closeDeleteConfirm());
-      })
-      .catch((err) => {
-        const msg = err.response?.data?.message || "Gagal menghapus pengguna.";
-        toast.error(msg);
-      })
-      .finally(() => setDeleting(false));
+    dispatch(deleteUser(userToDelete.id)).finally(() => setDeleting(false));
   };
 
   return (
@@ -63,9 +44,8 @@ export default function Users() {
 
         <UserTable
           search={search}
-          reloadTrigger={listReload}
-          onEdit={(user) => dispatch(openEditModal(user))}
-          onDelete={(user) => dispatch(openDeleteConfirm(user))}
+          onEdit={(u) => dispatch(openEditModal(u))}
+          onDelete={(u) => dispatch(openDeleteConfirm(u))}
         />
 
         <UserModal
@@ -73,7 +53,6 @@ export default function Users() {
           mode={mode}
           user={selectedUser}
           onClose={() => dispatch(closeUserModal())}
-          onSuccess={() => dispatch(triggerReload())}
         />
       </div>
 

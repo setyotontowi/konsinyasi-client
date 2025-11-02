@@ -1,18 +1,14 @@
+// src/pages/users/UserModal.jsx
 import { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import Select from "react-select";
 import axiosClient from "../../api/axiosClient";
-import { toast } from "react-toastify";
+import { addUser, editUser, fetchUsers } from "../../store/userSlice";
 
-export default function UserFormModal({ 
-  open, 
-  onClose, 
-  onSuccess, 
-  mode = "add", // "add" or "edit"
-  user = null   // existing user data for edit
-}) {
+export default function UserModal({ open, onClose, mode, user }) {
   if (!open) return null;
-
+  const dispatch = useDispatch();
   const isEdit = mode === "edit";
 
   const [formData, setFormData] = useState({
@@ -32,7 +28,6 @@ export default function UserFormModal({
   const [loading, setLoading] = useState({ unit: false, group: false });
   const [submitting, setSubmitting] = useState(false);
 
-  // Prefill data in edit mode
   useEffect(() => {
     if (isEdit && user) {
       setFormData({
@@ -57,79 +52,69 @@ export default function UserFormModal({
         keterangan: "",
       });
     }
+    setErrors({});
   }, [isEdit, user, open]);
 
-  // Fetch groups
+  // Load dropdowns
   useEffect(() => {
     if (!open) return;
-    setLoading((l) => ({ ...l, group: true }));
+    setLoading({ group: true, unit: true });
+
     axiosClient
       .get("/user/group")
       .then((res) => {
-        if (res.data?.data) {
-          setGroups(res.data.data.map((g) => ({ value: g.id, label: g.group_nama })));
-        }
+        setGroups(
+          (res.data?.data || []).map((g) => ({ value: g.id, label: g.group_nama }))
+        );
+      })
+      .catch((err) => {
+        console.error("Failed to load groups:", err);
       })
       .finally(() => setLoading((l) => ({ ...l, group: false })));
-  }, [open]);
 
-  // Fetch units
-  useEffect(() => {
-    if (!open) return;
-    setLoading((l) => ({ ...l, unit: true }));
     axiosClient
       .get("/unit")
       .then((res) => {
-        if (res.data?.data) {
-          setUnits(res.data.data.map((u) => ({ value: u.id, label: u.nama })));
-        }
+        setUnits((res.data?.data || []).map((u) => ({ value: u.id, label: u.nama })));
+      })
+      .catch((err) => {
+        console.error("Failed to load units:", err);
       })
       .finally(() => setLoading((l) => ({ ...l, unit: false })));
   }, [open]);
 
-  // Field change handlers
+  // ----- NEW: generic change handlers -----
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((p) => ({ ...p, [name]: value }));
     setErrors((p) => ({ ...p, [name]: "" }));
   };
+
   const handleSelectChange = (name, opt) => {
     setFormData((p) => ({ ...p, [name]: opt?.value || "" }));
     setErrors((p) => ({ ...p, [name]: "" }));
   };
+  // ---------------------------------------
 
-  // Validation
+  // Validate form
   const validate = () => {
-    const newErrors = {};
+    const errs = {};
+    if (!formData.username.trim()) errs.username = "Username wajib diisi";
+    if (!formData.nama.trim()) errs.nama = "Nama wajib diisi";
+    if (!formData.grupUser) errs.grupUser = "Grup user wajib dipilih";
 
-    if (!formData.username.trim()) newErrors.username = "Username wajib diisi";
-    if (!formData.nama.trim()) newErrors.nama = "Nama wajib diisi";
-    if (!formData.grupUser) newErrors.grupUser = "Grup user wajib dipilih";
+    if (!isEdit && !formData.password.trim()) errs.password = "Password wajib diisi";
+    else if (formData.password && formData.password !== formData.confirmPassword)
+      errs.confirmPassword = "Konfirmasi password tidak cocok";
 
-    // If ADD mode: password is required
-    // If EDIT mode: password only validated if filled
-    if (!isEdit && !formData.password.trim()) {
-        newErrors.password = "Password wajib diisi";
-    } else if (formData.password && !formData.confirmPassword) {
-        newErrors.confirmPassword = "Konfirmasi password wajib diisi";
-    } else if (
-        formData.password &&
-        formData.confirmPassword &&
-        formData.password !== formData.confirmPassword
-    ) {
-        newErrors.confirmPassword = "Konfirmasi password tidak cocok";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
   };
 
-  // Submit handler
+  // Handle save
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!validate()) return;
-
-    setSubmitting(true);
 
     const payload = {
       username: formData.username,
@@ -140,45 +125,33 @@ export default function UserFormModal({
       keterangan: formData.keterangan || "",
     };
 
-    // Only include password if it's filled in edit mode
-    if (formData.password.trim()) {
-        payload.password = formData.password;
-    }
+    if (formData.password && formData.password.trim()) payload.password = formData.password;
 
-    const req = isEdit
-      ? axiosClient.put(`/user/${user.id}`, payload)
-      : axiosClient.post("/auth/register", payload);
+    setSubmitting(true);
+    const action = isEdit ? editUser({ id: user.id, payload }) : addUser(payload);
 
-    req
-      .then((res) => {
-        toast.success(
-          isEdit
-            ? "Pengguna berhasil diperbarui!"
-            : "Pengguna berhasil ditambahkan!"
-        );
-        if (onSuccess) onSuccess();
+    dispatch(action)
+      .unwrap()
+      .then(() => {
+        // refresh first page (you can keep current page logic here if needed)
+        dispatch(fetchUsers({ page: 1, limit: 20 }));
         onClose();
       })
       .catch((err) => {
-        console.error(err);
-        const msg = err.response?.data?.message || "Terjadi kesalahan.";
-        toast.error(`Gagal menyimpan: ${msg}`);
+        // note: thunks already show toast for errors; but you can map errors here if backend returns field errors
+        console.error("Save failed:", err);
       })
       .finally(() => setSubmitting(false));
   };
 
   const customSelectStyle = {
-    control: (base, state) => ({
+    control: (base) => ({
       ...base,
       borderColor: "#e5e7eb",
-      boxShadow: state.isFocused ? "0 0 0 2px #93c5fd" : "none",
+      boxShadow: "none",
       "&:hover": { borderColor: "#93c5fd" },
-      minHeight: "38px",
     }),
-    menu: (base) => ({ ...base, zIndex: 9999 }),
   };
-
-  const handleModalClick = (e) => e.stopPropagation();
 
   return (
     <div
@@ -187,19 +160,19 @@ export default function UserFormModal({
     >
       <div
         className="bg-white rounded-xl shadow-lg w-full max-w-lg mx-4 animate-fadeIn border border-gray-200"
-        onClick={handleModalClick}
+        onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div className="flex justify-between items-center border-b border-gray-200 px-6 py-3">
           <h2 className="text-lg font-semibold text-gray-800">
             {isEdit ? "Edit Pengguna" : "Tambah Pengguna"}
           </h2>
-          <button onClick={onClose} className="p-1 rounded-full hover:bg-gray-100 transition">
+          <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded-full">
             <XMarkIcon className="h-5 w-5 text-gray-500" />
           </button>
         </div>
 
-        {/* Form */}
+        {/* Body */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {/* Username */}
           <div>
@@ -215,9 +188,7 @@ export default function UserFormModal({
                 errors.username ? "border-red-500" : "border-gray-200"
               } focus:ring-2 focus:ring-blue-500`}
             />
-            {errors.username && (
-              <p className="text-xs text-red-500 mt-1">{errors.username}</p>
-            )}
+            {errors.username && <p className="text-xs text-red-500 mt-1">{errors.username}</p>}
           </div>
 
           {/* Nama */}
@@ -234,16 +205,14 @@ export default function UserFormModal({
                 errors.nama ? "border-red-500" : "border-gray-200"
               } focus:ring-2 focus:ring-blue-500`}
             />
-            {errors.nama && (
-              <p className="text-xs text-red-500 mt-1">{errors.nama}</p>
-            )}
+            {errors.nama && <p className="text-xs text-red-500 mt-1">{errors.nama}</p>}
           </div>
 
           {/* Password */}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700">
-                Password <span className="text-red-500">*</span>
+                Password {isEdit ? <span className="text-gray-500 text-sm">(opsional)</span> : <span className="text-red-500">*</span>}
               </label>
               <input
                 type="password"
@@ -253,15 +222,12 @@ export default function UserFormModal({
                 className={`w-full mt-1 px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 ${
                   errors.password ? "border-red-500" : "border-gray-200"
                 }`}
+                placeholder={isEdit ? "Biarkan kosong jika tidak ingin mengubah" : ""}
               />
-              {errors.password && (
-                <p className="text-xs text-red-500 mt-1">{errors.password}</p>
-              )}
+              {errors.password && <p className="text-xs text-red-500 mt-1">{errors.password}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Konfirmasi Password
-              </label>
+              <label className="block text-sm font-medium text-gray-700">Konfirmasi Password</label>
               <input
                 type="password"
                 name="confirmPassword"
@@ -271,11 +237,7 @@ export default function UserFormModal({
                   errors.confirmPassword ? "border-red-500" : "border-gray-200"
                 }`}
               />
-              {errors.confirmPassword && (
-                <p className="text-xs text-red-500 mt-1">
-                  {errors.confirmPassword}
-                </p>
-              )}
+              {errors.confirmPassword && <p className="text-xs text-red-500 mt-1">{errors.confirmPassword}</p>}
             </div>
           </div>
 
@@ -294,16 +256,12 @@ export default function UserFormModal({
               placeholder="Pilih grup user..."
               styles={customSelectStyle}
             />
-            {errors.grupUser && (
-              <p className="text-xs text-red-500 mt-1">{errors.grupUser}</p>
-            )}
+            {errors.grupUser && <p className="text-xs text-red-500 mt-1">{errors.grupUser}</p>}
           </div>
 
           {/* Unit */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Unit
-            </label>
+            <label className="block text-sm font-medium text-gray-700">Unit</label>
             <Select
               isSearchable
               isClearable
@@ -314,16 +272,12 @@ export default function UserFormModal({
               placeholder="Pilih unit..."
               styles={customSelectStyle}
             />
-            {errors.unit && (
-              <p className="text-xs text-red-500 mt-1">{errors.unit}</p>
-            )}
+            {errors.unit && <p className="text-xs text-red-500 mt-1">{errors.unit}</p>}
           </div>
 
           {/* Keterangan */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Keterangan
-            </label>
+            <label className="block text-sm font-medium text-gray-700">Keterangan</label>
             <textarea
               name="keterangan"
               value={formData.keterangan}
@@ -335,12 +289,12 @@ export default function UserFormModal({
         </form>
 
         {/* Footer */}
-        <div className="flex justify-end gap-2 border-t border-gray-200 px-6 py-3 bg-gray-50">
+        <div className="flex justify-end gap-2 border-t border-gray-200 px-6 py-3">
           <button
             type="button"
             onClick={onClose}
             disabled={submitting}
-            className="px-4 py-2 rounded-md text-gray-700 bg-gray-100 hover:bg-gray-200 transition border border-gray-200"
+            className="px-4 py-2 rounded-md text-gray-700 bg-gray-100 hover:bg-gray-200 border border-gray-200"
           >
             Batal
           </button>
@@ -348,10 +302,8 @@ export default function UserFormModal({
             type="submit"
             onClick={handleSubmit}
             disabled={submitting}
-            className={`px-4 py-2 rounded-md text-white transition border border-gray-200 ${
-              submitting
-                ? "bg-blue-300 cursor-not-allowed"
-                : "bg-blue-600 hover:bg-blue-700"
+            className={`px-4 py-2 rounded-md text-white transition ${
+              submitting ? "bg-blue-300 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
             }`}
           >
             {submitting ? "Menyimpan..." : isEdit ? "Simpan Perubahan" : "Simpan"}

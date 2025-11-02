@@ -1,35 +1,20 @@
-import { useEffect, useState } from "react";
-import axiosClient from "../../api/axiosClient";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchUsers } from "../../store/userSlice";
 import Pagination from "../../components/Pagination";
-import { PencilIcon, TrashIcon } from '@heroicons/react/24/outline'
+import { PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
 
-export default function UserTable({ search, reloadTrigger, onEdit, onDelete }) {
-  const [users, setUsers] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalItems, setTotalItems] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [fade, setFade] = useState(false);
-  const limit = 20;
+export default function UserTable({ search, onEdit, onDelete }) {
+  const dispatch = useDispatch();
+  const { list, pagination, loading } = useSelector((state) => state.user);
+  const { page, totalPages, totalItems } = pagination;
 
   useEffect(() => {
-    const delay = setTimeout(() => fetchUsers(), 400);
+    const delay = setTimeout(() => {
+      dispatch(fetchUsers({ page, limit: 20, search }));
+    }, 400);
     return () => clearTimeout(delay);
-  }, [currentPage, search, reloadTrigger]);
-
-  const fetchUsers = () => {
-    setLoading(true);
-    axiosClient
-      .get(`/user?page=${currentPage}&limit=${limit}&user=${encodeURIComponent(search)}`)
-      .then((res) => {
-        setUsers(res.data.data);
-        setTotalPages(res.data.pagination.total_pages);
-        setTotalItems(res.data.pagination.total);
-        setFade(true);
-        setTimeout(() => setFade(false), 300); // remove fade after 0.3s
-      })
-      .finally(() => setLoading(false));
-  };
+  }, [dispatch, page, search]);
 
   if (loading)
     return (
@@ -54,7 +39,7 @@ export default function UserTable({ search, reloadTrigger, onEdit, onDelete }) {
               </tr>
             </thead>
             <tbody>
-              {users.map((u, index) => (
+              {list.map((u, index) => (
                 <tr key={u.id} className="hover:bg-gray-50 transition">
                   <td className="border border-gray-200 px-6 py-2 text-gray-600 text-center">
                     {index + 1}
@@ -96,11 +81,11 @@ export default function UserTable({ search, reloadTrigger, onEdit, onDelete }) {
           </table>
 
           <Pagination
-            currentPage={currentPage}
+            currentPage={page}
             totalPages={totalPages}
-            perPage={limit}
+            perPage={20}
             totalItems={totalItems}
-            onPageChange={setCurrentPage}
+            onPageChange={(p) => dispatch(fetchUsers({ page: p, search }))}
           />
         </div>
       </div>
