@@ -17,7 +17,11 @@ export default function Users() {
   const [userToDelete, setUserToDelete] = useState(null);
   const [deleting, setDeleting] = useState(false);
 
-  const handleAddUser = () => setOpenAddModal(true);
+  const handleAddUser = () => {
+    setMode("add");
+    setSelectedUser(null);
+    setOpenAddModal(true);
+  };
 
   const handleSuccess = () => {
     setReloadTrigger((prev) => prev + 1);
@@ -53,6 +57,13 @@ export default function Users() {
       .finally(() => setDeleting(false));
   };
 
+  // add this in your component
+  const closeModal = () => {
+    setOpenAddModal(false);
+    setMode("add");
+    setSelectedUser(null);
+  };
+
   return (
     <>
       <div className="masterdata titlerounded-2xl bg-white border border-gray-200">
@@ -74,7 +85,7 @@ export default function Users() {
 
         <UserModal
           open={openAddModal}
-          onClose={() => setOpenAddModal(false)}
+          onClose={closeModal}
           onSuccess={handleSuccess}
           mode={mode}
           user={selectedUser}
