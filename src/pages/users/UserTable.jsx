@@ -3,7 +3,7 @@ import axiosClient from "../../api/axiosClient";
 import Pagination from "../../components/Pagination";
 import { PencilIcon, TrashIcon } from '@heroicons/react/24/outline'
 
-export default function UserTable({ search, reloadTrigger }) {
+export default function UserTable({ search, reloadTrigger, onEdit }) {
   const [users, setUsers] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -78,7 +78,9 @@ export default function UserTable({ search, reloadTrigger }) {
                   {/* Actions */}
                   <td className="border border-gray-200 px-6 py-2 text-center">
                     <div className="flex justify-center gap-2">
-                      <button className="flex items-center gap-1 px-3 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded text-sm transition">
+                      <button 
+                        onClick={() => onEdit(u)}
+                        className="flex items-center gap-1 px-3 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded text-sm transition">
                         <PencilIcon className="h-4 w-4" /> Edit
                       </button>
                       <button className="flex items-center gap-1 px-3 py-1 bg-red-50 hover:bg-red-100 text-red-600 rounded text-sm transition">

@@ -1,11 +1,19 @@
 import { useState, useEffect } from "react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import axiosClient from "../../api/axiosClient";
 import Select from "react-select";
+import axiosClient from "../../api/axiosClient";
 import { toast } from "react-toastify";
 
-export default function AddUserModal({ open, onClose, onSuccess }) {
+export default function UserFormModal({ 
+  open, 
+  onClose, 
+  onSuccess, 
+  mode = "add", // "add" or "edit"
+  user = null   // existing user data for edit
+}) {
   if (!open) return null;
+
+  const isEdit = mode === "edit";
 
   const [formData, setFormData] = useState({
     username: "",
@@ -21,14 +29,54 @@ export default function AddUserModal({ open, onClose, onSuccess }) {
   const [errors, setErrors] = useState({});
   const [units, setUnits] = useState([]);
   const [groups, setGroups] = useState([]);
-  const [unitLoading, setUnitLoading] = useState(false);
-  const [groupLoading, setGroupLoading] = useState(false);
+  const [loading, setLoading] = useState({ unit: false, group: false });
   const [submitting, setSubmitting] = useState(false);
 
-  // Fetch Units
+  // Prefill data in edit mode
+  useEffect(() => {
+    if (isEdit && user) {
+      setFormData({
+        username: user.username || "",
+        nama: user.nama || "",
+        password: "",
+        confirmPassword: "",
+        nip: user.nip || "",
+        grupUser: user.id_users_group || "",
+        unit: user.id_master_unit || "",
+        keterangan: user.keterangan || "",
+      });
+    } else {
+      setFormData({
+        username: "",
+        nama: "",
+        password: "",
+        confirmPassword: "",
+        nip: "",
+        grupUser: "",
+        unit: "",
+        keterangan: "",
+      });
+    }
+  }, [isEdit, user, open]);
+
+  // Fetch groups
   useEffect(() => {
     if (!open) return;
-    setUnitLoading(true);
+    setLoading((l) => ({ ...l, group: true }));
+    axiosClient
+      .get("/user/group")
+      .then((res) => {
+        if (res.data?.data) {
+          setGroups(res.data.data.map((g) => ({ value: g.id, label: g.group_nama })));
+        }
+      })
+      .finally(() => setLoading((l) => ({ ...l, group: false })));
+  }, [open]);
+
+  // Fetch units
+  useEffect(() => {
+    if (!open) return;
+    setLoading((l) => ({ ...l, unit: true }));
     axiosClient
       .get("/unit")
       .then((res) => {
@@ -36,106 +84,101 @@ export default function AddUserModal({ open, onClose, onSuccess }) {
           setUnits(res.data.data.map((u) => ({ value: u.id, label: u.nama })));
         }
       })
-      .catch((err) => console.error("Failed to fetch units:", err))
-      .finally(() => setUnitLoading(false));
+      .finally(() => setLoading((l) => ({ ...l, unit: false })));
   }, [open]);
 
-  // Fetch Groups
-  useEffect(() => {
-    if (!open) return;
-    setGroupLoading(true);
-    axiosClient
-      .get("/user/group")
-      .then((res) => {
-        if (res.data?.data) {
-          setGroups(
-            res.data.data.map((g) => ({ value: g.id, label: g.group_nama }))
-          );
-        }
-      })
-      .catch((err) => console.error("Failed to fetch groups:", err))
-      .finally(() => setGroupLoading(false));
-  }, [open]);
-
+  // Field change handlers
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    setErrors((prev) => ({ ...prev, [name]: "" }));
+    setFormData((p) => ({ ...p, [name]: value }));
+    setErrors((p) => ({ ...p, [name]: "" }));
+  };
+  const handleSelectChange = (name, opt) => {
+    setFormData((p) => ({ ...p, [name]: opt?.value || "" }));
+    setErrors((p) => ({ ...p, [name]: "" }));
   };
 
-  const handleSelectChange = (name, option) => {
-    setFormData((prev) => ({ ...prev, [name]: option?.value || "" }));
-    setErrors((prev) => ({ ...prev, [name]: "" }));
-  };
-
+  // Validation
   const validate = () => {
     const newErrors = {};
+
     if (!formData.username.trim()) newErrors.username = "Username wajib diisi";
     if (!formData.nama.trim()) newErrors.nama = "Nama wajib diisi";
-    if (!formData.password.trim()) newErrors.password = "Password wajib diisi";
     if (!formData.grupUser) newErrors.grupUser = "Grup user wajib dipilih";
 
-    if (
-      formData.password &&
-      formData.confirmPassword &&
-      formData.password !== formData.confirmPassword
+    // If ADD mode: password is required
+    // If EDIT mode: password only validated if filled
+    if (!isEdit && !formData.password.trim()) {
+        newErrors.password = "Password wajib diisi";
+    } else if (formData.password && !formData.confirmPassword) {
+        newErrors.confirmPassword = "Konfirmasi password wajib diisi";
+    } else if (
+        formData.password &&
+        formData.confirmPassword &&
+        formData.password !== formData.confirmPassword
     ) {
-      newErrors.confirmPassword = "Konfirmasi password tidak cocok";
+        newErrors.confirmPassword = "Konfirmasi password tidak cocok";
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
+  // Submit handler
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!validate()) return;
 
     setSubmitting(true);
 
-    // Prepare request payload
     const payload = {
       username: formData.username,
-      password: formData.password,
       nama: formData.nama,
       id_users_group: formData.grupUser,
       id_master_unit: formData.unit || null,
+      nip: formData.nip || "",
       keterangan: formData.keterangan || "",
     };
 
-    axiosClient
-      .post("/auth/register", payload)
+    // Only include password if it's filled in edit mode
+    if (formData.password.trim()) {
+        payload.password = formData.password;
+    }
+
+    const req = isEdit
+      ? axiosClient.put(`/user/${user.id}`, payload)
+      : axiosClient.post("/auth/register", payload);
+
+    req
       .then((res) => {
-        toast.success("Pengguna berhasil ditambahkan!");
-        if (onSuccess) onSuccess(); // optional: reload table
+        toast.success(
+          isEdit
+            ? "Pengguna berhasil diperbarui!"
+            : "Pengguna berhasil ditambahkan!"
+        );
+        if (onSuccess) onSuccess();
         onClose();
       })
       .catch((err) => {
-        if (err.response?.data?.message) {
-          toast.error(`Gagal menyimpan: ${err.response.data.message}`);
-        } else {
-          toast.error("Terjadi kesalahan saat menyimpan data.");
-        }
+        console.error(err);
+        const msg = err.response?.data?.message || "Terjadi kesalahan.";
+        toast.error(`Gagal menyimpan: ${msg}`);
       })
       .finally(() => setSubmitting(false));
   };
 
-  const handleModalClick = (e) => e.stopPropagation();
-
   const customSelectStyle = {
     control: (base, state) => ({
       ...base,
-      borderColor:
-        errors.unit || errors.grupUser ? "#ef4444" : "#e5e7eb", // red-500 / gray-200
+      borderColor: "#e5e7eb",
       boxShadow: state.isFocused ? "0 0 0 2px #93c5fd" : "none",
       "&:hover": { borderColor: "#93c5fd" },
       minHeight: "38px",
     }),
-    menu: (base) => ({
-      ...base,
-      zIndex: 9999,
-    }),
+    menu: (base) => ({ ...base, zIndex: 9999 }),
   };
+
+  const handleModalClick = (e) => e.stopPropagation();
 
   return (
     <div
@@ -149,12 +192,9 @@ export default function AddUserModal({ open, onClose, onSuccess }) {
         {/* Header */}
         <div className="flex justify-between items-center border-b border-gray-200 px-6 py-3">
           <h2 className="text-lg font-semibold text-gray-800">
-            Tambah Pengguna
+            {isEdit ? "Edit Pengguna" : "Tambah Pengguna"}
           </h2>
-          <button
-            onClick={onClose}
-            className="p-1 rounded-full hover:bg-gray-100 transition"
-          >
+          <button onClick={onClose} className="p-1 rounded-full hover:bg-gray-100 transition">
             <XMarkIcon className="h-5 w-5 text-gray-500" />
           </button>
         </div>
@@ -171,9 +211,9 @@ export default function AddUserModal({ open, onClose, onSuccess }) {
               name="username"
               value={formData.username}
               onChange={handleChange}
-              className={`w-full mt-1 px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 ${
+              className={`w-full mt-1 px-3 py-2 border rounded-md ${
                 errors.username ? "border-red-500" : "border-gray-200"
-              }`}
+              } focus:ring-2 focus:ring-blue-500`}
             />
             {errors.username && (
               <p className="text-xs text-red-500 mt-1">{errors.username}</p>
@@ -190,9 +230,9 @@ export default function AddUserModal({ open, onClose, onSuccess }) {
               name="nama"
               value={formData.nama}
               onChange={handleChange}
-              className={`w-full mt-1 px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 ${
+              className={`w-full mt-1 px-3 py-2 border rounded-md ${
                 errors.nama ? "border-red-500" : "border-gray-200"
-              }`}
+              } focus:ring-2 focus:ring-blue-500`}
             />
             {errors.nama && (
               <p className="text-xs text-red-500 mt-1">{errors.nama}</p>
@@ -247,7 +287,7 @@ export default function AddUserModal({ open, onClose, onSuccess }) {
             <Select
               isSearchable
               isClearable
-              isLoading={groupLoading}
+              isLoading={loading.group}
               options={groups}
               value={groups.find((g) => g.value === formData.grupUser) || null}
               onChange={(opt) => handleSelectChange("grupUser", opt)}
@@ -267,7 +307,7 @@ export default function AddUserModal({ open, onClose, onSuccess }) {
             <Select
               isSearchable
               isClearable
-              isLoading={unitLoading}
+              isLoading={loading.unit}
               options={units}
               value={units.find((u) => u.value === formData.unit) || null}
               onChange={(opt) => handleSelectChange("unit", opt)}
@@ -289,7 +329,7 @@ export default function AddUserModal({ open, onClose, onSuccess }) {
               value={formData.keterangan}
               onChange={handleChange}
               rows={3}
-              className="w-full mt-1 px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full mt-1 px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-500"
             />
           </div>
         </form>
@@ -314,7 +354,7 @@ export default function AddUserModal({ open, onClose, onSuccess }) {
                 : "bg-blue-600 hover:bg-blue-700"
             }`}
           >
-            {submitting ? "Menyimpan..." : "Simpan"}
+            {submitting ? "Menyimpan..." : isEdit ? "Simpan Perubahan" : "Simpan"}
           </button>
         </div>
       </div>

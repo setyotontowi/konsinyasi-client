@@ -7,12 +7,20 @@ import UserModal from "./UserModal"
 export default function Users() {
   const [search, setSearch] = useState("");
   const [openAddModal, setOpenAddModal] = useState(false);
-  const [reloadTrigger, setReloadTrigger] = useState(0); // 🔹 for forcing reload
+  const [reloadTrigger, setReloadTrigger] = useState(0);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [mode, setMode] = useState("add");
 
   const handleAddUser = () => setOpenAddModal(true);
 
   const handleSuccess = () => {
     setReloadTrigger((prev) => prev + 1);
+  };
+
+  const handleEditUser = (user) => {
+    setSelectedUser(user);
+    setMode("edit");
+    setOpenAddModal(true);
   };
 
   return (
@@ -27,12 +35,17 @@ export default function Users() {
       />
 
       {/* Pass reloadTrigger down to UserTable */}
-      <UserTable search={search} reloadTrigger={reloadTrigger} />
+      <UserTable 
+        search={search} 
+        reloadTrigger={reloadTrigger} 
+        onEdit={handleEditUser} />
 
       <UserModal
         open={openAddModal}
         onClose={() => setOpenAddModal(false)}
-        onSuccess={handleSuccess} 
+        onSuccess={handleSuccess}
+        mode={mode}
+        user={selectedUser}
       />
     </div>
   );
