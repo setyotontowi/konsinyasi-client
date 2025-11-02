@@ -2,26 +2,40 @@ import { useState, useEffect, useRef } from 'react'
 import axiosClient from '../api/axiosClient'
 import { UserPlusIcon,  PencilIcon, TrashIcon } from '@heroicons/react/24/outline'
 import PageHeader from '../components/PageHeader'
+import Pagination from '../components/Pagination'
 
 
 export default function Users() {
-  const [users, setUsers] = useState([])      // store fetched data
-  const [loading, setLoading] = useState(true) // show loading state
-  const [error, setError] = useState(null)     // handle errors
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [search, setSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [limit] = useState(20);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
 
   useEffect(() => {
+    setLoading(true);
     axiosClient
-      .get('/user') // your backend URL
+      .get(`/user?page=${currentPage}&limit=${limit}`)
       .then(response => {
-        setUsers(response.data.data)  // assuming response.data is an array
+        setUsers(response.data.data);
+        setTotalPages(response.data.pagination.total_pages || 1);
+        setTotalItems(response.data.pagination.total || 0);
       })
       .catch(err => {
-        console.error(err)
-        setError('Failed to fetch users')
+        console.error(err);
+        setError('Failed to fetch users');
       })
-      .finally(() => setLoading(false))
-  }, [])
+      .finally(() => setLoading(false));
+  }, [currentPage, limit]);
+
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
 
   const handleAddUser = () => {
     console.log("Add user clicked");
@@ -90,6 +104,14 @@ export default function Users() {
               ))}
             </tbody>
           </table>
+
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            perPage={limit}
+            totalItems={totalItems}
+            onPageChange={handlePageChange}
+          />
         </div>
       </div>
     </div>
