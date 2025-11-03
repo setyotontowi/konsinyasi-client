@@ -87,7 +87,7 @@ const UnitTable = ({search}) => {
                         <PencilIcon className="h-4 w-4" /> Edit
                       </button>
                       <button
-                        onClick={() => dispatch(openDeleteConfirm(u.id))}
+                        onClick={() => dispatch(openDeleteConfirm(u))}
                         className="flex items-center gap-1 px-3 py-1 bg-red-50 hover:bg-red-100 text-red-600 rounded text-sm transition"
                       >
                         <TrashIcon className="h-4 w-4" /> Delete

@@ -1,43 +1,72 @@
-import React, { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { fetchUnits } from "../../store/unitSlice";
-import UnitTable from "./UnitTable";
+import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  openAddModal,
+  openEditModal,
+  closeUnitModal,
+  openDeleteConfirm,
+  closeDeleteConfirm,
+} from "../../store/unitSlice";
+import { deleteUnit } from "../../store/unitSlice";
+
+import { PlusIcon } from "@heroicons/react/24/outline";
 import PageHeader from "../../components/PageHeader";
-import { RectangleGroupIcon } from "@heroicons/react/24/outline";
+import UnitTable from "./UnitTable";
+import UnitModal from "./UnitModal";
+import ConfirmModal from "../../components/ConfirmationModal";
 
-const Unit = () => {
+export default function Unit() {
   const dispatch = useDispatch();
+  const { modalOpen, confirmOpen, mode, selectedUnit, unitToDelete } =
+    useSelector((state) => state.unit);
+
   const [search, setSearch] = useState("");
+  const [deleting, setDeleting] = useState(false);
 
-  useEffect(() => {
-    dispatch(fetchUnits());
-  }, [dispatch]);
-
-  const handleSearch = (e) => {
-    e.preventDefault();
-    dispatch(fetchUnits({ query: search }));
+  const handleDeleteConfirm = () => {
+    if (!unitToDelete) return;
+    setDeleting(true);
+    dispatch(deleteUnit({ id: unitToDelete.id })).finally(() => setDeleting(false));
   };
 
   return (
     <>
-        <div className="masterdata titlerounded-2xl bg-white border border-gray-200">
+      <div className="rounded-2xl bg-white border border-gray-200">
         <PageHeader
-          title="Unit Pengguna"
+          title="Data Unit"
           onAdd={() => dispatch(openAddModal())}
           search={search}
           setSearch={setSearch}
           addLabel="Tambah Unit"
-          AddIcon={RectangleGroupIcon}
+          AddIcon={PlusIcon}
         />
 
-        {/* Table */}
-        <UnitTable 
+        <UnitTable
           search={search}
+          onEdit={(u) => dispatch(openEditModal(u))}
+          onDelete={(u) => dispatch(openDeleteConfirm(u))}
         />
-        
-        </div>
+
+        <UnitModal
+          open={modalOpen}
+          mode={mode}
+          unit={selectedUnit}
+          onClose={() => dispatch(closeUnitModal())}
+        />
+      </div>
+
+      <ConfirmModal
+        open={confirmOpen}
+        title="Hapus Unit"
+        message={
+          unitToDelete
+            ? `Apakah Anda yakin ingin menghapus unit "${unitToDelete.nama}"?`
+            : "Apakah Anda yakin ingin menghapus unit ini?"
+        }
+        onConfirm={handleDeleteConfirm}
+        onClose={() => dispatch(closeDeleteConfirm())}
+        loading={deleting}
+      />
     </>
   );
-};
-
-export default Unit;
+}

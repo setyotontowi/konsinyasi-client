@@ -25,10 +25,12 @@ export const fetchUnits = createAsyncThunk(
 // Add unit
 export const addUnit = createAsyncThunk(
   "unit/addUnit",
-  async (payload, { rejectWithValue }) => {
+  async ({ payload, queryParams }, { dispatch, rejectWithValue }) => {
     try {
       const res = await axiosClient.post("/unit", payload);
       toast.success("Unit berhasil ditambahkan!");
+      // refresh list after success
+      dispatch(fetchUnits(queryParams || { page: 1, limit: 20 }));
       return res.data;
     } catch (err) {
       const msg = err.response?.data?.message || "Gagal menambahkan unit.";
@@ -41,10 +43,12 @@ export const addUnit = createAsyncThunk(
 // Edit unit
 export const editUnit = createAsyncThunk(
   "unit/editUnit",
-  async ({ id, payload }, { rejectWithValue }) => {
+  async ({ id, payload, queryParams }, { dispatch, rejectWithValue }) => {
     try {
       const res = await axiosClient.put(`/unit/${id}`, payload);
       toast.success("Unit berhasil diperbarui!");
+      // refresh list after success
+      dispatch(fetchUnits(queryParams || { page: 1, limit: 20 }));
       return res.data;
     } catch (err) {
       const msg = err.response?.data?.message || "Gagal memperbarui unit.";
@@ -57,10 +61,12 @@ export const editUnit = createAsyncThunk(
 // Delete unit
 export const deleteUnit = createAsyncThunk(
   "unit/deleteUnit",
-  async (id, { rejectWithValue }) => {
+  async ({ id, queryParams }, { dispatch, rejectWithValue }) => {
     try {
-      const res = await axiosClient.delete(`/unit/${id}`);
+      await axiosClient.delete(`/unit/${id}`);
       toast.success("Unit berhasil dihapus!");
+      // refresh list after success
+      dispatch(fetchUnits(queryParams || { page: 1, limit: 20 }));
       return id;
     } catch (err) {
       const msg = err.response?.data?.message || "Gagal menghapus unit.";
@@ -146,7 +152,7 @@ const unitSlice = createSlice({
       })
 
       // ---- Delete Unit ----
-      .addCase(deleteUnit.fulfilled, (state, action) => {
+      .addCase(deleteUnit.fulfilled, (state) => {
         state.list = state.list.filter((u) => u.id !== action.payload);
         state.confirmOpen = false;
       });
