@@ -41,6 +41,7 @@ export default function UserGroup() {
           setSearch={setSearch}
           addLabel="Tambah Grup"
           AddIcon={PlusIcon}
+          disableSearch = {true}
         />
 
         <UserGroupTable
