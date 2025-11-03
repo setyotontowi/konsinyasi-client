@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import Users from './pages/users/Users'
+import Unit from './pages/unit/Unit'
 import Settings from './pages/Settings'
 import ProtectedRoute from './components/ProtectedRoute'
 import { ToastContainer } from 'react-toastify'
@@ -20,6 +21,7 @@ export default function App() {
           {/* Masterdata section */}
           <Route path="masterdata">
             <Route path="users" element={<Users />} />
+            <Route path="units" element={<Unit />} />
           </Route>
 
           <Route path="settings" element={<Settings />} />
