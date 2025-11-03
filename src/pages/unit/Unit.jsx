@@ -31,7 +31,9 @@ const Unit = () => {
         />
 
         {/* Table */}
-        <UnitTable />
+        <UnitTable 
+          search={search}
+        />
         
         </div>
     </>

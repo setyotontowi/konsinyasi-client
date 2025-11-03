@@ -8,10 +8,11 @@ export default function UserTable({ search, onEdit, onDelete }) {
   const dispatch = useDispatch();
   const { list, pagination, loading } = useSelector((state) => state.user);
   const { page, totalPages, totalItems } = pagination;
+  const limit = 20;
 
   useEffect(() => {
     const delay = setTimeout(() => {
-      dispatch(fetchUsers({ page, limit: 20, search }));
+      dispatch(fetchUsers({ page, limit: limit, search }));
     }, 400);
     return () => clearTimeout(delay);
   }, [dispatch, page, search]);
@@ -42,7 +43,7 @@ export default function UserTable({ search, onEdit, onDelete }) {
               {list.map((u, index) => (
                 <tr key={u.id} className="hover:bg-gray-50 transition">
                   <td className="border border-gray-200 px-6 py-2 text-gray-600 text-center">
-                    {index + 1}
+                    {(page - 1) * limit + index + 1}
                   </td>
                   <td className="border border-gray-200 px-6 py-2 ">
                     {u.nama}
@@ -83,7 +84,7 @@ export default function UserTable({ search, onEdit, onDelete }) {
           <Pagination
             currentPage={page}
             totalPages={totalPages}
-            perPage={20}
+            perPage={limit}
             totalItems={totalItems}
             onPageChange={(p) => dispatch(fetchUsers({ page: p, search }))}
           />
