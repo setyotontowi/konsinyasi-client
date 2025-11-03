@@ -9,7 +9,7 @@ import {
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
 import Pagination from "../../components/Pagination";
 
-const UnitTable = () => {
+const UnitTable = ({search}) => {
   const dispatch = useDispatch();
   const { list, loading, error, pagination } = useSelector(
     (state) => state.unit
@@ -20,8 +20,11 @@ const UnitTable = () => {
   const limit = 20; // same default as fetchUnits
 
   useEffect(() => {
-    dispatch(fetchUnits({ page: currentPage, limit: limit }));
-  }, [dispatch, currentPage]);
+    const delay = setTimeout(() => {
+          dispatch(fetchUnits({ page:currentPage, limit: limit, search }));
+        }, 400);
+    return () => clearTimeout(delay);
+  }, [dispatch, currentPage, search]);
 
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= totalPages) {

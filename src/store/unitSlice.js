@@ -13,7 +13,7 @@ export const fetchUnits = createAsyncThunk(
   async ({ page = 1, limit = 20, search = "" }, { rejectWithValue }) => {
     try {
       const res = await axiosClient.get(
-        `/unit?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`
+        `/unit?page=${page}&limit=${limit}&nama=${encodeURIComponent(search)}`
       );
       return res.data;
     } catch (err) {
