@@ -3,6 +3,10 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axiosClient from "../api/axiosClient";
 import { toast } from "react-toastify";
 
+// ====================
+//  Async Thunks
+// ====================
+
 // Fetch user groups
 export const fetchUserGroups = createAsyncThunk(
   "userGroup/fetchUserGroups",
@@ -12,6 +16,40 @@ export const fetchUserGroups = createAsyncThunk(
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
+    }
+  }
+);
+
+// Add group
+export const addUserGroup = createAsyncThunk(
+  "userGroup/addUserGroup",
+  async ({ payload }, { dispatch, rejectWithValue }) => {
+    try {
+      const res = await axiosClient.post("/user/group", payload);
+      toast.success("Grup berhasil ditambahkan!");
+      dispatch(fetchUserGroups());
+      return res.data;
+    } catch (err) {
+      const msg = err.response?.data?.message || "Gagal menambahkan grup.";
+      toast.error(msg);
+      return rejectWithValue(msg);
+    }
+  }
+);
+
+// Edit group
+export const editUserGroup = createAsyncThunk(
+  "userGroup/editUserGroup",
+  async ({ id, payload }, { dispatch, rejectWithValue }) => {
+    try {
+      const res = await axiosClient.put(`/user/group/${id}`, payload);
+      toast.success("Grup berhasil diperbarui!");
+      dispatch(fetchUserGroups());
+      return res.data;
+    } catch (err) {
+      const msg = err.response?.data?.message || "Gagal memperbarui grup.";
+      toast.error(msg);
+      return rejectWithValue(msg);
     }
   }
 );
@@ -33,13 +71,16 @@ export const deleteUserGroup = createAsyncThunk(
   }
 );
 
+// ====================
+//  Slice Definition
+// ====================
+
 const userGroupSlice = createSlice({
   name: "userGroup",
   initialState: {
     list: [],
     loading: false,
     error: null,
-
     modalOpen: false,
     confirmOpen: false,
     mode: "add",
@@ -84,6 +125,12 @@ const userGroupSlice = createSlice({
       .addCase(fetchUserGroups.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      .addCase(addUserGroup.fulfilled, (state) => {
+        state.modalOpen = false;
+      })
+      .addCase(editUserGroup.fulfilled, (state) => {
+        state.modalOpen = false;
       })
       .addCase(deleteUserGroup.fulfilled, (state) => {
         state.confirmOpen = false;

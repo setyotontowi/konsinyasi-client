@@ -1,10 +1,13 @@
-// src/pages/user-group/UserGroupTable.jsx
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchUserGroups, openEditModal, openDeleteConfirm } from "../../store/userGroupSlice";
-import { PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
+import {
+  fetchUserGroups,
+  openEditModal,
+  openDeleteConfirm,
+} from "../../store/userGroupSlice";
+import { PencilIcon, KeyIcon } from "@heroicons/react/24/outline";
 
-const UserGroupTable = ({ search }) => {
+const UserGroupTable = ({ search, onPrivilege }) => {
   const dispatch = useDispatch();
   const { list, loading, error } = useSelector((state) => state.userGroup);
 
@@ -29,7 +32,7 @@ const UserGroupTable = ({ search }) => {
               <th className="px-6 py-3 border border-gray-200 w-5">No</th>
               <th className="px-6 py-3 border border-gray-200">Nama Grup</th>
               <th className="px-6 py-3 border border-gray-200">Jumlah User</th>
-              <th className="px-6 py-3 border border-gray-200 w-10">Aksi</th>
+              <th className="px-6 py-3 border border-gray-200 w-50">Aksi</th>
             </tr>
           </thead>
           <tbody>
@@ -47,17 +50,17 @@ const UserGroupTable = ({ search }) => {
                   </td>
                   <td className="border border-gray-200 px-6 py-2 text-center">
                     <div className="flex justify-center gap-2">
-                      <button
+                      {/* <button
                         onClick={() => dispatch(openEditModal(g))}
                         className="flex items-center gap-1 px-3 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded text-sm transition"
                       >
                         <PencilIcon className="h-4 w-4" /> Edit
-                      </button>
+                      </button> */}
                       <button
-                        onClick={() => dispatch(openDeleteConfirm(g))}
-                        className="flex items-center gap-1 px-3 py-1 bg-red-50 hover:bg-red-100 text-red-600 rounded text-sm transition"
+                        onClick={() => onPrivilege(g)}
+                        className="flex items-center gap-1 px-3 py-1 bg-green-50 hover:bg-green-100 text-green-700 rounded text-sm transition"
                       >
-                        <TrashIcon className="h-4 w-4" /> Delete
+                        <KeyIcon className="h-4 w-4" /> Akses Menu
                       </button>
                     </div>
                   </td>
