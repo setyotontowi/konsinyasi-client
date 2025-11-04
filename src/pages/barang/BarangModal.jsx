@@ -1,38 +1,66 @@
 // src/pages/barang/BarangModal.jsx
 import { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import Select from "react-select";
+import axiosClient from "../../api/axiosClient";
 import { addBarang, editBarang, fetchBarang } from "../../store/barangSlice";
 
 export default function BarangModal({ open, onClose, mode, barang }) {
   if (!open) return null;
   const dispatch = useDispatch();
-  const { satuanList } = useSelector((state) => state.barang);
   const isEdit = mode === "edit";
 
   const [formData, setFormData] = useState({
-    nama: "",
-    kode: "",
-    satuan: "",
-    keterangan: "",
+    barang_nama: "",
+    serial_number: "",
+    barang_hpp: "",
+    id_satuan_kecil: "",
+    barang_id_simrs: "",
   });
+
   const [errors, setErrors] = useState({});
+  const [satuanOptions, setSatuanOptions] = useState([]);
+  const [loadingSatuan, setLoadingSatuan] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     if (isEdit && barang) {
       setFormData({
-        nama: barang.nama || "",
-        kode: barang.kode || "",
-        satuan: barang.id_satuan || "",
-        keterangan: barang.keterangan || "",
+        barang_nama: barang.barang_nama || "",
+        serial_number: barang.serial_number || "",
+        barang_hpp: barang.barang_hpp || "",
+        id_satuan_kecil: barang.id_satuan_kecil || "",
+        barang_id_simrs: barang.barang_id_simrs || "",
       });
     } else {
-      setFormData({ nama: "", kode: "", satuan: "", keterangan: "" });
+      setFormData({
+        barang_nama: "",
+        serial_number: "",
+        barang_hpp: "",
+        id_satuan_kecil: "",
+        barang_id_simrs: "",
+      });
     }
     setErrors({});
   }, [isEdit, barang, open]);
+
+  // --- Load satuan on mount
+  useEffect(() => {
+    if (!open) return;
+    fetchSatuanOptions("");
+  }, [open]);
+
+  const fetchSatuanOptions = (nama) => {
+    setLoadingSatuan(true);
+    axiosClient
+      .get(`/barang/satuan?nama=${encodeURIComponent(nama)}`)
+      .then((res) => {
+        const list = res.data?.data || [];
+        setSatuanOptions(list.map((s) => ({ value: s.mst_id, label: s.mst_nama })));
+      })
+      .finally(() => setLoadingSatuan(false));
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -41,14 +69,13 @@ export default function BarangModal({ open, onClose, mode, barang }) {
   };
 
   const handleSelectChange = (opt) => {
-    setFormData((p) => ({ ...p, satuan: opt?.value || "" }));
+    setFormData((p) => ({ ...p, id_satuan_kecil: opt?.value || "" }));
   };
 
   const validate = () => {
     const errs = {};
-    if (!formData.nama.trim()) errs.nama = "Nama barang wajib diisi";
-    if (!formData.kode.trim()) errs.kode = "Kode wajib diisi";
-    if (!formData.satuan) errs.satuan = "Satuan wajib dipilih";
+    if (!formData.barang_nama.trim()) errs.barang_nama = "Nama barang wajib diisi";
+    if (!formData.id_satuan_kecil) errs.id_satuan_kecil = "Satuan wajib dipilih";
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -56,15 +83,10 @@ export default function BarangModal({ open, onClose, mode, barang }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!validate()) return;
-    const payload = {
-      nama: formData.nama,
-      kode: formData.kode,
-      id_satuan: formData.satuan,
-      keterangan: formData.keterangan || "",
-    };
+    const payload = { ...formData };
     setSubmitting(true);
     const action = isEdit
-      ? editBarang({ id: barang.id, payload })
+      ? editBarang({ barang_id: barang.barang_id, payload })
       : addBarang(payload);
 
     dispatch(action)
@@ -74,6 +96,15 @@ export default function BarangModal({ open, onClose, mode, barang }) {
         onClose();
       })
       .finally(() => setSubmitting(false));
+  };
+
+  const customSelectStyle = {
+    control: (base) => ({
+      ...base,
+      borderColor: "#e5e7eb",
+      boxShadow: "none",
+      "&:hover": { borderColor: "#93c5fd" },
+    }),
   };
 
   return (
@@ -101,28 +132,38 @@ export default function BarangModal({ open, onClose, mode, barang }) {
             <label className="block text-sm font-medium text-gray-700">Nama Barang</label>
             <input
               type="text"
-              name="nama"
-              value={formData.nama}
+              name="barang_nama"
+              value={formData.barang_nama}
               onChange={handleChange}
               className={`w-full mt-1 px-3 py-2 border rounded-md ${
-                errors.nama ? "border-red-500" : "border-gray-200"
+                errors.barang_nama ? "border-red-500" : "border-gray-200"
               } focus:ring-2 focus:ring-blue-500`}
             />
-            {errors.nama && <p className="text-xs text-red-500 mt-1">{errors.nama}</p>}
+            {errors.barang_nama && (
+              <p className="text-xs text-red-500 mt-1">{errors.barang_nama}</p>
+            )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Kode Barang</label>
+            <label className="block text-sm font-medium text-gray-700">Serial Number</label>
             <input
               type="text"
-              name="kode"
-              value={formData.kode}
+              name="serial_number"
+              value={formData.serial_number}
               onChange={handleChange}
-              className={`w-full mt-1 px-3 py-2 border rounded-md ${
-                errors.kode ? "border-red-500" : "border-gray-200"
-              } focus:ring-2 focus:ring-blue-500`}
+              className="w-full mt-1 px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-500"
             />
-            {errors.kode && <p className="text-xs text-red-500 mt-1">{errors.kode}</p>}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700">HPP</label>
+            <input
+              type="number"
+              name="barang_hpp"
+              value={formData.barang_hpp}
+              onChange={handleChange}
+              className="w-full mt-1 px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-500"
+            />
           </div>
 
           <div>
@@ -130,23 +171,27 @@ export default function BarangModal({ open, onClose, mode, barang }) {
             <Select
               isSearchable
               isClearable
-              options={(satuanList || []).map((s) => ({ value: s.id, label: s.nama }))}
+              isLoading={loadingSatuan}
+              options={satuanOptions}
+              onInputChange={(v) => fetchSatuanOptions(v)}
               value={
-                satuanList.find((s) => s.id === formData.satuan)
-                  ? { value: formData.satuan, label: satuanList.find((s) => s.id === formData.satuan)?.nama }
-                  : null
+                satuanOptions.find((s) => s.value === formData.id_satuan_kecil) || null
               }
               onChange={handleSelectChange}
-              placeholder="Pilih satuan..."
+              placeholder="Cari satuan..."
+              styles={customSelectStyle}
             />
-            {errors.satuan && <p className="text-xs text-red-500 mt-1">{errors.satuan}</p>}
+            {errors.id_satuan_kecil && (
+              <p className="text-xs text-red-500 mt-1">{errors.id_satuan_kecil}</p>
+            )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Keterangan</label>
-            <textarea
-              name="keterangan"
-              value={formData.keterangan}
+            <label className="block text-sm font-medium text-gray-700">ID Barang SIMRS</label>
+            <input
+              type="text"
+              name="barang_id_simrs"
+              value={formData.barang_id_simrs}
               onChange={handleChange}
               rows={3}
               className="w-full mt-1 px-3 py-2 border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-500"

@@ -13,7 +13,7 @@ export const fetchBarang = createAsyncThunk(
   async ({ page = 1, limit = 20, search = "" }, { rejectWithValue }) => {
     try {
       const res = await axiosClient.get(
-        `barang/items?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`
+        `barang/items?page=${page}&limit=${limit}&nama=${encodeURIComponent(search)}`
       );
       return res.data;
     } catch (err) {
@@ -41,9 +41,9 @@ export const addBarang = createAsyncThunk(
 // Edit Barang
 export const editBarang = createAsyncThunk(
   "barang/editBarang",
-  async ({ id, payload }, { rejectWithValue }) => {
+  async ({ barang_id, payload }, { rejectWithValue }) => {
     try {
-      const res = await axiosClient.put(`barang/item/${id}`, payload);
+      const res = await axiosClient.put(`barang/item/${barang_id}`, payload);
       toast.success("Barang berhasil diperbarui!");
       return res.data;
     } catch (err) {
@@ -57,11 +57,11 @@ export const editBarang = createAsyncThunk(
 // Delete Barang
 export const deleteBarang = createAsyncThunk(
   "barang/deleteBarang",
-  async (id, { rejectWithValue }) => {
+  async (barang_id, { rejectWithValue }) => {
     try {
-      await axiosClient.delete(`barang/item/${id}`);
+      await axiosClient.delete(`barang/item/${barang_id}`);
       toast.success("Barang berhasil dihapus!");
-      return id;
+      return barang_id;
     } catch (err) {
       const msg = err.response?.data?.message || "Gagal menghapus barang.";
       toast.error(msg);
@@ -73,10 +73,10 @@ export const deleteBarang = createAsyncThunk(
 // Fetch Satuan (for dropdown)
 export const fetchSatuan = createAsyncThunk(
   "barang/fetchSatuan",
-  async (_, { rejectWithValue }) => {
+  async (nama = "", { rejectWithValue }) => {
     try {
-      const res = await axiosClient.get("barang/satuan");
-      return res.data.data;
+      const res = await axiosClient.get(`barang/satuan?nama=${encodeURIComponent(nama)}`);
+      return res.data.data || [];
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
@@ -152,7 +152,7 @@ const barangSlice = createSlice({
         state.modalOpen = false;
       })
       .addCase(deleteBarang.fulfilled, (state, action) => {
-        state.list = state.list.filter((b) => b.id !== action.payload);
+        state.list = state.list.filter((b) => b.barang_id !== action.payload);
         state.confirmOpen = false;
       })
       .addCase(fetchSatuan.fulfilled, (state, action) => {

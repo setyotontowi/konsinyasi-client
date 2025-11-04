@@ -31,7 +31,7 @@ export default function Barang() {
   const handleDeleteConfirm = () => {
     if (!barangToDelete) return;
     setDeleting(true);
-    dispatch(deleteBarang(barangToDelete.id))
+    dispatch(deleteBarang(barangToDelete.barang_id))
       .finally(() => setDeleting(false));
   };
 
@@ -69,7 +69,7 @@ export default function Barang() {
         title="Hapus Barang"
         message={
           barangToDelete
-            ? `Apakah Anda yakin ingin menghapus barang "${barangToDelete.nama}"?`
+            ? `Apakah Anda yakin ingin menghapus barang "${barangToDelete.barang_nama}"?`
             : "Apakah Anda yakin ingin menghapus barang ini?"
         }
         onConfirm={handleDeleteConfirm}
