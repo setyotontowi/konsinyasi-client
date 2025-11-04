@@ -6,7 +6,9 @@ import Users from './pages/users/Users'
 import Unit from './pages/unit/Unit'
 import UserGroup from './pages/user-group/UserGroup'
 import Settings from './pages/Settings'
+import Barang from './pages/barang/Barang'
 import ProtectedRoute from './components/ProtectedRoute'
+
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
@@ -24,6 +26,7 @@ export default function App() {
             <Route path="users" element={<Users />} />
             <Route path="units" element={<Unit />} />
             <Route path="privileges" element={<UserGroup />} />
+            <Route path="barang" element={<Barang />} />
           </Route>
 
           <Route path="settings" element={<Settings />} />
