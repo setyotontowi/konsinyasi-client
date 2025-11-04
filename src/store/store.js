@@ -3,13 +3,15 @@ import userReducer from "../store/userSlice";
 import unitReducer from "../store/unitSlice";
 import userGroupSlice from "./userGroupSlice";
 import barangReducer from "./barangSlice"
+import satuanReducer from "./satuanSlice";
 
 export const store = configureStore({
   reducer: {
     user: userReducer,
     unit: unitReducer,
     userGroup: userGroupSlice,
-    barang : barangReducer
+    barang : barangReducer,
+    satuan: satuanReducer,
   },
 });
 

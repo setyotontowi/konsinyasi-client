@@ -11,6 +11,7 @@ import ProtectedRoute from './components/ProtectedRoute'
 
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import Satuan from './pages/satuan/Satuan'
 
 export default function App() {
   return (
@@ -27,6 +28,7 @@ export default function App() {
             <Route path="units" element={<Unit />} />
             <Route path="privileges" element={<UserGroup />} />
             <Route path="barang" element={<Barang />} />
+            <Route path="satuan" element={<Satuan />} />
           </Route>
 
           <Route path="settings" element={<Settings />} />

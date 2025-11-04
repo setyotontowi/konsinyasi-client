@@ -11,7 +11,8 @@ import {
   ChevronRightIcon,
   RectangleGroupIcon,
   UserGroupIcon,
-  Square3Stack3DIcon
+  Square3Stack3DIcon,
+  SwatchIcon
 } from "@heroicons/react/24/outline";
 
 // Map DB icon names to Heroicons
@@ -22,7 +23,8 @@ const iconMap = {
   FolderIcon,
   RectangleGroupIcon,
   UserGroupIcon,
-  Square3Stack3DIcon
+  Square3Stack3DIcon,
+  SwatchIcon
 };
 
 export default function Sidebar() {
