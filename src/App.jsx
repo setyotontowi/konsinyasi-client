@@ -31,6 +31,10 @@ export default function App() {
             <Route path="satuan" element={<Satuan />} />
           </Route>
 
+          <Route path="distribusi">
+            <Route path="permintaan" element={<Users />} />
+          </Route>
+
           <Route path="settings" element={<Settings />} />
         </Route>
 
