@@ -32,10 +32,10 @@ export default function PermintaanDistribusiTable({ search, onEdit, onDelete }) 
           <thead className="bg-blue-50 text-gray-700 text-xs uppercase">
             <tr>
               <th className="px-6 py-3 font-medium border border-gray-200 w-5">No</th>
-              <th className="px-6 py-3 font-medium border border-gray-200">Waktu</th>
               <th className="px-6 py-3 font-medium border border-gray-200">Nomor RM</th>
               <th className="px-6 py-3 font-medium border border-gray-200">Nama Pasien</th>
-              <th className="px-6 py-3 font-medium border border-gray-200">Diagnosa</th>
+              <th className="px-6 py-3 font-medium border border-gray-200">Waktu Permintaan</th>
+              <th className="px-6 py-3 font-medium border border-gray-200">Unit Asal</th>
               <th className="px-6 py-3 font-medium border border-gray-200">Unit Tujuan</th>
               <th className="px-6 py-3 font-medium border border-gray-200 w-10">Aksi</th>
             </tr>
@@ -46,9 +46,6 @@ export default function PermintaanDistribusiTable({ search, onEdit, onDelete }) 
                 <td className="border border-gray-200 px-6 py-2 text-center text-gray-600">
                   {(page - 1) * limit + index + 1}
                 </td>
-                <td className="border border-gray-200 px-6 py-2 text-gray-700">
-                  {new Date(d.waktu).toLocaleString("id-ID")}
-                </td>
                 <td className="border border-gray-200 px-6 py-2 text-gray-700 italic">
                   {d.nomor_rm}
                 </td>
@@ -56,10 +53,13 @@ export default function PermintaanDistribusiTable({ search, onEdit, onDelete }) 
                   {d.nama_pasien}
                 </td>
                 <td className="border border-gray-200 px-6 py-2 text-gray-700">
-                  {d.diagnosa}
+                  {new Date(d.waktu).toLocaleString("id-ID")}
                 </td>
                 <td className="border border-gray-200 px-6 py-2 text-gray-700">
-                  {d.nama_ruang || "-"}
+                  {d.unit_asal}
+                </td>
+                <td className="border border-gray-200 px-6 py-2 text-gray-700">
+                  {d.unit_tujuan}
                 </td>
 
                 {/* Actions */}
