@@ -12,6 +12,7 @@ import ProtectedRoute from './components/ProtectedRoute'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import Satuan from './pages/satuan/Satuan'
+import PermintaanDistribusi from './pages/distribusi/PermintaanDistribusi'
 
 export default function App() {
   return (
@@ -32,7 +33,7 @@ export default function App() {
           </Route>
 
           <Route path="distribusi">
-            <Route path="permintaan" element={<Users />} />
+            <Route path="permintaan" element={<PermintaanDistribusi />} />
           </Route>
 
           <Route path="settings" element={<Settings />} />

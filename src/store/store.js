@@ -3,7 +3,8 @@ import userReducer from "../store/userSlice";
 import unitReducer from "../store/unitSlice";
 import userGroupSlice from "./userGroupSlice";
 import barangReducer from "./barangSlice"
-import satuanReducer from "./satuanSlice";
+import satuanReducer from "./satuanSlice"
+import permintaanDistribusiReducer from "./permintaanDistribusiSlice";
 
 export const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ export const store = configureStore({
     userGroup: userGroupSlice,
     barang : barangReducer,
     satuan: satuanReducer,
+    permintaanDistribusi: permintaanDistribusiReducer
   },
 });
 
