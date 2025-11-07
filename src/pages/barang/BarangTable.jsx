@@ -36,7 +36,7 @@ export default function BarangTable({ search, onEdit, onDelete }) {
               <th className="px-6 py-3 font-medium border border-gray-200">Serial Number</th>
               <th className="px-6 py-3 font-medium border border-gray-200">HPP</th>
               <th className="px-6 py-3 font-medium border border-gray-200">Satuan Terkecil</th>
-              <th className="px-6 py-3 font-medium border border-gray-200">Barang SIMRS</th>
+              <th className="px-6 py-3 font-medium border border-gray-200">ID Barang SIMRS</th>
               <th className="px-6 py-3 font-medium border border-gray-200 w-10">Aksi</th>
             </tr>
           </thead>

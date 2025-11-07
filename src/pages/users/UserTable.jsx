@@ -31,8 +31,8 @@ export default function UserTable({ search, onEdit, onDelete }) {
             <thead className="bg-blue-50 text-gray-700 text-xs uppercase">
               <tr>
                 <th className="px-6 py-3 font-medium border border-gray-200 w-5">No</th>
-                <th className="px-6 py-3 font-medium border border-gray-200">Nama</th>
                 <th className="px-6 py-3 font-medium border border-gray-200">Username</th>
+                <th className="px-6 py-3 font-medium border border-gray-200">Nama</th>
                 <th className="px-6 py-3 font-medium border border-gray-200">Role</th>
                 <th className="px-6 py-3 font-medium border border-gray-200">Unit</th>
                 <th className="px-6 py-3 font-medium border border-gray-200">Keterangan</th>
@@ -45,11 +45,11 @@ export default function UserTable({ search, onEdit, onDelete }) {
                   <td className="border border-gray-200 px-6 py-2 text-gray-600 text-center">
                     {(page - 1) * limit + index + 1}
                   </td>
-                  <td className="border border-gray-200 px-6 py-2 ">
-                    {u.nama}
-                  </td>
                   <td className="border border-gray-200 px-6 py-2 text-gray-700 italic">
                     {u.username}
+                  </td>
+                  <td className="border border-gray-200 px-6 py-2 ">
+                    {u.nama}
                   </td>
                   <td className="border border-gray-200 px-6 py-2 text-gray-700">
                     {u.group_nama}

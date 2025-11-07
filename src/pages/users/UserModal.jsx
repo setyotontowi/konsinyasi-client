@@ -30,6 +30,7 @@ export default function UserModal({ open, onClose, mode, user }) {
 
   useEffect(() => {
     if (isEdit && user) {
+      console.log(user)
       setFormData({
         username: user.username || "",
         nama: user.nama || "",
