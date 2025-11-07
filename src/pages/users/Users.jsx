@@ -37,6 +37,7 @@ export default function Users() {
           title="Data Pengguna"
           onAdd={() => dispatch(openAddModal())}
           search={search}
+          searchPlaceholder="Cari Nama atau Username"
           setSearch={setSearch}
           addLabel="Tambah Pengguna"
           AddIcon={UserPlusIcon}

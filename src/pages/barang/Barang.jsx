@@ -42,6 +42,7 @@ export default function Barang() {
           title="Data Barang"
           onAdd={() => dispatch(openAddModal())}
           search={search}
+          searchPlaceholder="Cari Nama atau Serial Number"
           setSearch={setSearch}
           addLabel="Tambah Barang"
           AddIcon={PlusIcon}
