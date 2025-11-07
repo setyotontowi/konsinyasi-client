@@ -22,6 +22,8 @@ export default function BarangModal({ open, onClose, mode, barang }) {
   const [errors, setErrors] = useState({});
   const [satuanOptions, setSatuanOptions] = useState([]);
   const [loadingSatuan, setLoadingSatuan] = useState(false);
+  const [pabrikOptions, setPabrikOptions] = useState([]);
+  const [loadingPabrik, setLoadingPabrik] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -32,6 +34,7 @@ export default function BarangModal({ open, onClose, mode, barang }) {
         barang_hpp: barang.barang_hpp || "",
         id_satuan_kecil: barang.id_satuan_kecil || "",
         barang_id_simrs: barang.barang_id_simrs || "",
+        id_pabrik : barang.id_pabrik || ""
       });
     } else {
       setFormData({
@@ -40,6 +43,7 @@ export default function BarangModal({ open, onClose, mode, barang }) {
         barang_hpp: "",
         id_satuan_kecil: "",
         barang_id_simrs: "",
+        id_pabrik : ""
       });
     }
     setErrors({});
@@ -49,6 +53,7 @@ export default function BarangModal({ open, onClose, mode, barang }) {
   useEffect(() => {
     if (!open) return;
     fetchSatuanOptions("");
+    fetchPabrikOptions("");
   }, [open]);
 
   const fetchSatuanOptions = (nama) => {
@@ -62,19 +67,31 @@ export default function BarangModal({ open, onClose, mode, barang }) {
       .finally(() => setLoadingSatuan(false));
   };
 
+  const fetchPabrikOptions = (nama) => {
+    setLoadingPabrik(true);
+    axiosClient
+      .get(`/unit?is_pbf=ya&nama=${encodeURIComponent(nama)}`)
+      .then((res) => {
+        const list = res.data?.data || []
+        setPabrikOptions(list.map((s) => ({value: s.id, label:s.nama})));
+      })
+      .finally(() => setLoadingPabrik(false));
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((p) => ({ ...p, [name]: value }));
     setErrors((p) => ({ ...p, [name]: "" }));
   };
 
-  const handleSelectChange = (opt) => {
-    setFormData((p) => ({ ...p, id_satuan_kecil: opt?.value || "" }));
+  const handleSelectChange = (name, opt) => {
+    setFormData((p) => ({ ...p, [name]: opt?.value || "" }));
   };
 
   const validate = () => {
     const errs = {};
     if (!formData.barang_nama.trim()) errs.barang_nama = "Nama barang wajib diisi";
+    if (!formData.serial_number.trim()) errs.serial_number = "Serial Number wajib diisi";
     if (!formData.id_satuan_kecil) errs.id_satuan_kecil = "Satuan wajib dipilih";
     setErrors(errs);
     return Object.keys(errs).length === 0;
@@ -129,7 +146,9 @@ export default function BarangModal({ open, onClose, mode, barang }) {
         {/* Body */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700">Nama Barang</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Nama Barang <span className="text-red-500">*</span>
+            </label>
             <input
               type="text"
               name="barang_nama"
@@ -145,7 +164,9 @@ export default function BarangModal({ open, onClose, mode, barang }) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Serial Number</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Serial Number <span className="text-red-500">*</span>
+            </label>
             <input
               type="text"
               name="serial_number"
@@ -167,7 +188,9 @@ export default function BarangModal({ open, onClose, mode, barang }) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Satuan</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Satuan <span className="text-red-500">*</span>
+            </label>
             <Select
               isSearchable
               isClearable
@@ -177,12 +200,34 @@ export default function BarangModal({ open, onClose, mode, barang }) {
               value={
                 satuanOptions.find((s) => s.value === formData.id_satuan_kecil) || null
               }
-              onChange={handleSelectChange}
+              onChange={(opt) => handleSelectChange("id_satuan_kecil", opt)}
               placeholder="Cari satuan..."
               styles={customSelectStyle}
             />
             {errors.id_satuan_kecil && (
               <p className="text-xs text-red-500 mt-1">{errors.id_satuan_kecil}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Pabrik <span className="text-red-500">*</span>
+            </label>
+            <Select
+              isSearchable
+              isClearable
+              isLoading={loadingPabrik}
+              options={pabrikOptions}
+              onInputChange={(v) => fetchPabrikOptions(v)}
+              value={
+                pabrikOptions.find((s) => s.value === formData.id_pabrik) || null
+              }
+              onChange={(opt) => handleSelectChange("id_pabrik", opt)}
+              placeholder="Cari PBF..."
+              styles={customSelectStyle}
+            />
+            {errors.id_pabrik && (
+              <p className="text-xs text-red-500 mt-1">{errors.id_pabrik}</p>
             )}
           </div>
 

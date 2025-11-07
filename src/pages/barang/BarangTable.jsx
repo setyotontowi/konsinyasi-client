@@ -34,6 +34,7 @@ export default function BarangTable({ search, onEdit, onDelete }) {
               <th className="px-6 py-3 font-medium border border-gray-200 w-5">No</th>
               <th className="px-6 py-3 font-medium border border-gray-200">Nama Barang</th>
               <th className="px-6 py-3 font-medium border border-gray-200">Serial Number</th>
+              <th className="px-6 py-3 font-medium border border-gray-200">PBF</th>
               <th className="px-6 py-3 font-medium border border-gray-200">HPP</th>
               <th className="px-6 py-3 font-medium border border-gray-200">Satuan Terkecil</th>
               <th className="px-6 py-3 font-medium border border-gray-200">ID Barang SIMRS</th>
@@ -48,6 +49,7 @@ export default function BarangTable({ search, onEdit, onDelete }) {
                 </td>
                 <td className="border border-gray-200 px-6 py-2">{b.barang_nama}</td>
                 <td className="border border-gray-200 px-6 py-2">{b.serial_number}</td>
+                <td className="border border-gray-200 px-6 py-2">{b.nama_pabrik}</td>
                 <td className="border border-gray-200 px-6 py-2">{b.barang_hpp}</td>
                 <td className="border border-gray-200 px-6 py-2">{b.nama_satuan}</td>
                 <td className="border border-gray-200 px-6 py-2">{b.barang_id_simrs}</td>
