@@ -13,7 +13,7 @@ import { ClipboardDocumentListIcon } from "@heroicons/react/24/outline";
 import PageHeader from "../../components/PageHeader";
 import PermintaanDistribusiTable from "./PermintaanDistribusiTable";
 import ConfirmModal from "../../components/ConfirmationModal";
-// import PermintaanDistribusiModal from "./PermintaanDistribusiModal";
+import PermintaanDistribusiModal from "./PermintaanDistribusiModal";
 
 export default function PermintaanDistribusi() {
   const dispatch = useDispatch();
@@ -43,6 +43,7 @@ export default function PermintaanDistribusi() {
           title="Permintaan Distribusi"
           onAdd={() => dispatch(openAddModal())}
           search={search}
+          searchPlaceholder= "Cari Nama atau RM Pasien"
           setSearch={setSearch}
           addLabel="Tambah Permintaan"
           AddIcon={ClipboardDocumentListIcon}
@@ -54,12 +55,12 @@ export default function PermintaanDistribusi() {
           onDelete={(item) => dispatch(openDeleteConfirm(item))}
         />
 
-        {/* <PermintaanDistribusiModal
+        <PermintaanDistribusiModal
           open={modalOpen}
           mode={mode}
           data={selectedItem}
           onClose={() => dispatch(closeModal())}
-        /> */}
+        />
       </div>
 
       <ConfirmModal

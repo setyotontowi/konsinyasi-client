@@ -3,9 +3,9 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchPermintaanDistribusi } from "../../store/permintaanDistribusiSlice";
 import Pagination from "../../components/Pagination";
-import { PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { EyeIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
 
-export default function PermintaanDistribusiTable({ search, onEdit, onDelete }) {
+export default function PermintaanDistribusiTable({ search, onDetail}) {
   const dispatch = useDispatch();
   const { list, pagination, loading } = useSelector((state) => state.permintaanDistribusi);
   const { page, totalPages, totalItems } = pagination;
@@ -66,16 +66,10 @@ export default function PermintaanDistribusiTable({ search, onEdit, onDelete }) 
                 <td className="border border-gray-200 px-6 py-2 text-center">
                   <div className="flex justify-center gap-2">
                     <button
-                      onClick={() => onEdit(d)}
+                      onClick={() => onDetail(d)}
                       className="flex items-center gap-1 px-3 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded text-sm transition"
                     >
-                      <PencilIcon className="h-4 w-4" /> Edit
-                    </button>
-                    <button
-                      onClick={() => onDelete(d)}
-                      className="flex items-center gap-1 px-3 py-1 bg-red-50 hover:bg-red-100 text-red-600 rounded text-sm transition"
-                    >
-                      <TrashIcon className="h-4 w-4" /> Delete
+                      <EyeIcon className="h-4 w-4" /> Lihat
                     </button>
                   </div>
                 </td>
