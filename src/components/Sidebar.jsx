@@ -13,7 +13,8 @@ import {
   UserGroupIcon,
   Square3Stack3DIcon,
   SwatchIcon,
-  ArrowLeftEndOnRectangleIcon
+  ArrowLeftEndOnRectangleIcon,
+  ArrowRightStartOnRectangleIcon
 } from "@heroicons/react/24/outline";
 
 // Map DB icon names to Heroicons
@@ -26,7 +27,8 @@ const iconMap = {
   UserGroupIcon,
   Square3Stack3DIcon,
   SwatchIcon, 
-  ArrowLeftEndOnRectangleIcon
+  ArrowLeftEndOnRectangleIcon,
+  ArrowRightStartOnRectangleIcon,
 };
 
 export default function Sidebar() {
