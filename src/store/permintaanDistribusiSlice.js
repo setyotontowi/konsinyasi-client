@@ -112,6 +112,11 @@ const permintaanDistribusiSlice = createSlice({
       state.confirmOpen = false;
       state.itemToDelete = null;
     },
+    openViewModal: (state, action) => {
+      state.modalOpen = true;
+      state.mode = "view";
+      state.selectedItem = action.payload;
+    },
   },
 
   extraReducers: (builder) => {
@@ -148,13 +153,14 @@ const permintaanDistribusiSlice = createSlice({
       .addCase(deletePermintaanDistribusi.fulfilled, (state, action) => {
         state.list = state.list.filter((d) => d.pd_id !== action.payload);
         state.confirmOpen = false;
-      });
+      });  
   },
 });
 
 export const {
   openAddModal,
   openEditModal,
+  openViewModal, 
   closeModal,
   openDeleteConfirm,
   closeDeleteConfirm,

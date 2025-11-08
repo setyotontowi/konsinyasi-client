@@ -5,7 +5,7 @@ import { fetchPermintaanDistribusi } from "../../store/permintaanDistribusiSlice
 import Pagination from "../../components/Pagination";
 import { EyeIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
 
-export default function PermintaanDistribusiTable({ search, onDetail}) {
+export default function PermintaanDistribusiTable({ search, onView, onEdit, onDelete}) {
   const dispatch = useDispatch();
   const { list, pagination, loading } = useSelector((state) => state.permintaanDistribusi);
   const { page, totalPages, totalItems } = pagination;
@@ -77,18 +77,27 @@ export default function PermintaanDistribusiTable({ search, onDetail}) {
                   <div className="flex justify-center gap-2">
                     {d.terdistribusi ? (
                       <button
-                        onClick={() => onDetail(d)}
+                        onClick={() => onView(d)}
                         className="flex items-center gap-1 px-3 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded text-sm transition"
                       >
                         <EyeIcon className="h-4 w-4" /> Lihat
                       </button>
                     ) : (
-                      <button
-                        onClick={() => onDetail(d)}
-                        className="flex items-center gap-1 px-3 py-1 bg-yellow-50 hover:bg-yellow-100 text-yellow-700 rounded text-sm transition"
-                      >
-                        <PencilIcon className="h-4 w-4" /> Edit
-                      </button>
+                      <>
+                        <button
+                          onClick={() => onEdit(d)}
+                          className="flex items-center gap-1 px-3 py-1 bg-yellow-50 hover:bg-yellow-100 text-yellow-700 rounded text-sm transition"
+                        >
+                          <PencilIcon className="h-4 w-4" /> Edit
+                        </button>
+                        
+                        <button
+                          onClick={() => onDelete(d)}
+                          className="flex items-center gap-1 px-3 py-1 bg-red-50 hover:bg-red-100 text-red-600 rounded text-sm transition"
+                        >
+                          <TrashIcon className="h-4 w-4" /> Hapus
+                        </button>
+                      </>
                     )}
                   </div>
                 </td>

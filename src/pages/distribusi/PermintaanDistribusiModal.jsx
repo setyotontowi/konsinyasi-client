@@ -7,7 +7,37 @@ import { XMarkIcon, PlusCircleIcon } from "@heroicons/react/24/outline";
 import { toast } from "react-toastify";
 
 export default function PermintaanDistribusiModal({ open, mode, data, onClose }) {
+  const isView = mode === "view";
   const dispatch = useDispatch();
+
+  useEffect(() => {
+  if (open && data) {
+    setFormData({
+      waktu: data?.waktu ? data.waktu.slice(0, 16) : new Date().toISOString().slice(0, 16),
+      id_master_unit: data?.id_master_unit || "",
+      id_master_unit_tujuan: data?.id_master_unit_tujuan || "",
+      nomor_rm: data?.nomor_rm || "",
+      nama_pasien: data?.nama_pasien || "",
+      nama_ruang: data?.nama_ruang || "",
+      diagnosa: data?.diagnosa || "",
+    });
+
+    setItems(data?.items || []);
+  }
+
+  if (open && mode === "add") {
+    setFormData({
+      waktu: new Date().toISOString().slice(0, 16),
+      id_master_unit: "",
+      id_master_unit_tujuan: "",
+      nomor_rm: "",
+      nama_pasien: "",
+      nama_ruang: "",
+      diagnosa: "",
+    });
+    setItems([]); // ✅ clear item list
+  }
+}, [data, open]);
 
   const [formData, setFormData] = useState({
     waktu: data?.waktu ? data.waktu.slice(0, 16) : new Date().toISOString().slice(0, 16),
@@ -119,6 +149,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
       id_master_unit_tujuan: parseInt(formData.id_master_unit_tujuan),
       nomor_rm: formData.nomor_rm,
       nama_pasien: formData.nama_pasien,
+      nama_ruang : formData.nama_ruang,
       diagnosa: formData.diagnosa,
       items: items.map((it) => ({
         id_master_barang: parseInt(it.id_master_barang),
@@ -177,6 +208,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                   <input
                     type="datetime-local"
                     name="waktu"
+                    disabled={isView}
                     value={formData.waktu}
                     onChange={handleChange}
                     className="w-full border border-gray-300 rounded p-2"
@@ -189,6 +221,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                     isLoading={loading.unit}
                     options={units}
                     placeholder="Pilih unit asal..."
+                    isDisabled={isView}
                     value={units.find((u) => u.value === formData.id_master_unit) || null}
                     onChange={(opt) => handleSelectChange("id_master_unit", opt)}
                     className="react-select-container"
@@ -203,6 +236,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                     isLoading={loading.unit}
                     options={units}
                     placeholder="Pilih unit tujuan..."
+                    isDisabled={isView}
                     value={units.find((u) => u.value === formData.id_master_unit_tujuan) || null}
                     onChange={(opt) => handleSelectChange("id_master_unit_tujuan", opt)}
                     className="react-select-container"
@@ -221,6 +255,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                   <input
                     type="text"
                     name="nomor_rm"
+                    disabled={isView}
                     value={formData.nomor_rm}
                     onChange={handleChange}
                     className="w-full border border-gray-300 rounded p-2"
@@ -231,6 +266,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                   <input
                     type="text"
                     name="nama_pasien"
+                    disabled={isView}
                     value={formData.nama_pasien}
                     onChange={handleChange}
                     className="w-full border border-gray-300 rounded p-2"
@@ -241,6 +277,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                   <input
                     type="text"
                     name="nama_ruang"
+                    disabled={isView}
                     value={formData.nama_ruang}
                     onChange={handleChange}
                     className="w-full border border-gray-300 rounded p-2"
@@ -251,6 +288,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                   <input
                     type="text"
                     name="diagnosa"
+                    disabled={isView}
                     value={formData.diagnosa}
                     onChange={handleChange}
                     className="w-full border border-gray-300 rounded p-2"
@@ -264,13 +302,15 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
           <div className="mt-8">
             <div className="flex justify-between items-center mb-2">
               <h3 className="font-semibold text-sm text-gray-600 uppercase">Detail Barang</h3>
-              <button
-                type="button"
-                onClick={() => setItemModalOpen(true)}
-                className="flex items-center gap-1 text-blue-600 hover:text-blue-800"
-              >
-                <PlusCircleIcon className="h-5 w-5" /> Tambah Item
-              </button>
+              {!isView && (
+                <button
+                    type="button"
+                    onClick={() => setItemModalOpen(true)}
+                    className="flex items-center gap-1 text-blue-600 hover:text-blue-800"
+                >
+                    <PlusCircleIcon className="h-5 w-5" /> Tambah Item
+                </button>
+                )}
             </div>
 
             <table className="min-w-full text-sm border border-gray-200">
@@ -296,13 +336,17 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                       <td className="border border-gray-200 px-3 py-2">{item.nama_satuan}</td>
                       <td className="border border-gray-200 px-3 py-2">{item.qty}</td>
                       <td className="border border-gray-200 px-3 py-2 text-center">
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveItem(i)}
-                          className="text-red-600 hover:underline"
-                        >
-                          Hapus
-                        </button>
+                        {!isView && (
+                        <td className="border border-gray-200 px-3 py-2 text-center">
+                            <button
+                            type="button"
+                            onClick={() => handleRemoveItem(i)}
+                            className="text-red-600 hover:underline"
+                            >
+                            Hapus
+                            </button>
+                        </td>
+                        )}
                       </td>
                     </tr>
                   ))
@@ -320,12 +364,14 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
             >
               Batal
             </button>
-            <button
-              type="submit"
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
-            >
-              {mode === "add" ? "Simpan" : "Perbarui"}
-            </button>
+            {!isView && (
+                <button
+                type="submit"
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
+                >
+                {mode === "add" ? "Simpan" : "Perbarui"}
+                </button>
+            )}
           </div>
         </form>
         </div>
@@ -345,6 +391,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                     isLoading={loading.barang}
                     options={barang}
                     placeholder="Pilih barang"
+                    isDisabled={isView}
                     value={barang.find((u) => u.value === newItem.id_master_barang) || null}
                     onChange={(opt) => {
                         handleItemOptionChange("id_master_barang", opt ? opt.value : "")
@@ -360,6 +407,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                     isLoading={loading.satuan}
                     options={satuan}
                     placeholder="Pilih satuan terkecil"
+                    isDisabled={isView}
                     value={satuan.find((u) => u.value === newItem.id_master_satuan) || null}
                     onChange={(opt) => {
                         handleItemOptionChange("id_master_satuan",  opt ? opt.value : "")

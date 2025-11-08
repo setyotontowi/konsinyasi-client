@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   openAddModal,
   openEditModal,
+  openViewModal,
   closeModal,
   openDeleteConfirm,
   closeDeleteConfirm,
@@ -52,6 +53,7 @@ export default function PermintaanDistribusi() {
         <PermintaanDistribusiTable
           search={search}
           onEdit={(item) => dispatch(openEditModal(item))}
+          onView={(item) => dispatch(openViewModal(item))}
           onDelete={(item) => dispatch(openDeleteConfirm(item))}
         />
 
