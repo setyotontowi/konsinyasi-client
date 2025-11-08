@@ -37,6 +37,7 @@ export default function PermintaanDistribusiTable({ search, onDetail}) {
               <th className="px-6 py-3 font-medium border border-gray-200">Waktu Permintaan</th>
               <th className="px-6 py-3 font-medium border border-gray-200">Unit Asal</th>
               <th className="px-6 py-3 font-medium border border-gray-200">Unit Tujuan</th>
+              <th className="px-6 py-3 font-medium border border-gray-200">Status</th>
               <th className="px-6 py-3 font-medium border border-gray-200 w-10">Aksi</th>
             </tr>
           </thead>
@@ -61,16 +62,34 @@ export default function PermintaanDistribusiTable({ search, onDetail}) {
                 <td className="border border-gray-200 px-6 py-2 text-gray-700">
                   {d.unit_tujuan}
                 </td>
+                <td
+                  className={`border border-gray-200 px-6 py-2 text-center ${
+                    d.terdistribusi
+                      ? "text-gray-700"
+                      : "text-red-700"
+                  }`}
+                >
+                  {d.status_distribusi || "Belum Didistribusikan"}
+                </td>
 
                 {/* Actions */}
                 <td className="border border-gray-200 px-6 py-2 text-center">
                   <div className="flex justify-center gap-2">
-                    <button
-                      onClick={() => onDetail(d)}
-                      className="flex items-center gap-1 px-3 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded text-sm transition"
-                    >
-                      <EyeIcon className="h-4 w-4" /> Lihat
-                    </button>
+                    {d.terdistribusi ? (
+                      <button
+                        onClick={() => onDetail(d)}
+                        className="flex items-center gap-1 px-3 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded text-sm transition"
+                      >
+                        <EyeIcon className="h-4 w-4" /> Lihat
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => onDetail(d)}
+                        className="flex items-center gap-1 px-3 py-1 bg-yellow-50 hover:bg-yellow-100 text-yellow-700 rounded text-sm transition"
+                      >
+                        <PencilIcon className="h-4 w-4" /> Edit
+                      </button>
+                    )}
                   </div>
                 </td>
               </tr>
