@@ -14,14 +14,11 @@ import { toast } from "react-toastify";
 import { formatToReadableLocal, getLocalNow } from "../../helper/helper";
 
 export default function PermintaanDistribusiModal({ open, mode, data, onClose }) {
-  const isView = mode === "view" || mode === "distribusi";
+  const isView = mode === "view";
   const dispatch = useDispatch();
-
-  console.log(mode)
 
   useEffect(() => {
    if (open && (mode === "edit" || mode === "view" || mode === "distribusi") && data?.pd_id) {
-    console.log("first");
     dispatch(fetchPermintaanDistribusiById(data.pd_id))
       .unwrap()
       .then((detail) => {
@@ -393,19 +390,21 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
             >
               Batal
             </button>
-            <button
-              type="submit"
-              disabled = {submitting}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
-            >
-              {mode === "add"
-                ? "Simpan"
-                : mode === "edit"
-                ? "Perbarui"
-                : mode === "distribusi"
-                ? "Kirim Barang"
-                : ""}
-            </button>
+            {!isView && (
+              <button
+                type="submit"
+                disabled = {submitting}
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
+              >
+                {mode === "add"
+                  ? "Simpan"
+                  : mode === "edit"
+                  ? "Perbarui"
+                  : mode === "distribusi"
+                  ? "Kirim Barang"
+                  : ""}
+              </button>
+            )}
           </div>
         </form>
         </div>
