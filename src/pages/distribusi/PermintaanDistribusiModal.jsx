@@ -6,7 +6,8 @@ import {
   addPermintaanDistribusi,
   editPermintaanDistribusi,
   fetchPermintaanDistribusi,
-  fetchPermintaanDistribusiById 
+  fetchPermintaanDistribusiById,
+  kirimDistribusi,
 } from "../../store/permintaanDistribusiSlice";
 import { XMarkIcon, PlusCircleIcon } from "@heroicons/react/24/outline";
 import { toast } from "react-toastify";
@@ -182,13 +183,18 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
 
     const action = mode === "add"
       ? addPermintaanDistribusi(payload)
-      : editPermintaanDistribusi({ id: data.pd_id, payload })
+      : mode === "edit"
+      ? editPermintaanDistribusi({ id: data.pd_id, payload })
+      : mode === "distribusi"
+      ? kirimDistribusi({id: data.pd_id, payload})
+      : null
 
     dispatch(action)
         .unwrap()
         .then(() => {
         // 🧠 same pattern as UserModal.jsx
-        dispatch(fetchPermintaanDistribusi({ page: 1, limit: 20 }));
+        const distribusi = mode === "distribusi"
+        dispatch(fetchPermintaanDistribusi({ page: 1, limit: 20, onDistribusi: distribusi }));
         onClose();
         })
         .catch((err) => {

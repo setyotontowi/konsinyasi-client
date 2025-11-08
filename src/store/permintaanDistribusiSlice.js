@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axiosClient from "../api/axiosClient";
+import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
 
 // ====================
@@ -61,6 +62,31 @@ export const editPermintaanDistribusi = createAsyncThunk(
       toast.success("Permintaan distribusi berhasil diperbarui!");
       return res.data;
     } catch (err) {
+      const msg = err.response?.data?.message || "Gagal memperbarui permintaan distribusi.";
+      toast.error(msg);
+      return rejectWithValue(msg);
+    }
+  }
+);
+
+export const kirimDistribusi = createAsyncThunk(
+  "distribusi/distribusi",
+  async ({ id, payload }, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem("auth_token");
+      const decoded = jwtDecode(token);
+      const id_user = decoded.id; 
+
+      const body = {
+        id_permintaan_distribusi : id,
+        id_master_unit : payload.id_master_unit,
+        id_users: id_user
+      }
+      const res = await axiosClient.post(`/distribusi/distribusi`, body);
+      toast.success("Permintaan distribusi berhasil diperbarui!");
+      return res.data;
+    } catch (err) {
+      console.log(err)
       const msg = err.response?.data?.message || "Gagal memperbarui permintaan distribusi.";
       toast.error(msg);
       return rejectWithValue(msg);
