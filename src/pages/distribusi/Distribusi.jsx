@@ -43,27 +43,29 @@ export default function Distribusi() {
         <PageHeader
           title="Distribusi"
           onAdd={() => dispatch(openAddModal())}
-          search={search}
-          searchPlaceholder= "Cari Nama atau RM Pasien"
-          setSearch={setSearch}
+          disableAdd = {true}
+          disableSearch = {true}
           addLabel="Tambah Permintaan"
-          AddIcon={ClipboardDocumentListIcon}
         />
+
+        <div className="px-6 flex items-center justify-between">
+          <h3 className="text-md font-semibold">Permintaan Distribusi Aktif</h3>
+        </div>
 
         <PermintaanDistribusiTable
           search={search}
-          onEdit={(item) => dispatch(openEditModal(item))}
           onView={(item) => dispatch(openViewModal(item))}
-          onDelete={(item) => dispatch(openDeleteConfirm(item))}
+          onDistribusi={true}
         />
 
-        <PermintaanDistribusiModal
+      </div>
+
+      <PermintaanDistribusiModal
           open={modalOpen}
           mode={mode}
           data={selectedItem}
           onClose={() => dispatch(closeModal())}
-        />
-      </div>
+      />
 
       <ConfirmModal
         open={confirmOpen}

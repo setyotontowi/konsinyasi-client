@@ -11,6 +11,7 @@ export default function PageHeader({
   addLabel, 
   AddIcon,
   disableSearch = false,
+  disableAdd = false,
  }) {
   
   const location = useLocation();
@@ -47,13 +48,15 @@ export default function PageHeader({
 
       <div className="pt-6 pl-6 pr-6 flex justify-between items-center border-t border-gray-200">
         {/* Add Button */}
-        <button
-          onClick={onAdd}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg shadow-md"
-        >
-          {AddIcon && <AddIcon className="w-5 h-5" />}
-          <span className="relative top-px-1">{addLabel}</span>
-        </button>
+        {!disableAdd && (
+          <button
+            onClick={onAdd}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg shadow-md"
+          >
+            {AddIcon && <AddIcon className="w-5 h-5" />}
+            <span className="relative top-px-1">{addLabel}</span>
+          </button>
+        )}
 
         {/* Search bar */}
         {!disableSearch && (

@@ -5,7 +5,7 @@ import { fetchPermintaanDistribusi } from "../../store/permintaanDistribusiSlice
 import Pagination from "../../components/Pagination";
 import { EyeIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
 
-export default function PermintaanDistribusiTable({ search, onView, onEdit, onDelete}) {
+export default function PermintaanDistribusiTable({ search, onView, onEdit, onDelete, onDistribusi}) {
   const dispatch = useDispatch();
   const { list, pagination, loading } = useSelector((state) => state.permintaanDistribusi);
   const { page, totalPages, totalItems } = pagination;
@@ -13,7 +13,7 @@ export default function PermintaanDistribusiTable({ search, onView, onEdit, onDe
 
   useEffect(() => {
     const delay = setTimeout(() => {
-      dispatch(fetchPermintaanDistribusi({ page, limit, search }));
+      dispatch(fetchPermintaanDistribusi({ page, limit, search, onDistribusi }));
     }, 400);
     return () => clearTimeout(delay);
   }, [dispatch, page, search]);
@@ -38,7 +38,9 @@ export default function PermintaanDistribusiTable({ search, onView, onEdit, onDe
               <th className="px-6 py-3 font-medium border border-gray-200">Unit Asal</th>
               <th className="px-6 py-3 font-medium border border-gray-200">Unit Tujuan</th>
               <th className="px-6 py-3 font-medium border border-gray-200">Status</th>
+              {!onDistribusi && (
               <th className="px-6 py-3 font-medium border border-gray-200 w-10">Aksi</th>
+              )}
             </tr>
           </thead>
           <tbody>
@@ -73,34 +75,36 @@ export default function PermintaanDistribusiTable({ search, onView, onEdit, onDe
                 </td>
 
                 {/* Actions */}
-                <td className="border border-gray-200 px-6 py-2 text-center">
-                  <div className="flex justify-center gap-2">
-                    {d.terdistribusi ? (
-                      <button
-                        onClick={() => onView(d)}
-                        className="flex items-center gap-1 px-3 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded text-sm transition"
-                      >
-                        <EyeIcon className="h-4 w-4" /> Lihat
-                      </button>
-                    ) : (
-                      <>
+                {!onDistribusi && (
+                  <td className="border border-gray-200 px-6 py-2 text-center">
+                    <div className="flex justify-center gap-2">
+                      {d.terdistribusi ? (
                         <button
-                          onClick={() => onEdit(d)}
-                          className="flex items-center gap-1 px-3 py-1 bg-yellow-50 hover:bg-yellow-100 text-yellow-700 rounded text-sm transition"
+                          onClick={() => onView(d)}
+                          className="flex items-center gap-1 px-3 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded text-sm transition"
                         >
-                          <PencilIcon className="h-4 w-4" /> Edit
+                          <EyeIcon className="h-4 w-4" /> Lihat
                         </button>
-                        
-                        <button
-                          onClick={() => onDelete(d)}
-                          className="flex items-center gap-1 px-3 py-1 bg-red-50 hover:bg-red-100 text-red-600 rounded text-sm transition"
-                        >
-                          <TrashIcon className="h-4 w-4" /> Hapus
-                        </button>
-                      </>
-                    )}
-                  </div>
-                </td>
+                      ) : (
+                        <>
+                          <button
+                            onClick={() => onEdit(d)}
+                            className="flex items-center gap-1 px-3 py-1 bg-yellow-50 hover:bg-yellow-100 text-yellow-700 rounded text-sm transition"
+                          >
+                            <PencilIcon className="h-4 w-4" /> Edit
+                          </button>
+
+                          <button
+                            onClick={() => onDelete(d)}
+                            className="flex items-center gap-1 px-3 py-1 bg-red-50 hover:bg-red-100 text-red-600 rounded text-sm transition"
+                          >
+                            <TrashIcon className="h-4 w-4" /> Hapus
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>
