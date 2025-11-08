@@ -2,7 +2,12 @@ import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import Select from "react-select";
 import axiosClient from "../../api/axiosClient";
-import { addPermintaanDistribusi, editPermintaanDistribusi, fetchPermintaanDistribusi } from "../../store/permintaanDistribusiSlice";
+import { 
+  addPermintaanDistribusi,
+  editPermintaanDistribusi,
+  fetchPermintaanDistribusi,
+  fetchPermintaanDistribusiById 
+} from "../../store/permintaanDistribusiSlice";
 import { XMarkIcon, PlusCircleIcon } from "@heroicons/react/24/outline";
 import { toast } from "react-toastify";
 
@@ -11,18 +16,25 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
   const dispatch = useDispatch();
 
   useEffect(() => {
-  if (open && data) {
-    setFormData({
-      waktu: data?.waktu ? data.waktu.slice(0, 16) : new Date().toISOString().slice(0, 16),
-      id_master_unit: data?.id_master_unit || "",
-      id_master_unit_tujuan: data?.id_master_unit_tujuan || "",
-      nomor_rm: data?.nomor_rm || "",
-      nama_pasien: data?.nama_pasien || "",
-      nama_ruang: data?.nama_ruang || "",
-      diagnosa: data?.diagnosa || "",
-    });
-
-    setItems(data?.items || []);
+   if (open && (mode === "edit" || mode === "view") && data?.pd_id) {
+    dispatch(fetchPermintaanDistribusiById(data.pd_id))
+      .unwrap()
+      .then((detail) => {
+        // fill formData & items from API result
+        setFormData({
+          waktu: detail?.waktu ? detail.waktu.slice(0, 16) : new Date().toISOString().slice(0, 16),
+          id_master_unit: detail?.id_master_unit || "",
+          id_master_unit_tujuan: detail?.id_master_unit_tujuan || "",
+          nomor_rm: detail?.nomor_rm || "",
+          nama_pasien: detail?.nama_pasien || "",
+          nama_ruang: detail?.nama_ruang || "",
+          diagnosa: detail?.diagnosa || "",
+        });
+        setItems(detail?.items || []);
+      })
+      .catch(() => {
+        toast.error("Gagal memuat detail permintaan distribusi");
+      });
   }
 
   if (open && mode === "add") {
@@ -37,7 +49,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
     });
     setItems([]); // ✅ clear item list
   }
-}, [data, open]);
+}, [data?.pd_id, open, mode]);
 
   const [formData, setFormData] = useState({
     waktu: data?.waktu ? data.waktu.slice(0, 16) : new Date().toISOString().slice(0, 16),
@@ -142,6 +154,11 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    if (items.length === 0) {
+        toast.error("Barang wajib diisi");
+        return; // stop the function if no items
+    }
 
     const payload = {
       waktu: new Date(formData.waktu),

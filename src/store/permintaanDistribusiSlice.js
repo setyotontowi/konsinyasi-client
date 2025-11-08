@@ -21,6 +21,21 @@ export const fetchPermintaanDistribusi = createAsyncThunk(
   }
 );
 
+// Fetch single record detail by ID
+export const fetchPermintaanDistribusiById = createAsyncThunk(
+  "permintaanDistribusi/fetchById",
+  async (id, { rejectWithValue }) => {
+    try {
+      const res = await axiosClient.get(`/distribusi/permintaan/${id}`);
+      return res.data?.data; // expects structure { data: {..., items: []} }
+    } catch (err) {
+      const msg =
+        err.response?.data?.message || "Gagal mengambil detail permintaan distribusi.";
+      return rejectWithValue(msg);
+    }
+  }
+);
+
 // Add new record
 export const addPermintaanDistribusi = createAsyncThunk(
   "permintaanDistribusi/add",
@@ -135,6 +150,19 @@ const permintaanDistribusiSlice = createSlice({
         };
       })
       .addCase(fetchPermintaanDistribusi.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      // ---- Fetch by ID ----
+      .addCase(fetchPermintaanDistribusiById.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchPermintaanDistribusiById.fulfilled, (state, action) => {
+        state.loading = false;
+        state.selectedItem = action.payload; // store fetched record
+      })
+      .addCase(fetchPermintaanDistribusiById.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
