@@ -15,9 +15,6 @@ export default function DistribusiTable({ onView }) {
     dispatch(fetchDistribusi({ page, limit }));
   }, [dispatch, page]);
 
-
-  console.log(list)
-
   return (
     <div className="m-6 bg-white">
       <div className="overflow-x-auto">
@@ -51,7 +48,7 @@ export default function DistribusiTable({ onView }) {
                   </td>
                   <td className="border border-gray-200 px-6 py-2 text-center">
                     <button
-                      onClick={() => onView && onView(d)}
+                      onClick={() => onView(d)}
                       className="flex items-center gap-1 px-3 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded text-sm transition mx-auto"
                     >
                       <EyeIcon className="h-4 w-4" /> Detail

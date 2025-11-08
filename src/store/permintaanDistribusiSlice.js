@@ -158,6 +158,11 @@ const permintaanDistribusiSlice = createSlice({
       state.mode = "view";
       state.selectedItem = action.payload;
     },
+    openDistribusiModal: (state, action) => {
+      state.modalOpen = true;
+      state.mode = "distribusi";
+      state.selectedItem = action.payload;
+    },
   },
 
   extraReducers: (builder) => {
@@ -215,6 +220,7 @@ export const {
   openAddModal,
   openEditModal,
   openViewModal, 
+  openDistribusiModal,
   closeModal,
   openDeleteConfirm,
   closeDeleteConfirm,

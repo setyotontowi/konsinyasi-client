@@ -4,6 +4,7 @@ import {
   openAddModal,
   openEditModal,
   openViewModal,
+  openDistribusiModal,
   closeModal,
   openDeleteConfirm,
   closeDeleteConfirm,
@@ -67,7 +68,7 @@ export default function Distribusi() {
         >
           <div className="p-4">
             <PermintaanDistribusiTable
-              onView={(item) => dispatch(openViewModal(item))}
+              onView={(item) => dispatch(openDistribusiModal(item))}
               onDistribusi={true}
               onCountChange={setPermintaanCount}
             />
@@ -96,7 +97,7 @@ export default function Distribusi() {
 
       <PermintaanDistribusiModal
           open={modalOpen}
-          mode="distribusi"
+          mode={mode} 
           data={selectedItem}
           onClose={() => dispatch(closeModal())}
       />

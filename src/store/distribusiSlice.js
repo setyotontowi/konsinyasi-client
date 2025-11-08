@@ -6,12 +6,27 @@ export const fetchDistribusi = createAsyncThunk(
   async ({ page = 1, limit = 20 }, { rejectWithValue }) => {
     try {
       const res = await axiosClient.get(`/distribusi/distribusi?page=${page}&limit=${limit}`);
-      return res.data;
+
+      // Modify each item in the data array to include pd_id
+      const modifiedData = res.data.data.map((item) => ({
+        ...item,
+        pd_id: item.id_permintaan_distribusi, // append new key
+      }));
+
+      // Return the same structure, but with modified data
+      const response = {
+        ...res.data,
+        data: modifiedData,
+      };
+
+      console.log(response);
+      return response;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
   }
 );
+
 
 const distribusiSlice = createSlice({
   name: "distribusi",

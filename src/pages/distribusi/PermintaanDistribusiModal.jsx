@@ -17,8 +17,11 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
   const isView = mode === "view" || mode === "distribusi";
   const dispatch = useDispatch();
 
+  console.log(mode)
+
   useEffect(() => {
-   if (open && (mode === "edit" || mode === "view") || mode === "distribusi" && data?.pd_id) {
+   if (open && (mode === "edit" || mode === "view" || mode === "distribusi") && data?.pd_id) {
+    console.log("first");
     dispatch(fetchPermintaanDistribusiById(data.pd_id))
       .unwrap()
       .then((detail) => {
