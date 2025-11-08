@@ -62,7 +62,7 @@ export default function Distribusi() {
 
       <PermintaanDistribusiModal
           open={modalOpen}
-          mode={mode}
+          mode="distribusi"
           data={selectedItem}
           onClose={() => dispatch(closeModal())}
       />

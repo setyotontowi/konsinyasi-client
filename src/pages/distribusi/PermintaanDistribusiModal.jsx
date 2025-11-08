@@ -10,19 +10,20 @@ import {
 } from "../../store/permintaanDistribusiSlice";
 import { XMarkIcon, PlusCircleIcon } from "@heroicons/react/24/outline";
 import { toast } from "react-toastify";
+import { formatToReadableLocal, getLocalNow } from "../../helper/helper";
 
 export default function PermintaanDistribusiModal({ open, mode, data, onClose }) {
-  const isView = mode === "view";
+  const isView = mode === "view" || mode === "distribusi";
   const dispatch = useDispatch();
 
   useEffect(() => {
-   if (open && (mode === "edit" || mode === "view") && data?.pd_id) {
+   if (open && (mode === "edit" || mode === "view") || mode === "distribusi" && data?.pd_id) {
     dispatch(fetchPermintaanDistribusiById(data.pd_id))
       .unwrap()
       .then((detail) => {
         // fill formData & items from API result
         setFormData({
-          waktu: detail?.waktu ? detail.waktu.slice(0, 16) : new Date().toISOString().slice(0, 16),
+          waktu: detail?.waktu ? formatToReadableLocal(detail.waktu) : getLocalNow(),
           id_master_unit: detail?.id_master_unit || "",
           id_master_unit_tujuan: detail?.id_master_unit_tujuan || "",
           nomor_rm: detail?.nomor_rm || "",
@@ -39,7 +40,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
 
   if (open && mode === "add") {
     setFormData({
-      waktu: new Date().toISOString().slice(0, 16),
+      waktu: getLocalNow(),
       id_master_unit: "",
       id_master_unit_tujuan: "",
       nomor_rm: "",
@@ -52,7 +53,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
 }, [data?.pd_id, open, mode]);
 
   const [formData, setFormData] = useState({
-    waktu: data?.waktu ? data.waktu.slice(0, 16) : new Date().toISOString().slice(0, 16),
+    waktu: data?.waktu ? formatToReadableLocal(data.waktu) : getLocalNow(),
     id_master_unit: data?.id_master_unit || "",
     id_master_unit_tujuan: data?.id_master_unit_tujuan || "",
     nomor_rm: data?.nomor_rm || "",
@@ -67,6 +68,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
   const [satuan, setSatuanOptions] = useState([]);
   const [itemModalOpen, setItemModalOpen] = useState(false);
   const [loading, setLoading] = useState({ unit: false, group: false });
+  const [submitting, setSubmitting] = useState(false);
   const [newItem, setNewItem] = useState({
     id_master_barang: "",
     nama_barang : "",
@@ -160,6 +162,8 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
         return; // stop the function if no items
     }
 
+    setSubmitting(true);
+
     const payload = {
       waktu: new Date(formData.waktu),
       id_master_unit: parseInt(formData.id_master_unit),
@@ -174,6 +178,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
         qty: parseInt(it.qty),
       })),
     };
+
 
     const action = mode === "add"
       ? addPermintaanDistribusi(payload)
@@ -223,7 +228,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                 <div>
                   <label className="block text-sm font-medium">Waktu</label>
                   <input
-                    type="datetime-local"
+                    type="datetime"
                     name="waktu"
                     disabled={isView}
                     value={formData.waktu}
@@ -352,19 +357,17 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                       <td className="border border-gray-200 px-3 py-2">{item.nama_barang}</td>
                       <td className="border border-gray-200 px-3 py-2">{item.nama_satuan}</td>
                       <td className="border border-gray-200 px-3 py-2">{item.qty}</td>
+                      {!isView && (
                       <td className="border border-gray-200 px-3 py-2 text-center">
-                        {!isView && (
-                        <td className="border border-gray-200 px-3 py-2 text-center">
-                            <button
-                            type="button"
-                            onClick={() => handleRemoveItem(i)}
-                            className="text-red-600 hover:underline"
-                            >
-                            Hapus
-                            </button>
-                        </td>
-                        )}
+                          <button
+                          type="button"
+                          onClick={() => handleRemoveItem(i)}
+                          className="text-red-600 hover:underline"
+                          >
+                          Hapus
+                          </button>
                       </td>
+                      )}
                     </tr>
                   ))
                 )}
@@ -381,14 +384,19 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
             >
               Batal
             </button>
-            {!isView && (
-                <button
-                type="submit"
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
-                >
-                {mode === "add" ? "Simpan" : "Perbarui"}
-                </button>
-            )}
+            <button
+              type="submit"
+              disabled = {submitting}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
+            >
+              {mode === "add"
+                ? "Simpan"
+                : mode === "edit"
+                ? "Perbarui"
+                : mode === "distribusi"
+                ? "Kirim Barang"
+                : ""}
+            </button>
           </div>
         </form>
         </div>
