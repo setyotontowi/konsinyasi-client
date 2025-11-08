@@ -15,6 +15,7 @@ import PageHeader from "../../components/PageHeader";
 import PermintaanDistribusiTable from "./PermintaanDistribusiTable";
 import ConfirmModal from "../../components/ConfirmationModal";
 import PermintaanDistribusiModal from "./PermintaanDistribusiModal";
+import DistribusiTable from "./DistribusiTable";
 
 export default function Distribusi() {
   const dispatch = useDispatch();
@@ -84,6 +85,12 @@ export default function Distribusi() {
           disableSearch = {true}
           addLabel="Tambah Permintaan"
         />
+
+        <div>
+          <DistribusiTable
+            onView={(item) => dispatch(openViewModal(item))}
+          />
+        </div>
 
       </div>
 
