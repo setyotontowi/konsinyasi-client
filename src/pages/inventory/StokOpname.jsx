@@ -14,6 +14,7 @@ import ConfirmModal from "../../components/ConfirmationModal";
 import PermintaanDistribusiModal from "../distribusi/PermintaanDistribusiModal";
 import { ArrowDownOnSquareIcon, CalendarIcon } from "@heroicons/react/24/outline";
 import StokOpnameTable from "./StokOpnameTable";
+import StokOpnameModal from "./StokOpnameModal";
 
 export default function StokOpname() {
   const dispatch = useDispatch();
@@ -52,11 +53,11 @@ export default function StokOpname() {
           onDelete={(item) => dispatch(openDeleteConfirm(item))}
         />
 
-        <PermintaanDistribusiModal
+        <StokOpnameModal
           open={modalOpen}
-          mode={mode}
           data={selectedItem}
           onClose={() => dispatch(closeModal())}
+          onSave={(updatedData) => console.log("Save data:", updatedData)}
         />
       </div>
 

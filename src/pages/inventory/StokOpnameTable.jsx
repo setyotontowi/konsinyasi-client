@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchStokOpname } from "../../store/stokOpnameSlice";
 import Pagination from "../../components/Pagination";
+import { EyeIcon } from "@heroicons/react/24/outline";
 
 export default function StokOpnameTable({ search, onView, onEdit, onDelete}) {
   const dispatch = useDispatch();
@@ -53,8 +54,14 @@ export default function StokOpnameTable({ search, onView, onEdit, onDelete}) {
                 <td className="border border-gray-200 px-6 py-2 text-gray-700">
                   {item.jumlah_barang}
                 </td>
-                <td className="border border-gray-200 px-6 py-2 text-gray-700">
-                  
+                 {/* ✅ Action buttons */}
+                <td className="border border-gray-200 px-6 py-2 text-center">
+                  <button
+                    onClick={() => onView && onView(item)}
+                    className="flex items-center justify-center gap-1 px-3 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded text-sm transition"
+                  >
+                    <EyeIcon className="h-4 w-4" /> Lihat
+                  </button>
                 </td>
               </tr>
             ))}

@@ -15,6 +15,18 @@ export const fetchStokOpname = createAsyncThunk(
   }
 );
 
+export const fetchStokOpnameById = createAsyncThunk(
+  "stokOpname/fetchById",
+  async (id, { rejectWithValue }) => {
+    try {
+      const res = await axiosClient.get(`/inventory/stok-opname/${id}`);
+      return res.data.data; // response has data object
+    } catch (err) {
+      return rejectWithValue(err.response?.data || err.message);
+    }
+  }
+);
+
 const stokOpnameSlice = createSlice({
   name: "stokOpname",
   initialState: {
@@ -79,30 +91,13 @@ const stokOpnameSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-
-    //   // ---- Fetch by ID ----
-    //   .addCase(fetchPermintaanDistribusiById.fulfilled, (state, action) => {
-    //     state.selectedItem = action.payload; // store fetched record
-    //   })
-    //   .addCase(fetchPermintaanDistribusiById.rejected, (state, action) => {
-    //     state.error = action.payload;
-    //   })
-
-    //   // ---- Add ----
-    //   .addCase(addPermintaanDistribusi.fulfilled, (state) => {
-    //     state.modalOpen = false;
-    //   })
-
-    //   // ---- Edit ----
-    //   .addCase(editPermintaanDistribusi.fulfilled, (state) => {
-    //     state.modalOpen = false;
-    //   })
-
-    //   // ---- Delete ----
-    //   .addCase(deletePermintaanDistribusi.fulfilled, (state, action) => {
-    //     state.list = state.list.filter((d) => d.pd_id !== action.payload);
-    //     state.confirmOpen = false;
-    //   })
+      // --- fetch by ID ---
+      .addCase(fetchStokOpnameById.fulfilled, (state, action) => {
+        state.selectedItem = action.payload;
+      })
+      .addCase(fetchStokOpnameById.rejected, (state, action) => {
+        state.error = action.payload;
+      });
   },
 });
 
