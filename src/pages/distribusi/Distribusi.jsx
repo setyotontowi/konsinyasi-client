@@ -2,19 +2,14 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   openAddModal,
-  openEditModal,
   openViewModal,
   openDistribusiModal,
   closeModal,
-  openDeleteConfirm,
-  closeDeleteConfirm,
 } from "../../store/permintaanDistribusiSlice";
-import { deletePermintaanDistribusi } from "../../store/permintaanDistribusiSlice";
 
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline";
 import PageHeader from "../../components/PageHeader";
 import PermintaanDistribusiTable from "./PermintaanDistribusiTable";
-import ConfirmModal from "../../components/ConfirmationModal";
 import PermintaanDistribusiModal from "./PermintaanDistribusiModal";
 import DistribusiTable from "./DistribusiTable";
 
@@ -22,23 +17,13 @@ export default function Distribusi() {
   const dispatch = useDispatch();
   const {
     modalOpen,
-    confirmOpen,
     mode,
     selectedItem,
-    itemToDelete,
   } = useSelector((state) => state.permintaanDistribusi);
 
-  const [deleting, setDeleting] = useState(false);
   const [showActive, setShowActive] = useState(false);
   const [permintaanCount, setPermintaanCount] = useState();
 
-  const handleDeleteConfirm = () => {
-    if (!itemToDelete) return;
-    setDeleting(true);
-    dispatch(deletePermintaanDistribusi(itemToDelete.pd_id)).finally(() =>
-      setDeleting(false)
-    );
-  };
 
   return (
     <>
@@ -100,19 +85,6 @@ export default function Distribusi() {
           mode={mode} 
           data={selectedItem}
           onClose={() => dispatch(closeModal())}
-      />
-
-      <ConfirmModal
-        open={confirmOpen}
-        title="Hapus Permintaan Distribusi"
-        message={
-          itemToDelete
-            ? `Apakah Anda yakin ingin menghapus permintaan untuk pasien "${itemToDelete.nama_pasien}"?`
-            : "Apakah Anda yakin ingin menghapus permintaan distribusi ini?"
-        }
-        onConfirm={handleDeleteConfirm}
-        onClose={() => dispatch(closeDeleteConfirm())}
-        loading={deleting}
       />
     </>
   );
