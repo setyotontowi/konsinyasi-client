@@ -22,8 +22,11 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
           setForm(res);
         })
         .finally(() => setLoading(false));
-    }
-  }, [dispatch, open, data]);
+    } else if (data?.details) {
+    setForm(data);
+    setLoading(false);
+  }
+  }, [dispatch, open, data?.id]);
 
   if (!open) return null;
 
@@ -113,7 +116,10 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
           {/* Detail items */}
           <div className="mt-8">
             <div className="flex justify-between items-center mb-2">
-              <h3 className="font-semibold text-sm text-gray-600 uppercase">Detail Barang</h3>
+              <div>
+                <h3 className="font-semibold text-sm text-gray-600 uppercase">Detail Barang</h3>
+                <p className=" text-gray-500 text-xs italic">Barang yang sudah dipakai tidak dapat diedit</p>
+              </div>
             </div>
 
             <table className="min-w-full text-sm border border-gray-200">
@@ -121,8 +127,7 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
                 <tr>
                   <th className="border border-gray-200 px-3 py-2 text-center">No</th>
                   <th className="border border-gray-200 px-3 py-2">Nama Barang</th>
-                  <th className="border border-gray-200 px-3 py-2">Satuan</th>
-                  <th className="border border-gray-200 px-3 py-2">Batch</th>
+                  <th className="border border-gray-200 px-3 py-2">No. Batch</th>
                   <th className="border border-gray-200 px-3 py-2">ED</th>
                   <th className="border border-gray-200 px-3 py-2">Sisa</th>
                   <th className="border border-gray-200 px-3 py-2">Keterangan</th>
@@ -142,16 +147,6 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
                           handleChangeDetail(index, "nama_barang", e.target.value)
                         }
                         className="border  border-gray-300 rounded w-full p-1"
-                      />
-                    </td>
-                    <td className="border border-gray-200 px-3 py-2">
-                      <input
-                        type="text"
-                        value={d.nama_satuan || ""}
-                        onChange={(e) =>
-                          handleChangeDetail(index, "nama_satuan", e.target.value)
-                        }
-                        className="border border-gray-300 rounded w-full p-1"
                       />
                     </td>
                     <td className="border border-gray-200 px-3 py-2">
