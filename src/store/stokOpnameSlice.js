@@ -27,6 +27,30 @@ export const fetchStokOpnameById = createAsyncThunk(
   }
 );
 
+export const createStokOpname = createAsyncThunk(
+  "stokOpname/create",
+  async (data, { rejectWithValue }) => {
+    try {
+      const user = getState().auth.user;
+      const now = new Date().toISOString().slice(0, 19).replace("T", " ");
+
+      const payload = {
+        waktu_input: now,
+        id_users: user.id,
+        nama_user: user.username,
+        id_master_unit: user.id_master_unit || null,
+        details: [],
+      };
+
+      const res = await axiosClient.post(`/inventory/stok-opname`, data);
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data || err.message);
+    }
+  }
+);
+
+
 export const updateStokOpname = createAsyncThunk(
   "stokOpname/update",
   async (data, { rejectWithValue }) => {
@@ -115,6 +139,13 @@ const stokOpnameSlice = createSlice({
         state.loading = false;
       })
       .addCase(updateStokOpname.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(createStokOpname.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(createStokOpname.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

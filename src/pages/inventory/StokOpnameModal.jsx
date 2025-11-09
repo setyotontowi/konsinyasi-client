@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import { fetchStokOpnameById, updateStokOpname } from "../../store/stokOpnameSlice";
+import { fetchStokOpnameById, updateStokOpname, createStokOpname } from "../../store/stokOpnameSlice";
 import axiosClient from "../../api/axiosClient";
 import Select from "react-select";
+import { getAuthUser } from "../../helper/helper";
 import { toast } from "react-toastify";
 
 export default function StokOpnameModal({ open, data, onClose, onSave }) {
@@ -47,6 +48,29 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
       setForm(data);
     }
   }, [open, data?.id, dispatch]);
+
+  useEffect(() => {
+    if (!open) return;
+
+    // decode user from JWT via helper
+    const authUser = getAuthUser();
+
+    if (!data?.id) {
+        const now = new Date();
+        const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+        const formattedNow = local.toISOString().slice(0, 16); // yyyy-MM-ddTHH:mm
+
+        setForm({
+        waktu_input: formattedNow,
+        id_users: authUser.id || "",
+        nama_user: authUser.username || "",
+        id_master_unit: authUser.id_master_unit || "",
+        details: [],
+        });
+    } else if (data?.details) {
+        setForm(data);
+    }
+  }, [open, data]);
 
   // --- Fetch Units and Barang only once when modal opens ---
   useEffect(() => {
@@ -98,19 +122,32 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!form.id) return toast.error("Invalid stok opname data");
 
-    dispatch(updateStokOpname(form))
-      .unwrap()
-      .then(() => {
-        toast.success("Perubahan stok opname berhasil disimpan");
-        onSave(form); // optional callback
+    // Validation
+    if (!form.waktu_input) return toast.error("Waktu input harus diisi");
+    if (!form.id_master_unit) return toast.error("Unit harus dipilih");
+    if (form.details.length === 0) return toast.error("Minimal satu barang harus ditambahkan");
+
+    for (let i = 0; i < form.details.length; i++) {
+        const d = form.details[i];
+        if (!d.id_master_barang) return toast.error(`Barang ke-${i + 1} belum dipilih`);
+        if (!d.nobatch) return toast.error(`No. batch barang ke-${i + 1} belum diisi`);
+        if (!d.ed) return toast.error(`ED barang ke-${i + 1} belum diisi`);
+        if (!d.kenyataan) return toast.error(`Kenyataan barang ke-${i + 1} belum diisi`);
+    }
+
+    const action = form.id ? updateStokOpname(form) : createStokOpname(form);
+
+    dispatch(action)
+        .unwrap()
+        .then(() => {
+        toast.success(form.id ? "Perubahan stok opname disimpan" : "Stok opname berhasil dibuat");
+        onSave(form);
         onClose();
-      })
-      .catch(() => {
-        toast.error("Gagal menyimpan perubahan stok opname");
-      });
+        })
+        .catch(() => toast.error("Gagal menyimpan stok opname"));
   };
+
 
   // --- Handlers ---
   const handleChangeHeader = (e) => {
@@ -128,7 +165,14 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
         }
         return { ...prev, details: updated };
     });
-    };
+  };
+
+  const handleSelectChange = (name, option) => {
+    setForm((prev) => ({
+        ...prev,
+        [name]: option ? option.value : "",
+    }));
+  };
 
   if (!open) return null;
 
@@ -144,7 +188,7 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
         {/* Header */}
         <div className="flex justify-between items-center border-b border-gray-200 px-6 py-3">
           <h2 className="text-lg font-semibold text-gray-800">
-            Edit Stok Opname
+            {form.id ? "Edit Stok Opname" : "Tambah Stok Opname"}
           </h2>
           <button
             onClick={onClose}
@@ -208,6 +252,31 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
                   Barang yang sudah dipakai tidak dapat diedit
                 </p>
               </div>
+
+              <button
+                type="button"
+                onClick={() => {
+                setForm((prev) => ({
+                    ...prev,
+                    details: [
+                    ...prev.details,
+                    {
+                        id_master_barang: "",
+                        nama_barang: "",
+                        nobatch: "",
+                        ed: "",
+                        sisa: "",
+                        kenyataan: "",
+                        keterangan: "",
+                        editable: true,
+                    },
+                    ],
+                }));
+                }}
+                className="text-xs px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition"
+              >
+                + Tambah Barang
+              </button>
             </div>
 
             <table className="min-w-full text-sm border border-gray-200">

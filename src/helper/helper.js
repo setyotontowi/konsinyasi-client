@@ -1,3 +1,5 @@
+import { jwtDecode } from "jwt-decode";
+
 export function getLocalNow() {
   const now = new Date();
   const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
@@ -17,3 +19,15 @@ export function formatToReadableLocal(dateString) {
   // Format into "YYYY-MM-DD HH:mm"
   return local.toISOString().slice(0, 16).replace("T", " ");
 }
+
+export const getAuthUser = () => {
+  const token = localStorage.getItem("auth_token");
+  if (!token) return {};
+
+  try {
+    return jwtDecode(token);
+  } catch (error) {
+    console.error("Invalid or expired JWT token:", error);
+    return {};
+  }
+};
