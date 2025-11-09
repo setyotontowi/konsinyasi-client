@@ -99,30 +99,30 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
       .finally(() => setLoading((l) => ({ ...l, unit: false })));
 
       // Fetch Barang
-        setLoading((l) => ({ ...l, barang: true }));
-        axiosClient
-        .get("/barang/items")
-        .then((res) => {
-            setBarangOptions((res.data?.data || []).map((b) => ({ value: b.barang_id, label: b.barang_nama })));
-        })
-        .catch((err) => {
-            console.error("Failed to load barang:", err);
-            toast.error("Gagal memuat daftar barang");
-        })
-        .finally(() => setLoading((l) => ({ ...l, barang: false })));
+      setLoading((l) => ({ ...l, barang: true }));
+    axiosClient
+      .get("/barang/items")
+      .then((res) => {
+          setBarangOptions((res.data?.data || []).map((b) => ({ value: b.barang_id, label: b.barang_nama })));
+      })
+      .catch((err) => {
+          console.error("Failed to load barang:", err);
+          toast.error("Gagal memuat daftar barang");
+      })
+      .finally(() => setLoading((l) => ({ ...l, barang: false })));
 
-        // Fetch Satuan
-        setLoading((l) => ({ ...l, satuan: true }));
-        axiosClient
-        .get("/barang/satuan")
-        .then((res) => {
-            setSatuanOptions((res.data?.data || []).map((s) => ({ value: s.mst_id, label: s.mst_nama })));
-        })
-        .catch((err) => {
-            console.error("Failed to load satuan:", err);
-            toast.error("Gagal memuat daftar satuan");
-        })
-        .finally(() => setLoading((l) => ({ ...l, satuan: false })));
+      // Fetch Satuan
+      setLoading((l) => ({ ...l, satuan: true }));
+    axiosClient
+      .get("/barang/satuan")
+      .then((res) => {
+          setSatuanOptions((res.data?.data || []).map((s) => ({ value: s.mst_id, label: s.mst_nama })));
+      })
+      .catch((err) => {
+          console.error("Failed to load satuan:", err);
+          toast.error("Gagal memuat daftar satuan");
+      })
+      .finally(() => setLoading((l) => ({ ...l, satuan: false })));
   }, [open]);
 
   const handleChange = (e) => {
