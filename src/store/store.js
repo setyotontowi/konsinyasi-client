@@ -6,6 +6,7 @@ import barangReducer from "./barangSlice"
 import satuanReducer from "./satuanSlice"
 import permintaanDistribusiReducer from "./permintaanDistribusiSlice";
 import distribusiReducer from "./distribusiSlice"
+import stokOpnameSlice from "./stokOpnameSlice"
 
 export const store = configureStore({
   reducer: {
@@ -16,6 +17,7 @@ export const store = configureStore({
     satuan: satuanReducer,
     permintaanDistribusi: permintaanDistribusiReducer,
     distribusi: distribusiReducer,
+    stokOpname: stokOpnameSlice, 
   },
 });
 

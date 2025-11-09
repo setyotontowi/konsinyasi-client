@@ -15,6 +15,7 @@ import Satuan from './pages/satuan/Satuan'
 
 import PermintaanDistribusi from './pages/distribusi/PermintaanDistribusi'
 import Distribusi from './pages/distribusi/Distribusi'
+import StokOpname from './pages/inventory/StokOpname'
 
 export default function App() {
   return (
@@ -40,7 +41,7 @@ export default function App() {
           </Route>
 
           <Route path="inventory">
-            <Route path="stok-opname" element={<PermintaanDistribusi />} />
+            <Route path="stok-opname" element={<StokOpname />} />
           </Route>
 
           <Route path="settings" element={<Settings />} />
