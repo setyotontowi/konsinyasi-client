@@ -7,8 +7,8 @@ import {
   editPermintaanDistribusi,
   fetchPermintaanDistribusi,
   fetchPermintaanDistribusiById,
-  kirimDistribusi,
 } from "../../store/permintaanDistribusiSlice";
+import { kirimDistribusi } from "../../store/distribusiSlice";
 import { XMarkIcon, PlusCircleIcon } from "@heroicons/react/24/outline";
 import { toast } from "react-toastify";
 import { formatToReadableLocal, getLocalNow } from "../../helper/helper";
