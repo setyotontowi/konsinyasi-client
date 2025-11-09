@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import { fetchStokOpnameById } from "../../store/stokOpnameSlice";
+import { fetchStokOpnameById, updateStokOpname } from "../../store/stokOpnameSlice";
 import axiosClient from "../../api/axiosClient";
 import Select from "react-select";
 import { toast } from "react-toastify";
@@ -96,6 +96,22 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
     }
   }, [open]);
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!form.id) return toast.error("Invalid stok opname data");
+
+    dispatch(updateStokOpname(form))
+      .unwrap()
+      .then(() => {
+        toast.success("Perubahan stok opname berhasil disimpan");
+        onSave(form); // optional callback
+        onClose();
+      })
+      .catch(() => {
+        toast.error("Gagal menyimpan perubahan stok opname");
+      });
+  };
+
   // --- Handlers ---
   const handleChangeHeader = (e) => {
     const { name, value } = e.target;
@@ -113,11 +129,6 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
         return { ...prev, details: updated };
     });
     };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (onSave) onSave(form);
-  };
 
   if (!open) return null;
 

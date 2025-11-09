@@ -27,6 +27,19 @@ export const fetchStokOpnameById = createAsyncThunk(
   }
 );
 
+export const updateStokOpname = createAsyncThunk(
+  "stokOpname/update",
+  async (data, { rejectWithValue }) => {
+    try {
+      const res = await axiosClient.put(`/inventory/stok-opname/${data.id}`, data);
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data || err.message);
+    }
+  }
+);
+
+
 const stokOpnameSlice = createSlice({
   name: "stokOpname",
   initialState: {
@@ -96,6 +109,13 @@ const stokOpnameSlice = createSlice({
         state.selectedItem = action.payload;
       })
       .addCase(fetchStokOpnameById.rejected, (state, action) => {
+        state.error = action.payload;
+      })
+      .addCase(updateStokOpname.fulfilled, (state, action) => {
+        state.loading = false;
+      })
+      .addCase(updateStokOpname.rejected, (state, action) => {
+        state.loading = false;
         state.error = action.payload;
       });
   },
