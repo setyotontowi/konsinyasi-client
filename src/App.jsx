@@ -39,6 +39,10 @@ export default function App() {
             <Route path="distribusi" element={<Distribusi />} />
           </Route>
 
+          <Route path="inventory">
+            <Route path="stok-opname" element={<PermintaanDistribusi />} />
+          </Route>
+
           <Route path="settings" element={<Settings />} />
         </Route>
 
