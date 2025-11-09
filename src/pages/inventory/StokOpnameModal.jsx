@@ -219,13 +219,15 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
               </thead>
               <tbody>
                 {form.details.map((d, index) => (
-                  <tr key={d.id || index} className="hover:bg-gray-50">
+                    <tr key={d.id || index} className="hover:bg-gray-50">
                     <td className="border border-gray-200 px-3 py-2 text-center">
-                      {index + 1}
+                        {index + 1}
                     </td>
+
+                    {/* --- Barang cell --- */}
                     <td className="border border-gray-200 px-3 py-2">
-                      {editingIndex === index ? (
-                            // 🟢 Inline Select appears when editing this row
+                        {d.editable ? (
+                        editingIndex === index ? (
                             <Select
                             isLoading={loading.barang}
                             options={barang}
@@ -236,14 +238,13 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
                                 id_master_barang: opt ? opt.value : "",
                                 nama_barang: opt ? opt.label : "",
                                 });
-                                setEditingIndex(null); // ✅ exit edit mode
+                                setEditingIndex(null);
                             }}
-                            onBlur={() => setEditingIndex(null)} // ✅ exit if user clicks away
+                            onBlur={() => setEditingIndex(null)}
                             className="react-select-container"
                             classNamePrefix="react-select"
                             />
                         ) : (
-                            // 🧊 Display text + “Ganti” link when not editing
                             <div className="flex items-center justify-between">
                             <span>{d.nama_barang || "-"}</span>
                             <button
@@ -254,55 +255,81 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
                                 Ganti
                             </button>
                             </div>
+                        )
+                        ) : (
+                        <span className="text-gray-600">{d.nama_barang || "-"}</span>
                         )}
                     </td>
+
+                    {/* --- No Batch --- */}
                     <td className="border border-gray-200 px-3 py-2">
-                      <input
+                        <input
                         type="text"
                         value={d.nobatch || ""}
                         onChange={(e) =>
-                          handleChangeDetail(index, "nobatch", e.target.value)
+                            handleChangeDetail(index, "nobatch", e.target.value)
                         }
-                        className="border border-gray-300 rounded w-full p-1"
-                      />
+                        disabled={!d.editable}
+                        className={`border border-gray-300 rounded w-full p-1 ${
+                            !d.editable ? "bg-gray-100 text-gray-500" : ""
+                        }`}
+                        />
                     </td>
+
+                    {/* --- ED --- */}
                     <td className="border border-gray-200 px-3 py-2">
-                      <input
+                        <input
                         type="date"
                         value={d.ed ? d.ed.split("T")[0] : ""}
                         onChange={(e) =>
-                          handleChangeDetail(index, "ed", e.target.value)
+                            handleChangeDetail(index, "ed", e.target.value)
                         }
-                        className="border border-gray-300 rounded w-full p-1"
-                      />
+                        disabled={!d.editable}
+                        className={`border border-gray-300 rounded w-full p-1 ${
+                            !d.editable ? "bg-gray-100 text-gray-500" : ""
+                        }`}
+                        />
                     </td>
+
+                    {/* --- Sisa --- */}
                     <td className="border border-gray-200 px-3 py-2 text-center">
                         {d.sisa}
                     </td>
+
+                    {/* --- Kenyataan --- */}
                     <td className="border border-gray-200 px-3 py-2 text-center">
                         <input
-                            type="number"
-                            value={d.kenyataan || 0}
-                            onChange={(e) =>
-                                handleChangeDetail(index, "kenyataan", e.target.value)
-                            }
-                            placeholder="Kenyataan"
-                            className="border border-gray-300 w-30 rounded p-1 text-center"
+                        type="number"
+                        value={d.kenyataan || ""}
+                        onChange={(e) =>
+                            handleChangeDetail(index, "kenyataan", e.target.value)
+                        }
+                        placeholder="Kenyataan"
+                        disabled={!d.editable}
+                        className={`border border-gray-300 w-30 rounded p-1 text-center ${
+                            !d.editable ? "bg-gray-100 text-gray-500" : ""
+                        }`}
                         />
                     </td>
+
+                    {/* --- Keterangan --- */}
                     <td className="border border-gray-200 px-3 py-2">
-                      <input
+                        <input
                         type="text"
                         value={d.keterangan || ""}
                         onChange={(e) =>
-                          handleChangeDetail(index, "keterangan", e.target.value)
+                            handleChangeDetail(index, "keterangan", e.target.value)
                         }
-                        className="border border-gray-300 rounded w-full p-1"
-                      />
+                        disabled={!d.editable}
+                        className={`border border-gray-300 rounded w-full p-1 ${
+                            !d.editable ? "bg-gray-100 text-gray-500" : ""
+                        }`}
+                        />
                     </td>
-                  </tr>
+                    </tr>
                 ))}
               </tbody>
+
             </table>
           </div>
         </form>
