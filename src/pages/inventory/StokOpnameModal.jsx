@@ -116,11 +116,22 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
     }));
   };
 
-  
 
   const handleEditDetail = (index) => {
     setEditingIndex(index);
     setDetailModalOpen(true);
+  };
+
+  const handleRemoveDetail = (index) => {
+    const confirmDelete = window.confirm("Hapus barang ini dari daftar?");
+    if (!confirmDelete) return;
+
+    setForm((prev) => ({
+        ...prev,
+        details: prev.details.filter((_, i) => i !== index),
+    }));
+
+    toast.info("Detail barang dihapus dari daftar");
   };
 
     // Delete detail record directly via backend
@@ -334,27 +345,40 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
                         {d.keterangan || "-"}
                         </td>
 
-                        {/* Action buttons */}
                         <td className="border border-gray-200 px-3 py-2 text-center">
-                        {d.editable ? (
-                            <div className="flex justify-center gap-2">
+                        {/* --- ADD MODE --- */}
+                        {!form.id ? (
                             <button
-                                onClick={() => handleEditDetail(index)}
-                                type="button"
-                                className="px-2 py-1 text-xs bg-yellow-100 text-yellow-700 rounded hover:bg-yellow-200"
+                            onClick={() => handleRemoveDetail(index)}
+                            type="button"
+                            className="px-2 py-1 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200"
                             >
-                                Edit
+                            Hapus
                             </button>
-                            <button
-                                onClick={() => handleDeleteDetail(d.id)}
-                                type="button"
-                                className="px-2 py-1 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200"
-                            >
-                                Hapus
-                            </button>
-                            </div>
                         ) : (
-                            <span className="text-gray-400 text-xs italic">Locked</span>
+                            /* --- EDIT MODE --- */
+                            <>
+                            {d.editable ? (
+                                <div className="flex justify-center gap-2">
+                                <button
+                                    onClick={() => handleEditDetail(index)}
+                                    type="button"
+                                    className="px-2 py-1 text-xs bg-yellow-100 text-yellow-700 rounded hover:bg-yellow-200"
+                                >
+                                    Edit
+                                </button>
+                                <button
+                                    onClick={() => handleDeleteDetail(d.id)}
+                                    type="button"
+                                    className="px-2 py-1 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200"
+                                >
+                                    Hapus
+                                </button>
+                                </div>
+                            ) : (
+                                <span className="text-gray-400 text-xs italic">Locked</span>
+                            )}
+                            </>
                         )}
                         </td>
                     </tr>
