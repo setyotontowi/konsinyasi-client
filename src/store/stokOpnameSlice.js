@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axiosClient from "../api/axiosClient";
+import { getAuthUser } from "../helper/helper";
 
 export const fetchStokOpname = createAsyncThunk(
   "stokOpname/fetch",
@@ -31,20 +32,10 @@ export const createStokOpname = createAsyncThunk(
   "stokOpname/create",
   async (data, { rejectWithValue }) => {
     try {
-      const user = getState().auth.user;
-      const now = new Date().toISOString().slice(0, 19).replace("T", " ");
-
-      const payload = {
-        waktu_input: now,
-        id_users: user.id,
-        nama_user: user.username,
-        id_master_unit: user.id_master_unit || null,
-        details: [],
-      };
-
       const res = await axiosClient.post(`/inventory/stok-opname`, data);
       return res.data;
     } catch (err) {
+      console.log(err);
       return rejectWithValue(err.response?.data || err.message);
     }
   }
