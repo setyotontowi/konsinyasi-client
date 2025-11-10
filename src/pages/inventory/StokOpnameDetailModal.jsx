@@ -167,79 +167,89 @@ export default function StokOpnameDetailModal({ open, onClose, onAddDetail }) {
           {/* ED */}
           <div>
             <div className="flex justify-between items-center">
-              <label className="block text-xs mb-1">ED</label>
-              <label className="flex items-center gap-1 text-xs text-gray-600">
+                <label className="block text-xs mb-1">ED</label>
+                <label className="flex items-center gap-1 text-xs text-gray-600">
                 <input
-                  type="checkbox"
-                  checked={isNewEd}
-                  onChange={(e) => {
-                    setIsNewEd(e.target.checked);
+                    type="checkbox"
+                    checked={isNewEd}
+                    onChange={(e) => {
+                    const checked = e.target.checked;
+                    setIsNewEd(checked);
                     setSelectedEd(null);
                     setNewEd("");
-                  }}
+
+                    // 🧠 if ED is new → NoBatch must be new as well
+                    if (checked) {
+                        setIsNewNoBatch(true);
+                        setSelectedNobatch(null);
+                        setNewNoBatch("");
+                    }
+                    }}
                 />
                 Baru
-              </label>
+                </label>
             </div>
 
             {isNewEd ? (
-              <input
+                <input
                 type="date"
                 value={newEd}
                 onChange={(e) => setNewEd(e.target.value)}
                 className="border border-gray-300 rounded w-full p-2 text-sm"
                 placeholder="Masukkan ED baru"
-              />
+                />
             ) : (
-              <Select
+                <Select
                 options={edOptions}
                 value={selectedEd}
                 onChange={(opt) => {
-                  setSelectedEd(opt);
-                  setSelectedNobatch(null);
+                    setSelectedEd(opt);
+                    setSelectedNobatch(null);
                 }}
                 placeholder="Pilih ED..."
                 isDisabled={!selectedBarang}
-              />
+                />
             )}
-          </div>
+            </div>
 
-          {/* No Batch */}
-          <div>
+            {/* No Batch */}
+            <div>
             <div className="flex justify-between items-center">
-              <label className="block text-xs mb-1">No Batch</label>
-              <label className="flex items-center gap-1 text-xs text-gray-600">
+                <label className="block text-xs mb-1">No Batch</label>
+                <label className="flex items-center gap-1 text-xs text-gray-600">
                 <input
-                  type="checkbox"
-                  checked={isNewNoBatch}
-                  onChange={(e) => {
+                    type="checkbox"
+                    checked={isNewNoBatch}
+                    onChange={(e) => {
                     setIsNewNoBatch(e.target.checked);
                     setSelectedNobatch(null);
                     setNewNoBatch("");
-                  }}
+                    }}
+                    disabled={isNewEd} // 🧩 prevent user from unchecking when ED is new
                 />
                 Baru
-              </label>
+                </label>
             </div>
 
             {isNewNoBatch ? (
-              <input
+                <input
                 type="text"
                 value={newNoBatch}
                 onChange={(e) => setNewNoBatch(e.target.value)}
                 className="border border-gray-300 rounded w-full p-2 text-sm"
                 placeholder="Masukkan No Batch baru"
-              />
+                />
             ) : (
-              <Select
+                <Select
                 options={nobatchOptions}
                 value={selectedNobatch}
                 onChange={setSelectedNobatch}
                 placeholder="Pilih No Batch..."
                 isDisabled={!selectedEd && !isNewEd}
-              />
+                />
             )}
           </div>
+
 
           {/* Sisa */}
           {sisa !== null && (
