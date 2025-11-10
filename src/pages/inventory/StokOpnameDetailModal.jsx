@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Select from "react-select";
 import axiosClient from "../../api/axiosClient";
 import { toast } from "react-toastify";
+import { formatToReadableDate } from "../../helper/helper";
 
 export default function StokOpnameDetailModal({ open, onClose, onAddDetail }) {
   const [barangOptions, setBarangOptions] = useState([]);
@@ -62,7 +63,7 @@ export default function StokOpnameDetailModal({ open, onClose, onAddDetail }) {
       axiosClient
         .get(`/inventory/barang/${selectedBarang.value}/eds`)
         .then((res) =>
-          setEdOptions(res.data.data.map((e) => ({ value: e.ed, label: e.ed })))
+          setEdOptions(res.data.data.map((e) => ({ value: formatToReadableDate(e.ed), label: formatToReadableDate(e.ed) })))
         )
         .catch(() => toast.error("Gagal memuat ED"));
     } else {
