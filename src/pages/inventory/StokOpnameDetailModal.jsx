@@ -25,6 +25,7 @@ export default function StokOpnameDetailModal({
 
   const [sisa, setSisa] = useState(null);
   const [kenyataan, setKenyataan] = useState("");
+  const [hpp, setHpp] = useState("");
   const [keterangan, setKeterangan] = useState("");
 
   // 🧹 Reset & prefill when modal opens
@@ -40,6 +41,7 @@ export default function StokOpnameDetailModal({
       setIsNewNoBatch(false);
       setSisa(null);
       setKenyataan("");
+      setHpp("");
       setKeterangan("");
       setEdOptions([]);
       setNobatchOptions([]);
@@ -67,6 +69,7 @@ export default function StokOpnameDetailModal({
 
         setSisa(initialData.sisa ?? 0);
         setKenyataan(initialData.kenyataan ?? "");
+        setHpp(initialData.hpp ?? "");
         setKeterangan(initialData.keterangan ?? "");
       }
     }
@@ -167,6 +170,7 @@ export default function StokOpnameDetailModal({
       nobatch,
       sisa,
       kenyataan,
+      hpp,
       keterangan,
     });
 
@@ -200,7 +204,7 @@ export default function StokOpnameDetailModal({
                 setSelectedEd(null);
                 setSelectedNobatch(null);
               }}
-              isDisabled={!!initialData} // prevent editing barang on edit
+              isDisabled={!!initialData}
               placeholder="Pilih barang..."
             />
           </div>
@@ -310,6 +314,19 @@ export default function StokOpnameDetailModal({
               className="border border-gray-300 rounded w-full p-2"
             />
           </div>
+
+          {/* HPP */}
+          <div>
+            <label className="block text-xs mb-1">HPP (Harga Pokok)</label>
+            <input
+              type="text"
+              value={hpp}
+              onChange={(e) => setHpp(e.target.value)}
+              className="border border-gray-300 rounded w-full p-2"
+              placeholder="Masukkan harga pokok"
+            />
+          </div>
+
 
           {/* Keterangan */}
           <div>
