@@ -1,17 +1,25 @@
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import { fetchStokOpnameById, updateStokOpname, createStokOpname } from "../../store/stokOpnameSlice";
+import {
+  fetchStokOpnameById,
+  updateStokOpname,
+  createStokOpname,
+} from "../../store/stokOpnameSlice";
 import axiosClient from "../../api/axiosClient";
 import Select from "react-select";
 import { getAuthUser } from "../../helper/helper";
 import { toast } from "react-toastify";
+import StokOpnameDetailModal from "./StokOpnameDetailModal";
 
 export default function StokOpnameModal({ open, data, onClose, onSave }) {
   const dispatch = useDispatch();
+
   const [form, setForm] = useState({
     waktu_input: "",
+    id_master_unit: "",
     nama_unit: "",
+    id_users: "",
     nama_user: "",
     details: [],
   });
@@ -19,22 +27,19 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
   const [loading, setLoading] = useState({
     fetching: false,
     unit: false,
-    barang: false,
   });
+
   const [units, setUnits] = useState([]);
-  const [barang, setBarangOptions] = useState([]);
-  const [editingIndex, setEditingIndex] = useState(null);
+  const [detailModalOpen, setDetailModalOpen] = useState(false);
 
-
-  // --- Helper for datetime-local format ---
   const formatDateTimeLocal = (dateString) => {
     if (!dateString) return "";
     const date = new Date(dateString);
     const local = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
-    return local.toISOString().slice(0, 16); // "YYYY-MM-DDTHH:mm"
+    return local.toISOString().slice(0, 16);
   };
 
-  // --- Fetch detail data by ID ---
+  // Fetch detail data by ID (edit/view mode)
   useEffect(() => {
     if (!open) return;
     if (data?.id && !data?.details) {
@@ -42,41 +47,39 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
       dispatch(fetchStokOpnameById(data.id))
         .unwrap()
         .then((res) => setForm(res))
-        .catch((err) => toast.error("Gagal memuat data opname"))
+        .catch(() => toast.error("Gagal memuat data opname"))
         .finally(() => setLoading((l) => ({ ...l, fetching: false })));
     } else if (data?.details) {
       setForm(data);
     }
   }, [open, data?.id, dispatch]);
 
+  // Prepare default form for new record
   useEffect(() => {
     if (!open) return;
-
-    // decode user from JWT via helper
     const authUser = getAuthUser();
 
     if (!data?.id) {
-        const now = new Date();
-        const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
-        const formattedNow = local.toISOString().slice(0, 16); // yyyy-MM-ddTHH:mm
+      const now = new Date();
+      const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+      const formattedNow = local.toISOString().slice(0, 16);
 
-        setForm({
+      setForm({
         waktu_input: formattedNow,
         id_users: authUser.id || "",
         nama_user: authUser.username || "",
         id_master_unit: authUser.id_master_unit || "",
         details: [],
-        });
+      });
     } else if (data?.details) {
-        setForm(data);
+      setForm(data);
     }
   }, [open, data]);
 
-  // --- Fetch Units and Barang only once when modal opens ---
+  // Fetch unit list
   useEffect(() => {
     if (!open) return;
 
-    // Units
     setLoading((l) => ({ ...l, unit: true }));
     axiosClient
       .get("/unit")
@@ -90,24 +93,9 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
       })
       .catch(() => toast.error("Gagal memuat data unit"))
       .finally(() => setLoading((l) => ({ ...l, unit: false })));
-
-    // Barang
-    setLoading((l) => ({ ...l, barang: true }));
-    axiosClient
-      .get("/barang/items")
-      .then((res) => {
-        setBarangOptions(
-          (res.data?.data || []).map((b) => ({
-            value: b.barang_id,
-            label: b.barang_nama,
-          }))
-        );
-      })
-      .catch(() => toast.error("Gagal memuat daftar barang"))
-      .finally(() => setLoading((l) => ({ ...l, barang: false })));
   }, [open]);
 
-  // --- Reset form when modal closes ---
+  // Reset form when modal closes
   useEffect(() => {
     if (!open) {
       setForm({
@@ -116,62 +104,51 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
         nama_user: "",
         details: [],
       });
-      setBarangOptions([]);
     }
   }, [open]);
 
+  // Add new detail from child modal
+  const handleAddDetail = (detail) => {
+    setForm((prev) => ({
+      ...prev,
+      details: [...prev.details, detail],
+    }));
+  };
+
+  // Submit
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Validation
     if (!form.waktu_input) return toast.error("Waktu input harus diisi");
     if (!form.id_master_unit) return toast.error("Unit harus dipilih");
-    if (form.details.length === 0) return toast.error("Minimal satu barang harus ditambahkan");
+    if (form.details.length === 0)
+      return toast.error("Minimal satu barang harus ditambahkan");
 
     for (let i = 0; i < form.details.length; i++) {
-        const d = form.details[i];
-        if (!d.id_master_barang) return toast.error(`Barang ke-${i + 1} belum dipilih`);
-        if (!d.nobatch) return toast.error(`No. batch barang ke-${i + 1} belum diisi`);
-        if (!d.ed) return toast.error(`ED barang ke-${i + 1} belum diisi`);
-        if (!d.kenyataan) return toast.error(`Kenyataan barang ke-${i + 1} belum diisi`);
+      const d = form.details[i];
+      if (!d.id_master_barang)
+        return toast.error(`Barang ke-${i + 1} belum dipilih`);
+      if (!d.nobatch)
+        return toast.error(`No. batch barang ke-${i + 1} belum diisi`);
+      if (!d.ed) return toast.error(`ED barang ke-${i + 1} belum diisi`);
+      if (!d.kenyataan)
+        return toast.error(`Kenyataan barang ke-${i + 1} belum diisi`);
     }
 
     const action = form.id ? updateStokOpname(form) : createStokOpname(form);
 
     dispatch(action)
-        .unwrap()
-        .then(() => {
-        toast.success(form.id ? "Perubahan stok opname disimpan" : "Stok opname berhasil dibuat");
+      .unwrap()
+      .then(() => {
+        toast.success(
+          form.id
+            ? "Perubahan stok opname disimpan"
+            : "Stok opname berhasil dibuat"
+        );
         onSave(form);
         onClose();
-        })
-        .catch(() => toast.error("Gagal menyimpan stok opname"));
-  };
-
-
-  // --- Handlers ---
-  const handleChangeHeader = (e) => {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleChangeDetail = (index, fieldOrObject, value) => {
-    setForm((prev) => {
-        const updated = [...prev.details];
-        if (typeof fieldOrObject === "object") {
-        updated[index] = { ...updated[index], ...fieldOrObject };
-        } else {
-        updated[index] = { ...updated[index], [fieldOrObject]: value };
-        }
-        return { ...prev, details: updated };
-    });
-  };
-
-  const handleSelectChange = (name, option) => {
-    setForm((prev) => ({
-        ...prev,
-        [name]: option ? option.value : "",
-    }));
+      })
+      .catch(() => toast.error("Gagal menyimpan stok opname"));
   };
 
   if (!open) return null;
@@ -182,7 +159,7 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
       onClick={onClose}
     >
       <div
-        className="bg-white w-full max-w-6xl rounded-lg shadow-lg relative overflow-y-auto max-h-[90vh] animate-fadeIn"
+        className="bg-white w-full max-w-6xl rounded-lg shadow-lg relative max-h-[90vh] animate-fadeIn "
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -210,7 +187,9 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
                 type="datetime-local"
                 name="waktu_input"
                 value={formatDateTimeLocal(form.waktu_input)}
-                onChange={handleChangeHeader}
+                onChange={(e) =>
+                  setForm((p) => ({ ...p, waktu_input: e.target.value }))
+                }
                 className="border border-gray-300 rounded-lg w-full p-2 text-sm"
               />
             </div>
@@ -221,11 +200,18 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
                 isLoading={loading.unit}
                 options={units}
                 placeholder="Pilih unit asal..."
-                value={units.find((u) => u.value === form.id_master_unit) || null}
-                onChange={(opt) => handleSelectChange("id_master_unit", opt)}
+                value={
+                  units.find((u) => u.value === form.id_master_unit) || null
+                }
+                onChange={(opt) =>
+                  setForm((p) => ({
+                    ...p,
+                    id_master_unit: opt ? opt.value : "",
+                  }))
+                }
                 className="react-select-container"
                 classNamePrefix="react-select"
-                />
+              />
             </div>
 
             <div>
@@ -235,7 +221,6 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
                 name="nama_user"
                 disabled={true}
                 value={form.nama_user || ""}
-                onChange={handleChangeHeader}
                 className="border border-gray-300 bg-gray-100 rounded-lg w-full p-2 text-sm"
               />
             </div>
@@ -249,30 +234,13 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
                   Detail Barang
                 </h3>
                 <p className="text-gray-500 text-xs italic">
-                  Barang yang sudah dipakai tidak dapat diedit
+                  Barang yang sudah ditambahkan dapat dilihat di tabel
                 </p>
               </div>
 
               <button
                 type="button"
-                onClick={() => {
-                setForm((prev) => ({
-                    ...prev,
-                    details: [
-                    ...prev.details,
-                    {
-                        id_master_barang: "",
-                        nama_barang: "",
-                        nobatch: "",
-                        ed: "",
-                        sisa: "",
-                        kenyataan: "",
-                        keterangan: "",
-                        editable: true,
-                    },
-                    ],
-                }));
-                }}
+                onClick={() => setDetailModalOpen(true)}
                 className="text-xs px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition"
               >
                 + Tambah Barang
@@ -282,134 +250,65 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
             <table className="min-w-full text-sm border border-gray-200">
               <thead className="bg-gray-100 text-gray-700 text-xs uppercase">
                 <tr>
-                  <th className="border border-gray-200 px-3 py-2 text-center">
+                  <th className="border border-gray-200 px-3 py-2 text-center w-5">
                     No
                   </th>
-                  <th className="border border-gray-200 w-50 px-3 py-2">
+                  <th className="border border-gray-200 px-3 py-2">
                     Nama Barang
                   </th>
-                  <th className="border border-gray-200 px-3 py-2">No. Batch</th>
                   <th className="border border-gray-200 px-3 py-2">ED</th>
-                  <th className="border border-gray-200 px-3 py-2">Sisa</th>
-                  <th className="border border-gray-200 px-3 py-2">Kenyataan</th>
+                  <th className="border border-gray-200 px-3 py-2">
+                    No. Batch
+                  </th>
+                  <th className="border border-gray-200 px-3 py-2 text-center">
+                    Sisa
+                  </th>
+                  <th className="border border-gray-200 px-3 py-2 text-center">
+                    Kenyataan
+                  </th>
                   <th className="border border-gray-200 px-3 py-2">
                     Keterangan
                   </th>
                 </tr>
               </thead>
               <tbody>
-                {form.details.map((d, index) => (
-                    <tr key={d.id || index} className="hover:bg-gray-50">
-                    <td className="border border-gray-200 px-3 py-2 text-center">
+                {form.details.length > 0 ? (
+                  form.details.map((d, index) => (
+                    <tr key={index} className="hover:bg-gray-50">
+                      <td className="border border-gray-200 px-3 py-2 text-center">
                         {index + 1}
-                    </td>
-
-                    {/* --- Barang cell --- */}
-                    <td className="border border-gray-200 px-3 py-2">
-                        {d.editable ? (
-                        editingIndex === index ? (
-                            <Select
-                            isLoading={loading.barang}
-                            options={barang}
-                            autoFocus
-                            placeholder="Pilih barang"
-                            onChange={(opt) => {
-                                handleChangeDetail(index, {
-                                id_master_barang: opt ? opt.value : "",
-                                nama_barang: opt ? opt.label : "",
-                                });
-                                setEditingIndex(null);
-                            }}
-                            onBlur={() => setEditingIndex(null)}
-                            className="react-select-container"
-                            classNamePrefix="react-select"
-                            />
-                        ) : (
-                            <div className="flex items-center justify-between">
-                            <span>{d.nama_barang || "-"}</span>
-                            <button
-                                type="button"
-                                onClick={() => setEditingIndex(index)}
-                                className="text-blue-600 text-xs underline ml-2 hover:text-blue-800"
-                            >
-                                Ganti
-                            </button>
-                            </div>
-                        )
-                        ) : (
-                        <span className="text-gray-600">{d.nama_barang || "-"}</span>
-                        )}
-                    </td>
-
-                    {/* --- No Batch --- */}
-                    <td className="border border-gray-200 px-3 py-2">
-                        <input
-                        type="text"
-                        value={d.nobatch || ""}
-                        onChange={(e) =>
-                            handleChangeDetail(index, "nobatch", e.target.value)
-                        }
-                        disabled={!d.editable}
-                        className={`border border-gray-300 rounded w-full p-1 ${
-                            !d.editable ? "bg-gray-100 text-gray-500" : ""
-                        }`}
-                        />
-                    </td>
-
-                    {/* --- ED --- */}
-                    <td className="border border-gray-200 px-3 py-2">
-                        <input
-                        type="date"
-                        value={d.ed ? d.ed.split("T")[0] : ""}
-                        onChange={(e) =>
-                            handleChangeDetail(index, "ed", e.target.value)
-                        }
-                        disabled={!d.editable}
-                        className={`border border-gray-300 rounded w-full p-1 ${
-                            !d.editable ? "bg-gray-100 text-gray-500" : ""
-                        }`}
-                        />
-                    </td>
-
-                    {/* --- Sisa --- */}
-                    <td className="border border-gray-200 px-3 py-2 text-center">
+                      </td>
+                      <td className="border border-gray-200 px-3 py-2">
+                        {d.nama_barang}
+                      </td>
+                      <td className="border border-gray-200 px-3 py-2">
+                        {d.ed}
+                      </td>
+                      <td className="border border-gray-200 px-3 py-2">
+                        {d.nobatch}
+                      </td>
+                      <td className="border border-gray-200 px-3 py-2 text-center">
                         {d.sisa}
-                    </td>
-
-                    {/* --- Kenyataan --- */}
-                    <td className="border border-gray-200 px-3 py-2 text-center">
-                        <input
-                        type="number"
-                        value={d.kenyataan || ""}
-                        onChange={(e) =>
-                            handleChangeDetail(index, "kenyataan", e.target.value)
-                        }
-                        placeholder="Kenyataan"
-                        disabled={!d.editable}
-                        className={`border border-gray-300 w-30 rounded p-1 text-center ${
-                            !d.editable ? "bg-gray-100 text-gray-500" : ""
-                        }`}
-                        />
-                    </td>
-
-                    {/* --- Keterangan --- */}
-                    <td className="border border-gray-200 px-3 py-2">
-                        <input
-                        type="text"
-                        value={d.keterangan || ""}
-                        onChange={(e) =>
-                            handleChangeDetail(index, "keterangan", e.target.value)
-                        }
-                        disabled={!d.editable}
-                        className={`border border-gray-300 rounded w-full p-1 ${
-                            !d.editable ? "bg-gray-100 text-gray-500" : ""
-                        }`}
-                        />
-                    </td>
+                      </td>
+                      <td className="border border-gray-200 px-3 py-2 text-center">
+                        {d.kenyataan}
+                      </td>
+                      <td className="border border-gray-200 px-3 py-2">
+                        {d.keterangan || "-"}
+                      </td>
                     </tr>
-                ))}
+                  ))
+                ) : (
+                  <tr>
+                    <td
+                      colSpan="7"
+                      className="text-center text-gray-400 py-3 italic"
+                    >
+                      Belum ada barang ditambahkan
+                    </td>
+                  </tr>
+                )}
               </tbody>
-
             </table>
           </div>
         </form>
@@ -429,6 +328,13 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
             Simpan
           </button>
         </div>
+
+        {/* Detail modal */}
+        <StokOpnameDetailModal
+          open={detailModalOpen}
+          onClose={() => setDetailModalOpen(false)}
+          onAddDetail={handleAddDetail}
+        />
       </div>
     </div>
   );
