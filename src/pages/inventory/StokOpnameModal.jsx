@@ -8,7 +8,7 @@ import {
 } from "../../store/stokOpnameSlice";
 import axiosClient from "../../api/axiosClient";
 import Select from "react-select";
-import { getAuthUser } from "../../helper/helper";
+import { formatToReadableDate, getAuthUser } from "../../helper/helper";
 import { toast } from "react-toastify";
 import StokOpnameDetailModal from "./StokOpnameDetailModal";
 
@@ -31,6 +31,7 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
 
   const [units, setUnits] = useState([]);
   const [detailModalOpen, setDetailModalOpen] = useState(false);
+  const [editingIndex, setEditingIndex] = useState(null);
 
   const formatDateTimeLocal = (dateString) => {
     if (!dateString) return "";
@@ -114,6 +115,39 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
       details: [...prev.details, detail],
     }));
   };
+
+  
+
+  const handleEditDetail = (index) => {
+    setEditingIndex(index);
+    setDetailModalOpen(true);
+  };
+
+    // Delete detail record directly via backend
+  const handleDeleteDetail = async (id_detail) => {
+    if (!id_detail) return toast.error("ID detail tidak ditemukan");
+
+    const confirmDelete = window.confirm(
+        "Apakah Anda yakin ingin menghapus detail stok opname ini?"
+    );
+    if (!confirmDelete) return;
+
+    try {
+        await axiosClient.delete(`/inventory/stok-opname/detail/${id_detail}`);
+
+        // Remove it from current state
+        setForm((prev) => ({
+        ...prev,
+        details: prev.details.filter((item) => item.id !== id_detail),
+        }));
+
+        toast.success("Detail stok opname berhasil dihapus");
+    } catch (err) {
+        console.error(err);
+        toast.error("Gagal menghapus detail stok opname");
+    }
+  };
+
 
   // Submit
   const handleSubmit = (e) => {
@@ -269,46 +303,74 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
                   <th className="border border-gray-200 px-3 py-2">
                     Keterangan
                   </th>
+                  <th className="border border-gray-200 px-3 py-2">
+                    Aksi
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {form.details.length > 0 ? (
-                  form.details.map((d, index) => (
+                    form.details.map((d, index) => (
                     <tr key={index} className="hover:bg-gray-50">
-                      <td className="border border-gray-200 px-3 py-2 text-center">
+                        <td className="border border-gray-200 px-3 py-2 text-center">
                         {index + 1}
-                      </td>
-                      <td className="border border-gray-200 px-3 py-2">
+                        </td>
+                        <td className="border border-gray-200 px-3 py-2">
                         {d.nama_barang}
-                      </td>
-                      <td className="border border-gray-200 px-3 py-2">
-                        {d.ed}
-                      </td>
-                      <td className="border border-gray-200 px-3 py-2">
+                        </td>
+                        <td className="border border-gray-200 px-3 py-2">
+                        {formatToReadableDate(d.ed)}
+                        </td>
+                        <td className="border border-gray-200 px-3 py-2">
                         {d.nobatch}
-                      </td>
-                      <td className="border border-gray-200 px-3 py-2 text-center">
+                        </td>
+                        <td className="border border-gray-200 px-3 py-2 text-center">
                         {d.sisa}
-                      </td>
-                      <td className="border border-gray-200 px-3 py-2 text-center">
+                        </td>
+                        <td className="border border-gray-200 px-3 py-2 text-center">
                         {d.kenyataan}
-                      </td>
-                      <td className="border border-gray-200 px-3 py-2">
+                        </td>
+                        <td className="border border-gray-200 px-3 py-2">
                         {d.keterangan || "-"}
-                      </td>
+                        </td>
+
+                        {/* Action buttons */}
+                        <td className="border border-gray-200 px-3 py-2 text-center">
+                        {d.editable ? (
+                            <div className="flex justify-center gap-2">
+                            <button
+                                onClick={() => handleEditDetail(index)}
+                                type="button"
+                                className="px-2 py-1 text-xs bg-yellow-100 text-yellow-700 rounded hover:bg-yellow-200"
+                            >
+                                Edit
+                            </button>
+                            <button
+                                onClick={() => handleDeleteDetail(d.id)}
+                                type="button"
+                                className="px-2 py-1 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200"
+                            >
+                                Hapus
+                            </button>
+                            </div>
+                        ) : (
+                            <span className="text-gray-400 text-xs italic">Locked</span>
+                        )}
+                        </td>
                     </tr>
-                  ))
+                    ))
                 ) : (
-                  <tr>
+                    <tr>
                     <td
-                      colSpan="7"
-                      className="text-center text-gray-400 py-3 italic"
+                        colSpan="8"
+                        className="text-center text-gray-400 py-3 italic"
                     >
-                      Belum ada barang ditambahkan
+                        Belum ada barang ditambahkan
                     </td>
-                  </tr>
+                    </tr>
                 )}
               </tbody>
+
             </table>
           </div>
         </form>
@@ -323,6 +385,7 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
           </button>
           <button
             onClick={handleSubmit}
+            type="submit"
             className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
           >
             Simpan
@@ -331,10 +394,25 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
 
         {/* Detail modal */}
         <StokOpnameDetailModal
-          open={detailModalOpen}
-          onClose={() => setDetailModalOpen(false)}
-          onAddDetail={handleAddDetail}
+            open={detailModalOpen}
+            onClose={() => {
+                setDetailModalOpen(false);
+                setEditingIndex(null);
+            }}
+            onAddDetail={(newDetail) => {
+                if (editingIndex !== null) {
+                    setForm((prev) => {
+                        const updated = [...prev.details];
+                        updated[editingIndex] = { ...updated[editingIndex], ...newDetail };
+                        return { ...prev, details: updated };
+                    });
+                } else {
+                    handleAddDetail(newDetail);
+                }
+            }}
+            initialData={editingIndex !== null ? form.details[editingIndex] : null}
         />
+
       </div>
     </div>
   );

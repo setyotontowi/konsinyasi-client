@@ -4,7 +4,12 @@ import axiosClient from "../../api/axiosClient";
 import { toast } from "react-toastify";
 import { formatToReadableDate } from "../../helper/helper";
 
-export default function StokOpnameDetailModal({ open, onClose, onAddDetail }) {
+export default function StokOpnameDetailModal({
+  open,
+  onClose,
+  onAddDetail,
+  initialData,
+}) {
   const [barangOptions, setBarangOptions] = useState([]);
   const [edOptions, setEdOptions] = useState([]);
   const [nobatchOptions, setNobatchOptions] = useState([]);
@@ -22,9 +27,10 @@ export default function StokOpnameDetailModal({ open, onClose, onAddDetail }) {
   const [kenyataan, setKenyataan] = useState("");
   const [keterangan, setKeterangan] = useState("");
 
-  // 🧹 Reset all fields every time modal opens
+  // 🧹 Reset & prefill when modal opens
   useEffect(() => {
     if (open) {
+      // Reset
       setSelectedBarang(null);
       setSelectedEd(null);
       setSelectedNobatch(null);
@@ -37,8 +43,34 @@ export default function StokOpnameDetailModal({ open, onClose, onAddDetail }) {
       setKeterangan("");
       setEdOptions([]);
       setNobatchOptions([]);
+
+      // Prefill if editing
+      if (initialData) {
+        setSelectedBarang({
+          value: initialData.id_master_barang,
+          label: initialData.nama_barang,
+        });
+
+        if (initialData.ed) {
+          setSelectedEd({
+            value: formatToReadableDate(initialData.ed),
+            label: formatToReadableDate(initialData.ed),
+          });
+        }
+
+        if (initialData.nobatch) {
+          setSelectedNobatch({
+            value: initialData.nobatch,
+            label: initialData.nobatch,
+          });
+        }
+
+        setSisa(initialData.sisa ?? 0);
+        setKenyataan(initialData.kenyataan ?? "");
+        setKeterangan(initialData.keterangan ?? "");
+      }
     }
-  }, [open]);
+  }, [open, initialData]);
 
   // Fetch barang list
   useEffect(() => {
@@ -63,7 +95,12 @@ export default function StokOpnameDetailModal({ open, onClose, onAddDetail }) {
       axiosClient
         .get(`/inventory/barang/${selectedBarang.value}/eds`)
         .then((res) =>
-          setEdOptions(res.data.data.map((e) => ({ value: formatToReadableDate(e.ed), label: formatToReadableDate(e.ed) })))
+          setEdOptions(
+            res.data.data.map((e) => ({
+              value: formatToReadableDate(e.ed),
+              label: formatToReadableDate(e.ed),
+            }))
+          )
         )
         .catch(() => toast.error("Gagal memuat ED"));
     } else {
@@ -80,7 +117,10 @@ export default function StokOpnameDetailModal({ open, onClose, onAddDetail }) {
         )
         .then((res) =>
           setNobatchOptions(
-            res.data.data.map((nb) => ({ value: nb.nobatch, label: nb.nobatch }))
+            res.data.data.map((nb) => ({
+              value: nb.nobatch,
+              label: nb.nobatch,
+            }))
           )
         )
         .catch(() => toast.error("Gagal memuat No Batch"));
@@ -89,7 +129,7 @@ export default function StokOpnameDetailModal({ open, onClose, onAddDetail }) {
     }
   }, [selectedBarang, selectedEd, isNewNoBatch]);
 
-  // Check stock
+  // Check stock (only if existing batch/ed)
   useEffect(() => {
     const barang = selectedBarang?.value;
     const ed = isNewEd ? newEd : selectedEd?.value;
@@ -100,8 +140,6 @@ export default function StokOpnameDetailModal({ open, onClose, onAddDetail }) {
         .post("/inventory/check-stock", { barang, ed, nobatch })
         .then((res) => setSisa(res.data.data?.sisa ?? 0))
         .catch(() => toast.error("Gagal memeriksa stok"));
-    } else {
-      setSisa(null);
     }
   }, [
     selectedBarang,
@@ -146,7 +184,9 @@ export default function StokOpnameDetailModal({ open, onClose, onAddDetail }) {
         className="bg-white w-full max-w-lg rounded-lg p-4 relative"
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="text-lg font-semibold mb-4">Tambah Detail Barang</h2>
+        <h2 className="text-lg font-semibold mb-4">
+          {initialData ? "Edit Detail Barang" : "Tambah Detail Barang"}
+        </h2>
 
         <div className="space-y-3">
           {/* Barang */}
@@ -160,6 +200,7 @@ export default function StokOpnameDetailModal({ open, onClose, onAddDetail }) {
                 setSelectedEd(null);
                 setSelectedNobatch(null);
               }}
+              isDisabled={!!initialData} // prevent editing barang on edit
               placeholder="Pilih barang..."
             />
           </div>
@@ -167,89 +208,84 @@ export default function StokOpnameDetailModal({ open, onClose, onAddDetail }) {
           {/* ED */}
           <div>
             <div className="flex justify-between items-center">
-                <label className="block text-xs mb-1">ED</label>
-                <label className="flex items-center gap-1 text-xs text-gray-600">
+              <label className="block text-xs mb-1">ED</label>
+              <label className="flex items-center gap-1 text-xs text-gray-600">
                 <input
-                    type="checkbox"
-                    checked={isNewEd}
-                    onChange={(e) => {
+                  type="checkbox"
+                  checked={isNewEd}
+                  onChange={(e) => {
                     const checked = e.target.checked;
                     setIsNewEd(checked);
                     setSelectedEd(null);
                     setNewEd("");
-
-                    // 🧠 if ED is new → NoBatch must be new as well
                     if (checked) {
-                        setIsNewNoBatch(true);
-                        setSelectedNobatch(null);
-                        setNewNoBatch("");
+                      setIsNewNoBatch(true);
+                      setSelectedNobatch(null);
+                      setNewNoBatch("");
                     }
-                    }}
+                  }}
                 />
                 Baru
-                </label>
+              </label>
             </div>
 
             {isNewEd ? (
-                <input
+              <input
                 type="date"
                 value={newEd}
                 onChange={(e) => setNewEd(e.target.value)}
                 className="border border-gray-300 rounded w-full p-2 text-sm"
-                placeholder="Masukkan ED baru"
-                />
+              />
             ) : (
-                <Select
+              <Select
                 options={edOptions}
                 value={selectedEd}
                 onChange={(opt) => {
-                    setSelectedEd(opt);
-                    setSelectedNobatch(null);
+                  setSelectedEd(opt);
+                  setSelectedNobatch(null);
                 }}
                 placeholder="Pilih ED..."
                 isDisabled={!selectedBarang}
-                />
+              />
             )}
-            </div>
+          </div>
 
-            {/* No Batch */}
-            <div>
+          {/* No Batch */}
+          <div>
             <div className="flex justify-between items-center">
-                <label className="block text-xs mb-1">No Batch</label>
-                <label className="flex items-center gap-1 text-xs text-gray-600">
+              <label className="block text-xs mb-1">No Batch</label>
+              <label className="flex items-center gap-1 text-xs text-gray-600">
                 <input
-                    type="checkbox"
-                    checked={isNewNoBatch}
-                    onChange={(e) => {
+                  type="checkbox"
+                  checked={isNewNoBatch}
+                  onChange={(e) => {
                     setIsNewNoBatch(e.target.checked);
                     setSelectedNobatch(null);
                     setNewNoBatch("");
-                    }}
-                    disabled={isNewEd} // 🧩 prevent user from unchecking when ED is new
+                  }}
+                  disabled={isNewEd}
                 />
                 Baru
-                </label>
+              </label>
             </div>
 
             {isNewNoBatch ? (
-                <input
+              <input
                 type="text"
                 value={newNoBatch}
                 onChange={(e) => setNewNoBatch(e.target.value)}
                 className="border border-gray-300 rounded w-full p-2 text-sm"
-                placeholder="Masukkan No Batch baru"
-                />
+              />
             ) : (
-                <Select
+              <Select
                 options={nobatchOptions}
                 value={selectedNobatch}
                 onChange={setSelectedNobatch}
                 placeholder="Pilih No Batch..."
                 isDisabled={!selectedEd && !isNewEd}
-                />
+              />
             )}
           </div>
-
 
           {/* Sisa */}
           {sisa !== null && (
@@ -287,15 +323,16 @@ export default function StokOpnameDetailModal({ open, onClose, onAddDetail }) {
           </div>
         </div>
 
-        {/* Footer */}
         <div className="flex justify-end gap-2 mt-4 pt-4">
           <button
+            type="button"
             onClick={onClose}
             className="px-3 py-1 border border-gray-300 rounded text-gray-700 hover:bg-gray-100"
           >
             Batal
           </button>
           <button
+            type="button"
             onClick={handleSave}
             className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
           >
