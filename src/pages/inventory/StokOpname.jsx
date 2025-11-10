@@ -8,6 +8,7 @@ import {
   closeModal,
   openDeleteConfirm,
   closeDeleteConfirm,
+  fetchStokOpname,
 } from "../../store/stokOpnameSlice";
 import PageHeader from "../../components/PageHeader";
 import ConfirmModal from "../../components/ConfirmationModal";
@@ -57,7 +58,7 @@ export default function StokOpname() {
           open={modalOpen}
           data={selectedItem}
           onClose={() => dispatch(closeModal())}
-          onSave={(updatedData) => console.log("Save data:", updatedData)}
+          onSave={() => dispatch(fetchStokOpname({ page: 1, limit: 20 }))}
         />
       </div>
 
