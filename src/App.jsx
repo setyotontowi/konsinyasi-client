@@ -42,6 +42,7 @@ export default function App() {
 
           <Route path="inventory">
             <Route path="stok-opname" element={<StokOpname />} />
+            <Route path="journal" element={<StokOpname />} />
           </Route>
 
           <Route path="settings" element={<Settings />} />
