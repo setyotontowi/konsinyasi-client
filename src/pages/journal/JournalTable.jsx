@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchJournal } from "../../store/journalSlice";
 import Pagination from "../../components/Pagination";
 
-const JournalTable = ({ search }) => {
+const JournalTable = ({ filters }) => {
   const dispatch = useDispatch();
   const { list, loading, error, pagination } = useSelector(
     (state) => state.journal
@@ -13,16 +13,16 @@ const JournalTable = ({ search }) => {
   const [currentPage, setCurrentPage] = useState(page || 1);
   const limit = 20;
 
-  useEffect(() => {
-    const delay = setTimeout(() => {
-      dispatch(fetchJournal({ page: currentPage, limit, search }));
-    }, 400);
-    return () => clearTimeout(delay);
-  }, [dispatch, currentPage, search]);
-
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= totalPages) setCurrentPage(newPage);
   };
+
+  useEffect(() => {
+    const delay = setTimeout(() => {
+        dispatch(fetchInventoryJournal({ page: currentPage, limit,  ...filters }));
+    }, 400);
+    return () => clearTimeout(delay);
+  }, [dispatch, currentPage, filters]);
 
   if (loading) return <div>Loading...</div>;
   if (error)
