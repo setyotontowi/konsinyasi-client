@@ -172,6 +172,7 @@ export default function StokOpnameDetailModal({
       kenyataan,
       hpp,
       keterangan,
+      editable:1,
     });
 
     onClose();

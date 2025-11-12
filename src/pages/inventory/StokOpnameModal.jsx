@@ -131,33 +131,11 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
         details: prev.details.filter((_, i) => i !== index),
     }));
 
+    console.log(form);
+
     toast.info("Detail barang dihapus dari daftar");
   };
 
-    // Delete detail record directly via backend
-  const handleDeleteDetail = async (id_detail) => {
-    if (!id_detail) return toast.error("ID detail tidak ditemukan");
-
-    const confirmDelete = window.confirm(
-        "Apakah Anda yakin ingin menghapus detail stok opname ini?"
-    );
-    if (!confirmDelete) return;
-
-    try {
-        await axiosClient.delete(`/inventory/stok-opname/detail/${id_detail}`);
-
-        // Remove it from current state
-        setForm((prev) => ({
-        ...prev,
-        details: prev.details.filter((item) => item.id !== id_detail),
-        }));
-
-        toast.success("Detail stok opname berhasil dihapus");
-    } catch (err) {
-        console.error(err);
-        toast.error("Gagal menghapus detail stok opname");
-    }
-  };
 
 
   // Submit
@@ -347,39 +325,28 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
 
                         <td className="border border-gray-200 px-3 py-2 text-center">
                         {/* --- ADD MODE --- */}
-                        {!form.id ? (
-                            <button
-                            onClick={() => handleRemoveDetail(index)}
-                            type="button"
-                            className="px-2 py-1 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200"
-                            >
-                            Hapus
-                            </button>
-                        ) : (
-                            /* --- EDIT MODE --- */
-                            <>
-                            {d.editable ? (
-                                <div className="flex justify-center gap-2">
-                                <button
-                                    onClick={() => handleEditDetail(index)}
-                                    type="button"
-                                    className="px-2 py-1 text-xs bg-yellow-100 text-yellow-700 rounded hover:bg-yellow-200"
-                                >
-                                    Edit
-                                </button>
-                                <button
-                                    onClick={() => handleDeleteDetail(d.id)}
-                                    type="button"
-                                    className="px-2 py-1 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200"
-                                >
-                                    Hapus
-                                </button>
-                                </div>
-                            ) : (
-                                <span className="text-gray-400 text-xs italic">Locked</span>
-                            )}
-                            </>
-                        )}
+                          <>
+                          {d.editable ? (
+                              <div className="flex justify-center gap-2">
+                              <button
+                                  onClick={() => handleEditDetail(index)}
+                                  type="button"
+                                  className="px-2 py-1 text-xs bg-yellow-100 text-yellow-700 rounded hover:bg-yellow-200"
+                              >
+                                  Edit
+                              </button>
+                              <button
+                                  onClick={() => handleRemoveDetail(index)}
+                                  type="button"
+                                  className="px-2 py-1 text-xs bg-red-100 text-red-700 rounded hover:bg-red-200"
+                              >
+                                  Hapus
+                              </button>
+                              </div>
+                          ) : (
+                              <span className="text-gray-400 text-xs italic">Locked</span>
+                          )}
+                          </>
                         </td>
                     </tr>
                     ))
