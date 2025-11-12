@@ -39,6 +39,7 @@ export default function App() {
           <Route path="distribusi">
             <Route path="permintaan" element={<PermintaanDistribusi />} />
             <Route path="distribusi" element={<Distribusi />} />
+            <Route path="penggunaan" element={<Distribusi />} />
           </Route>
 
           <Route path="inventory">

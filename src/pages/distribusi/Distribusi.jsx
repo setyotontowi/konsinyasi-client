@@ -21,9 +21,8 @@ export default function Distribusi() {
     selectedItem,
   } = useSelector((state) => state.permintaanDistribusi);
 
-  const [showActive, setShowActive] = useState(false);
+  const [showActive, setShowActive] = useState(true);
   const [permintaanCount, setPermintaanCount] = useState();
-
 
   return (
     <>

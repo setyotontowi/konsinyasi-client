@@ -50,7 +50,17 @@ export default function PermintaanDistribusiTable({ search, onView, onEdit, onDe
             </tr>
           </thead>
           <tbody>
-            {list.map((d, index) => (
+             {list.length === 0 ? (
+              <tr>
+                <td
+                  colSpan="8"
+                  className="text-center text-gray-500 py-6 italic"
+                >
+                  Tidak ada permintaan distribusi.
+                </td>
+              </tr>
+            ) : (
+            list.map((d, index) => (
               <tr key={d.pd_id} className="hover:bg-gray-50 transition">
                 <td className="border border-gray-200 px-6 py-2 text-center text-gray-600">
                   {(page - 1) * limit + index + 1}
@@ -124,7 +134,7 @@ export default function PermintaanDistribusiTable({ search, onView, onEdit, onDe
                   </td>
                 )}
               </tr>
-            ))}
+            )))}
           </tbody>
         </table>
 
