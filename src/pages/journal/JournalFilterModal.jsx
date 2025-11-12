@@ -1,6 +1,22 @@
 import React, { useState, useEffect } from "react";
+import Select from "react-select";
+import axiosClient from "../../api/axiosClient";
+import { toast } from "react-toastify";
 
-export default function JournalFilterModal({ open, onClose, onApply, initialFilters = {} }) {
+export default function JournalFilterModal({
+  open,
+  onClose,
+  onApply,
+  initialFilters = {},
+}) {
+  const [barangOptions, setBarangOptions] = useState([]);
+  const [edOptions, setEdOptions] = useState([]);
+  const [nobatchOptions, setNobatchOptions] = useState([]);
+
+  const [selectedBarang, setSelectedBarang] = useState(null);
+  const [selectedEd, setSelectedEd] = useState(null);
+  const [selectedNobatch, setSelectedNobatch] = useState(null);
+
   const [filters, setFilters] = useState({
     id_barang: "",
     nobatch: "",
@@ -9,16 +25,77 @@ export default function JournalFilterModal({ open, onClose, onApply, initialFilt
     end_date: "",
   });
 
+  // 🧹 Prefill when re-opened
   useEffect(() => {
     if (initialFilters) setFilters(initialFilters);
   }, [initialFilters]);
 
-  const handleChange = (e) => {
-    setFilters({ ...filters, [e.target.name]: e.target.value });
-  };
+  // 🧠 Fetch barang list
+  useEffect(() => {
+    if (open) {
+      axiosClient
+        .get("/barang/items")
+        .then((res) =>
+          setBarangOptions(
+            res.data.data.map((b) => ({
+              value: b.barang_id,
+              label: b.barang_nama,
+            }))
+          )
+        )
+        .catch(() => toast.error("Gagal memuat daftar barang"));
+    }
+  }, [open]);
 
+  // 🔁 Fetch EDs when barang selected
+  useEffect(() => {
+    if (selectedBarang) {
+      axiosClient
+        .get(`/inventory/barang/${selectedBarang.value}/eds`)
+        .then((res) =>
+          setEdOptions(
+            res.data.data.map((e) => ({
+              value: e.ed,
+              label: new Date(e.ed).toLocaleDateString("id-ID"),
+            }))
+          )
+        )
+        .catch(() => toast.error("Gagal memuat ED"));
+    } else {
+      setEdOptions([]);
+    }
+  }, [selectedBarang]);
+
+  useEffect(() => {
+    if (selectedBarang && selectedEd) {
+      axiosClient
+        .get(
+          `/inventory/barang/${selectedBarang.value}/nobatch?ed=${selectedEd.value}`
+        )
+        .then((res) =>
+          setNobatchOptions(
+            res.data.data.map((nb) => ({
+              value: nb.nobatch,
+              label: nb.nobatch,
+            }))
+          )
+        )
+        .catch(() => toast.error("Gagal memuat No Batch"));
+    } else {
+      setNobatchOptions([]);
+    }
+  }, [selectedBarang, selectedEd]);
+
+  // 🧾 Apply filters
   const handleApply = () => {
-    onApply(filters);
+    const applied = {
+      id_barang: selectedBarang?.value || "",
+      ed: selectedEd?.value || "",
+      nobatch: selectedNobatch?.value || "",
+      start_date: filters.start_date,
+      end_date: filters.end_date,
+    };
+    onApply(applied);
     onClose();
   };
 
@@ -35,37 +112,49 @@ export default function JournalFilterModal({ open, onClose, onApply, initialFilt
             Barang
           </h3>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-4">
+            {/* Barang */}
             <div>
-              <label className="block text-sm text-gray-600 mb-1">ID Barang</label>
-              <input
-                type="text"
-                name="id_barang"
-                value={filters.id_barang}
-                onChange={handleChange}
-                className="w-full border border-gray-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              <label className="block text-sm text-gray-600 mb-1">Barang</label>
+              <Select
+                options={barangOptions}
+                value={selectedBarang}
+                onChange={(opt) => {
+                  setSelectedBarang(opt);
+                  setSelectedEd(null);
+                  setSelectedNobatch(null);
+                }}
+                placeholder="Pilih barang..."
+                isClearable
               />
             </div>
 
+            {/* ED */}
             <div>
               <label className="block text-sm text-gray-600 mb-1">ED (Expired Date)</label>
-              <input
-                type="date"
-                name="ed"
-                value={filters.ed}
-                onChange={handleChange}
-                className="w-full border border-gray-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              <Select
+                options={edOptions}
+                value={selectedEd}
+                onChange={(opt) => {
+                  setSelectedEd(opt);
+                  setSelectedNobatch(null);
+                }}
+                placeholder="Pilih tanggal ED..."
+                isDisabled={!selectedBarang}
+                isClearable
               />
             </div>
 
-            <div className="col-span-2">
+            {/* No Batch */}
+            <div>
               <label className="block text-sm text-gray-600 mb-1">No Batch</label>
-              <input
-                type="text"
-                name="nobatch"
-                value={filters.nobatch}
-                onChange={handleChange}
-                className="w-full border border-gray-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              <Select
+                options={nobatchOptions}
+                value={selectedNobatch}
+                onChange={setSelectedNobatch}
+                placeholder="Pilih No Batch..."
+                isDisabled={!selectedEd}
+                isClearable
               />
             </div>
           </div>
@@ -84,7 +173,9 @@ export default function JournalFilterModal({ open, onClose, onApply, initialFilt
                 type="date"
                 name="start_date"
                 value={filters.start_date}
-                onChange={handleChange}
+                onChange={(e) =>
+                  setFilters({ ...filters, start_date: e.target.value })
+                }
                 className="w-full border border-gray-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
@@ -95,7 +186,9 @@ export default function JournalFilterModal({ open, onClose, onApply, initialFilt
                 type="date"
                 name="end_date"
                 value={filters.end_date}
-                onChange={handleChange}
+                onChange={(e) =>
+                  setFilters({ ...filters, end_date: e.target.value })
+                }
                 className="w-full border border-gray-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>

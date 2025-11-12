@@ -19,7 +19,7 @@ const JournalTable = ({ filters }) => {
 
   useEffect(() => {
     const delay = setTimeout(() => {
-        dispatch(fetchInventoryJournal({ page: currentPage, limit,  ...filters }));
+        dispatch(fetchJournal({ page: currentPage, limit,  ...filters }));
     }, 400);
     return () => clearTimeout(delay);
   }, [dispatch, currentPage, filters]);
@@ -55,7 +55,7 @@ const JournalTable = ({ filters }) => {
                     {(currentPage - 1) * limit + index + 1}
                   </td>
                   <td className="border px-4 py-2 border-gray-200">{item.transaksi}</td>
-                  <td className="border px-4 py-2 border-gray-200">{item.id_barang}</td>
+                  <td className="border px-4 py-2 border-gray-200">{item.nama_barang}</td>
                   <td className="border px-4 py-2 border-gray-200">{item.nobatch || "-"}</td>
                   <td className="border px-4 py-2 border-gray-200">
                     {new Date(item.ed).toLocaleDateString()}
