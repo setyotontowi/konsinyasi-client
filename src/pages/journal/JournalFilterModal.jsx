@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Select from "react-select";
 import axiosClient from "../../api/axiosClient";
 import { toast } from "react-toastify";
+import { formatToReadableDate } from "../../helper/helper";
 
 export default function JournalFilterModal({
   open,
@@ -56,8 +57,8 @@ export default function JournalFilterModal({
         .then((res) =>
           setEdOptions(
             res.data.data.map((e) => ({
-              value: e.ed,
-              label: new Date(e.ed).toLocaleDateString("id-ID"),
+              value: formatToReadableDate(e.ed),
+              label: formatToReadableDate(e.ed)
             }))
           )
         )

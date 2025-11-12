@@ -21,8 +21,6 @@ export const fetchJournal = createAsyncThunk(
       // Build query params dynamically
       const params = new URLSearchParams();
 
-      console.log("here")
-
       params.append("page", page);
       params.append("limit", limit);
       if (search) params.append("search", search);
@@ -33,7 +31,6 @@ export const fetchJournal = createAsyncThunk(
       if (end_date) params.append("end_date", end_date);
 
       const res = await axiosClient.get(`/inventory/journal?${params.toString()}`);
-      console.log("there")
       return res.data;
     } catch (err) {
       console.log(err)

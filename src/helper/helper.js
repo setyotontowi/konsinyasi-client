@@ -29,7 +29,7 @@ export function formatToReadableDate(dateString) {
   // Shift UTC → local timezone
   const local = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
 
-  // Format into "YYYY-MM-DD HH:mm"
+  // Format into "YYYY-MM-DD"
   return local.toISOString().slice(0, 10);
 }
 

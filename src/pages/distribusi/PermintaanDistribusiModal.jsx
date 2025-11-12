@@ -146,6 +146,10 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
       toast.error("Semua field barang wajib diisi.");
       return;
     }
+    if (newItem.qty <= 0) {
+      toast.error("Tidak bisa meminta barang dengan qty 0 atau minus")
+      return;
+    }
     setItems([...items, newItem]);
     setNewItem({ id_master_barang: "", id_master_satuan: "", qty: "" });
     setItemModalOpen(false);

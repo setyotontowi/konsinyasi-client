@@ -18,7 +18,6 @@ const JournalTable = ({ filters }) => {
   };
 
   useEffect(() => {
-    console.log("fetch journal")
     const delay = setTimeout(() => {
         dispatch(fetchJournal({ page: currentPage, limit,  ...filters }));
     }, 400);
@@ -40,10 +39,10 @@ const JournalTable = ({ filters }) => {
               <th className="px-4 py-3 border border-gray-200">Barang</th>
               <th className="px-4 py-3 border border-gray-200">Batch</th>
               <th className="px-4 py-3 border border-gray-200">ED</th>
-              <th className="px-4 py-3 border border-gray-200">Masuk</th>
-              <th className="px-4 py-3 border border-gray-200">Keluar</th>
-              <th className="px-4 py-3 border border-gray-200">Sebelum</th>
-              <th className="px-4 py-3 border border-gray-200">Sesudah</th>
+              <th className="px-4 py-3 border border-gray-200 italic">Sebelum</th>
+              <th className="px-4 py-3 border border-gray-200 bold">Masuk</th>
+              <th className="px-4 py-3 border border-gray-200 bold">Keluar</th>
+              <th className="px-4 py-3 border border-gray-200 italic">Sesudah</th>
               <th className="px-4 py-3 border border-gray-200">Keterangan</th>
               <th className="px-4 py-3 border border-gray-200">Tanggal</th>
             </tr>
@@ -61,17 +60,17 @@ const JournalTable = ({ filters }) => {
                   <td className="border px-4 py-2 border-gray-200">
                     {new Date(item.ed).toLocaleDateString()}
                   </td>
-                  <td className="border px-4 py-2 border-gray-200 text-right">{item.masuk}</td>
-                  <td className="border px-4 py-2 border-gray-200 text-right">{item.keluar}</td>
-                  <td className="border px-4 py-2 border-gray-200 text-right">
+                  <td className="border px-4 py-2 border-gray-200 text-right bg-amber-100">
                     {item.stok_sebelum}
                   </td>
-                  <td className="border px-4 py-2 border-gray-200 text-right">
+                  <td className="border px-4 py-2 border-gray-200 text-right font-bold ">{item.masuk}</td>
+                  <td className="border px-4 py-2 border-gray-200 text-right font-bold">{item.keluar}</td>
+                  <td className="border px-4 py-2 border-gray-200 text-right bg-amber-100">
                     {item.stok_sesudah}
                   </td>
                   <td className="border px-4 py-2 border-gray-200">{item.keterangan}</td>
                   <td className="border px-4 py-2 border-gray-200">
-                    {new Date(item.created_at).toLocaleString()}
+                    {new Date(item.created_at).toLocaleString("id", "ID")}
                   </td>
                 </tr>
               ))

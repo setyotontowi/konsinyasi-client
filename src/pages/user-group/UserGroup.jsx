@@ -44,9 +44,9 @@ export default function UserGroup() {
       <div className="rounded-2xl bg-white border border-gray-200">
         <PageHeader
           title="Grup Pengguna dan Akses Menu"
-          onAdd={() => dispatch(openAddModal())}
           addLabel="Tambah Grup"
           AddIcon={PlusIcon}
+          disableAdd={true}
           disableSearch={true} // no search for user groups
         />
 
@@ -56,14 +56,6 @@ export default function UserGroup() {
           onPrivilege={handleOpenPrivilege} // pass callback for privilege modal
         />
       </div>
-
-      {/* Add/Edit Modal */}
-      <UserGroupModal
-        open={modalOpen}
-        mode={mode}
-        group={selectedGroup}
-        onClose={() => dispatch(closeUserGroupModal())}
-      />
 
       {/* Privilege (Menu Access) Modal */}
       <UserGroupPrivilegeModal

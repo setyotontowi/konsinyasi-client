@@ -162,6 +162,7 @@ export default function StokOpnameDetailModal({
     if (!barang || !ed || !nobatch)
       return toast.error("Barang, ED, dan NoBatch wajib diisi");
     if (kenyataan === "") return toast.error("Kenyataan wajib diisi");
+    if (kenyataan < 0) return toast.error("Kenyataan tidak boleh diisi dengan angka minus")
 
     onAddDetail({
       id_master_barang: barang,

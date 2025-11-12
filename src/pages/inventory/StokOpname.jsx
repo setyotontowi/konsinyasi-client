@@ -40,9 +40,7 @@ export default function StokOpname() {
         <PageHeader
           title="Stok Opname"
           onAdd={() => dispatch(openAddModal())}
-          search={search}
-          searchPlaceholder= "Cari Nama atau RM Pasien"
-          setSearch={setSearch}
+          disableSearch={true}
           addLabel="Stok Opname"
           AddIcon={ArrowDownOnSquareIcon}
         />
