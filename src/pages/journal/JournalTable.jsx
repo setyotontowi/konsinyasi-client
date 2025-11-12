@@ -18,6 +18,7 @@ const JournalTable = ({ filters }) => {
   };
 
   useEffect(() => {
+    console.log("fetch journal")
     const delay = setTimeout(() => {
         dispatch(fetchJournal({ page: currentPage, limit,  ...filters }));
     }, 400);

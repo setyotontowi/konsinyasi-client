@@ -20,14 +20,13 @@ export default function Journal() {
         disableFilter={false}
       />
 
-      <JournalTable filter={filters} />
+      <JournalTable filters={filters} />
 
       <JournalFilterModal
         open={filterOpen}
         onClose={() => setFilterOpen(false)}
         onApply={(f) => {
             setFilters(f)
-            setCurrentPage(1)
         }}
         initialFilters={filters}
       />
