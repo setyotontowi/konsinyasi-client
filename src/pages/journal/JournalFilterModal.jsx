@@ -104,7 +104,7 @@ export default function JournalFilterModal({
   return (
     <div className="fixed inset-0 bg-black/30 flex justify-center items-center z-50">
       <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-lg">
-        <h2 className="text-lg font-semibold mb-6">Filter Journal</h2>
+        <h2 className="text-lg font-semibold mb-6">Filter Journal (Dev)</h2>
 
         {/* ================== Section 1: Barang ================== */}
         <div className="mb-6">

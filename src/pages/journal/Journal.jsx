@@ -25,7 +25,10 @@ export default function Journal() {
       <JournalFilterModal
         open={filterOpen}
         onClose={() => setFilterOpen(false)}
-        onApply={(f) => setFilters(f)}
+        onApply={(f) => {
+            setFilters(f)
+            setCurrentPage(1)
+        }}
         initialFilters={filters}
       />
     </div>
