@@ -18,7 +18,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
   const dispatch = useDispatch();
 
   useEffect(() => {
-   if (open && (mode === "edit" || mode === "view" || mode === "distribusi") && data?.pd_id) {
+   if (open && (mode !== "add") && data?.pd_id) {
     dispatch(fetchPermintaanDistribusiById(data.pd_id))
       .unwrap()
       .then((detail) => {
@@ -225,7 +225,16 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
         </button>
 
         <h2 className="text-lg font-semibold mb-4">
-          {mode === "add" ? "Tambah Permintaan Distribusi" : "Edit Permintaan Distribusi"}
+          {mode === "add" 
+          ? "Tambah Permintaan Distribusi" 
+          : mode === "edit"
+          ? "Edit Permintaan Distribusi"
+          : mode === "distribusi"
+          ? "Pengiriman Barang"
+          : mode === "pemakaian"
+          ? "Pemakaian Barang"
+          : "Permintaan Distribusi"
+        }
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -334,7 +343,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
           <div className="mt-8">
             <div className="flex justify-between items-center mb-2">
               <h3 className="font-semibold text-sm text-gray-600 uppercase">Detail Barang</h3>
-              {!isView && (
+              {!isView && mode !== "pemakaian" && (
                 <button
                     type="button"
                     onClick={() => setItemModalOpen(true)}
@@ -351,7 +360,11 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                   <th className="px-3 py-2 border border-gray-200">Barang</th>
                   <th className="px-3 py-2 border border-gray-200">Satuan</th>
                   <th className="px-3 py-2 border border-gray-200">Qty</th>
-                  <th className="px-3 py-2 border border-gray-200 w-10">Aksi</th>
+                  {mode === "pemakaian" ? (
+                  <th className="px-3 py-2 border border-gray-200">Pemakaian</th>
+                  ) : (
+                    <th className="px-3 py-2 border border-gray-200 w-10">Aksi</th>
+                  )}
                 </tr>
               </thead>
               <tbody>
@@ -367,7 +380,25 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                       <td className="border border-gray-200 px-3 py-2">{item.nama_barang}</td>
                       <td className="border border-gray-200 px-3 py-2">{item.nama_satuan}</td>
                       <td className="border border-gray-200 px-3 py-2">{item.qty}</td>
-                      {!isView && (
+                      {mode === "pemakaian" && (
+                        <td className="border border-gray-200 px-3 py-2 w-50">
+                          <input
+                            type="number"
+                            min="0"
+                            value={item.pemakaian || ""}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              setItems((prev) =>
+                                prev.map((it, idx) =>
+                                  idx === i ? { ...it, pemakaian: val } : it
+                                )
+                              );
+                            }}
+                            className="w-full border border-blue-600 rounded p-1"
+                          />
+                        </td>
+                      )}
+                      {!isView && mode !== "pemakaian" && (
                       <td className="border border-gray-200 px-3 py-2 text-center">
                           <button
                           type="button"
@@ -406,6 +437,8 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                   ? "Perbarui"
                   : mode === "distribusi"
                   ? "Kirim Barang"
+                  : mode === "pemakaian"
+                  ? "Simpan Transaksi"
                   : ""}
               </button>
             )}

@@ -16,6 +16,8 @@ import Satuan from './pages/satuan/Satuan'
 import PermintaanDistribusi from './pages/distribusi/PermintaanDistribusi'
 import Distribusi from './pages/distribusi/Distribusi'
 import StokOpname from './pages/inventory/StokOpname'
+import PemakaianDistribusi from './pages/pemakaian/PemakaianDistribusi'
+
 import Journal from './pages/journal/Journal'
 
 export default function App() {
@@ -39,7 +41,7 @@ export default function App() {
           <Route path="distribusi">
             <Route path="permintaan" element={<PermintaanDistribusi />} />
             <Route path="distribusi" element={<Distribusi />} />
-            <Route path="penggunaan" element={<Distribusi />} />
+            <Route path="penggunaan" element={<PemakaianDistribusi />} />
           </Route>
 
           <Route path="inventory">

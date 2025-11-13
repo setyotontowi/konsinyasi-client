@@ -37,12 +37,12 @@ const JournalTable = ({ filters }) => {
               <th className="px-4 py-3 border border-gray-200">No</th>
               <th className="px-4 py-3 border border-gray-200">Transaksi</th>
               <th className="px-4 py-3 border border-gray-200">Barang</th>
-              <th className="px-4 py-3 border border-gray-200">Batch</th>
               <th className="px-4 py-3 border border-gray-200">ED</th>
-              <th className="px-4 py-3 border border-gray-200 italic">Sebelum</th>
-              <th className="px-4 py-3 border border-gray-200 bold">Masuk</th>
-              <th className="px-4 py-3 border border-gray-200 bold">Keluar</th>
-              <th className="px-4 py-3 border border-gray-200 italic">Sesudah</th>
+              <th className="px-4 py-3 border border-gray-200">Batch</th>
+              <th className="px-4 py-3 border border-gray-200">Sebelum</th>
+              <th className="px-4 py-3 border border-gray-200">Masuk</th>
+              <th className="px-4 py-3 border border-gray-200">Keluar</th>
+              <th className="px-4 py-3 border border-gray-200">Sesudah</th>
               <th className="px-4 py-3 border border-gray-200">Keterangan</th>
               <th className="px-4 py-3 border border-gray-200">Tanggal</th>
             </tr>
@@ -55,17 +55,17 @@ const JournalTable = ({ filters }) => {
                     {(currentPage - 1) * limit + index + 1}
                   </td>
                   <td className="border px-4 py-2 border-gray-200">{item.transaksi}</td>
-                  <td className="border px-4 py-2 border-gray-200">{item.nama_barang}</td>
-                  <td className="border px-4 py-2 border-gray-200">{item.nobatch || "-"}</td>
-                  <td className="border px-4 py-2 border-gray-200">
+                  <td className="border px-4 py-2 border-gray-200 bg-gray-100">{item.nama_barang}</td>
+                  <td className="border px-4 py-2 border-gray-200 bg-gray-100">
                     {new Date(item.ed).toLocaleDateString()}
                   </td>
-                  <td className="border px-4 py-2 border-gray-200 text-right bg-amber-100">
+                  <td className="border px-4 py-2 border-gray-200 bg-gray-100">{item.nobatch || "-"}</td>
+                  <td className="border px-4 py-2 border-gray-200 text-right ">
                     {item.stok_sebelum}
                   </td>
-                  <td className="border px-4 py-2 border-gray-200 text-right font-bold ">{item.masuk}</td>
-                  <td className="border px-4 py-2 border-gray-200 text-right font-bold">{item.keluar}</td>
-                  <td className="border px-4 py-2 border-gray-200 text-right bg-amber-100">
+                  <td className="border px-4 py-2 border-gray-200 text-right text-green-700 ">{item.masuk}</td>
+                  <td className="border px-4 py-2 border-gray-200 text-right text-red-700">{item.keluar}</td>
+                  <td className="border px-4 py-2 border-gray-200 text-right ">
                     {item.stok_sesudah}
                   </td>
                   <td className="border px-4 py-2 border-gray-200">{item.keterangan}</td>
