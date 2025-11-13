@@ -68,6 +68,22 @@ export const editPermintaanDistribusi = createAsyncThunk(
   }
 );
 
+// Pemakaian barang record
+export const pemakaianBarang = createAsyncThunk(
+  "permintaanDistribusi/edit",
+  async ({ id, payload }, { rejectWithValue }) => {
+    try {
+      const res = await axiosClient.put(`/distribusi/pemakaian`, payload);
+      toast.success("Permintaan distribusi berhasil diperbarui!");
+      return res.data;
+    } catch (err) {
+      const msg = err.response?.data?.message || "Gagal memperbarui permintaan distribusi.";
+      toast.error(msg);
+      return rejectWithValue(msg);
+    }
+  }
+);
+
 // Delete record
 export const deletePermintaanDistribusi = createAsyncThunk(
   "permintaanDistribusi/delete",

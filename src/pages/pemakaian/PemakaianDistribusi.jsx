@@ -17,12 +17,11 @@ export default function PemakaianDistribusi() {
   const { modalOpen, mode, selectedItem } = useSelector((state) => state.permintaanDistribusi);
 
   const [search, setSearch] = useState("");
-  const [count, setCount] = useState(0);
 
   return (
     <div className="masterdata rounded-2xl bg-white border border-gray-200">
       <PageHeader
-        title={`Pemakaian Distribusi (${count})`}
+        title={`Penggunaan Barang`}
         search={search}
         setSearch={setSearch}
         searchPlaceholder="Cari Nama atau RM Pasien"

@@ -7,6 +7,7 @@ import {
   editPermintaanDistribusi,
   fetchPermintaanDistribusi,
   fetchPermintaanDistribusiById,
+  pemakaianBarang,
 } from "../../store/permintaanDistribusiSlice";
 import { kirimDistribusi } from "../../store/distribusiSlice";
 import { XMarkIcon, PlusCircleIcon } from "@heroicons/react/24/outline";
@@ -178,9 +179,11 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
       nama_ruang : formData.nama_ruang,
       diagnosa: formData.diagnosa,
       items: items.map((it) => ({
+        pdd_id : parseInt(it.pdd_id),
         id_master_barang: parseInt(it.id_master_barang),
         id_master_satuan: parseInt(it.id_master_satuan),
-        qty: parseInt(it.qty),
+        qty: it.qty,
+        qty_real: it.qty_real,
       })),
     };
 
@@ -191,7 +194,9 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
       ? editPermintaanDistribusi({ id: data.pd_id, payload })
       : mode === "distribusi"
       ? kirimDistribusi({id: data.pd_id, payload})
-      : null
+      : mode === "pemakaian" 
+      ? pemakaianBarang({payload})
+      :null
 
     dispatch(action)
         .unwrap()
@@ -385,12 +390,12 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                           <input
                             type="number"
                             min="0"
-                            value={item.pemakaian || ""}
+                            value={item.qty_real || item.qty}
                             onChange={(e) => {
                               const val = e.target.value;
                               setItems((prev) =>
                                 prev.map((it, idx) =>
-                                  idx === i ? { ...it, pemakaian: val } : it
+                                  idx === i ? { ...it, qty_real: val } : it
                                 )
                               );
                             }}
