@@ -388,8 +388,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                       {mode === "pemakaian" && (
                         <td className="border border-gray-200 px-3 py-2 w-50">
                           <input
-                            type="number"
-                            min="0"
+                            type="text"
                             value={item.qty_real || item.qty}
                             onChange={(e) => {
                               const val = e.target.value;
