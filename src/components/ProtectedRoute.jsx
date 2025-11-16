@@ -10,11 +10,15 @@ export default function ProtectedRoute() {
   }
 
   return (
-    <div className="min-h-screen flex bg-gray-50">
+    <div className="min-h-screen bg-gray-50">
+      {/* Fixed sidebar */}
       <Sidebar />
-      <div className="flex-1">
+
+      {/* Main content shifted to the right */}
+      <div className="ml-64 flex flex-col min-h-screen">
         <Topbar />
-        <main className="m-6 mt-4">
+
+        <main className="p-6">
           <Outlet />
         </main>
       </div>

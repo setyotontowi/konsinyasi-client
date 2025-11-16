@@ -135,7 +135,7 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="w-64 bg-white h-screen flex flex-col border-r border-r-gray-200">
+    <aside className="fixed left-0 top-0 w-64 bg-white h-screen flex flex-col border-r border-r-gray-200">
       <div className="pr-4 pl-4 pt-4 text-xl font-bold font-sans">
         <BuildingOffice2Icon className="w-6 h-6 inline-block mr-2 text-black-900" />
         SI Konsinyasi
