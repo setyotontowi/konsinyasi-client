@@ -44,3 +44,25 @@ export const getAuthUser = () => {
     return {};
   }
 };
+
+export const isAuthenticated = () => {
+  const token = localStorage.getItem('auth_token')
+  if (!token) return false
+
+  try {
+    const decoded = jwtDecode(token)
+
+    // exp is in seconds, convert to ms
+    if (decoded.exp * 1000 < Date.now()) {
+      // expired → remove token
+      localStorage.removeItem('auth_token')
+      return false
+    }
+
+    return true
+  } catch (err) {
+    // corrupted token → remove token
+    localStorage.removeItem('auth_token')
+    return false
+  }
+}

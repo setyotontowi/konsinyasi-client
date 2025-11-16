@@ -1,6 +1,8 @@
 import { MagnifyingGlassIcon, FunnelIcon } from "@heroicons/react/24/outline";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import capitalizeFirstLetter from "capitalize-first-letter";
+import { useEffect } from "react";
+import { isAuthenticated } from "../helper/helper";
 
 export default function PageHeader({
   title,
@@ -17,6 +19,14 @@ export default function PageHeader({
 }) {
   const location = useLocation();
   const paths = location.pathname.split("/").filter(Boolean);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isAuthenticated()) {
+      navigate("/login", { replace: true });
+    }
+  }, []);
 
   const justifyClass = disableAdd ? "justify-end" : "justify-between";
 

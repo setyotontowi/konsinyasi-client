@@ -2,11 +2,7 @@ import React from 'react'
 import { Navigate, Outlet } from 'react-router-dom'
 import Sidebar from './Sidebar'
 import Topbar from './Topbar'
-
-function isAuthenticated() {
-  // simple mock: check localStorage for token
-  return Boolean(localStorage.getItem('auth_token'))
-}
+import { isAuthenticated } from '../helper/helper'
 
 export default function ProtectedRoute() {
   if (!isAuthenticated()) {
@@ -18,11 +14,10 @@ export default function ProtectedRoute() {
       <Sidebar />
       <div className="flex-1">
         <Topbar />
-        {/* Main Content */}
         <main className="m-6 mt-4">
           <Outlet />
         </main>
       </div>
     </div>
-  );
+  )
 }
