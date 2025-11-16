@@ -10,11 +10,25 @@ import { toast } from "react-toastify";
 // Fetch Barang
 export const fetchBarang = createAsyncThunk(
   "barang/fetchBarang",
-  async ({ page = 1, limit = 20, search = "" }, { rejectWithValue }) => {
+  async (
+    { page = 1, limit = 20, search = "", filters = {} },
+    { rejectWithValue }
+  ) => {
     try {
-      const res = await axiosClient.get(
-        `barang/items?page=${page}&limit=${limit}&nama=${encodeURIComponent(search)}`
-      );
+      const params = new URLSearchParams();
+
+      params.append("page", page);
+      params.append("limit", limit);
+
+      // search → maps to backend filter "nama"
+      if (search) params.append("nama", search);
+
+      // apply extra filters
+      if (filters.satuan) params.append("satuan", filters.satuan);
+      if (filters.nama_pabrik) params.append("nama_pabrik", filters.nama_pabrik);
+
+      const res = await axiosClient.get(`barang/items?${params.toString()}`);
+
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);

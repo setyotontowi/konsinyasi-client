@@ -15,6 +15,7 @@ import PageHeader from "../../components/PageHeader";
 import BarangTable from "./BarangTable";
 import BarangModal from "./BarangModal";
 import ConfirmModal from "../../components/ConfirmationModal";
+import BarangFilterModal from "./BarangFilterModal"; 
 
 export default function Barang() {
   const dispatch = useDispatch();
@@ -22,6 +23,8 @@ export default function Barang() {
   const [search, setSearch] = useState("");
   const [deleting, setDeleting] = useState(false);
   const [barangToDelete, setBarangToDelete] = useState(null);
+  const [filters, setFilters] = useState({});
+  const [filterOpen, setFilterOpen] = useState(false);
 
   useEffect(() => {
     dispatch(fetchSatuan());
@@ -46,6 +49,8 @@ export default function Barang() {
           setSearch={setSearch}
           addLabel="Tambah Barang"
           AddIcon={PlusIcon}
+          onFilter={() => setFilterOpen(true)}
+          disableFilter={false}
         />
 
         <BarangTable
@@ -65,6 +70,16 @@ export default function Barang() {
         />
       </div>
 
+      <BarangFilterModal
+        open={filterOpen}
+        onClose={() => setFilterOpen(false)}
+        initialFilters={filters}
+        onApply={(applied) => {
+          setFilters(applied);
+          dispatch(fetchBarang({ page: 1, limit: 20, filters: applied }));
+        }}
+      />
+
       <ConfirmModal
         open={confirmOpen}
         title="Hapus Barang"
@@ -77,6 +92,8 @@ export default function Barang() {
         onClose={() => dispatch(closeDeleteConfirm())}
         loading={deleting}
       />
+
+      
     </>
   );
 }
