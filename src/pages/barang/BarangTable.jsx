@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchBarang } from "../../store/barangSlice";
 import Pagination from "../../components/Pagination";
 import { PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { formatRupiah } from "../../helper/helper";
 
 export default function BarangTable({ search, onEdit, onDelete }) {
   const dispatch = useDispatch();
@@ -50,7 +51,7 @@ export default function BarangTable({ search, onEdit, onDelete }) {
                 <td className="border border-gray-200 px-6 py-2">{b.barang_nama}</td>
                 <td className="border border-gray-200 px-6 py-2">{b.serial_number}</td>
                 <td className="border border-gray-200 px-6 py-2">{b.nama_pabrik}</td>
-                <td className="border border-gray-200 px-6 py-2">{b.barang_hpp}</td>
+                <td className="border border-gray-200 px-6 py-2 text-right">{formatRupiah(b.barang_hpp)}</td>
                 <td className="border border-gray-200 px-6 py-2">{b.nama_satuan}</td>
                 <td className="border border-gray-200 px-6 py-2">{b.barang_id_simrs}</td>
 

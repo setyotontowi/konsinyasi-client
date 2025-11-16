@@ -66,3 +66,33 @@ export const isAuthenticated = () => {
     return false
   }
 }
+
+export function formatRupiah(value) {
+  if (value === null || value === undefined) return "Rp 0";
+
+  const number = typeof value === "string" ? Number(value) : value;
+
+  if (isNaN(number)) return "Rp 0";
+
+  return number.toLocaleString("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    minimumFractionDigits: 0,
+  });
+}
+
+export function parseRupiah(str) {
+  if (!str) return 0;
+
+  let cleaned = str
+    .toString()
+    .replace(/Rp/gi, "")
+    .replace(/\s+/g, "")
+    .replace(/\./g, "")
+    .replace(/,/g, ".")
+    .trim();
+
+  const number = parseFloat(cleaned);
+
+  return isNaN(number) ? 0 : number;
+}
