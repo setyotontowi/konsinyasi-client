@@ -3,6 +3,7 @@ import { useState } from "react";
 import PageHeader from "../../components/PageHeader";
 import StokTable from "./StokTable";
 import { ArchiveBoxIcon } from "@heroicons/react/24/outline";
+import StokFilterModal from "./StokFilterModal";
 
 export default function Stok() {
   const [filters, setFilters] = useState({});
@@ -11,7 +12,7 @@ export default function Stok() {
   return (
     <div className="rounded-2xl bg-white border border-gray-200">
       <PageHeader
-        title="Stok Inventory"
+        title="Stok Barang Gudang"
         AddIcon={ArchiveBoxIcon}
         addLabel="Stok"
         disableAdd={true}
@@ -22,8 +23,12 @@ export default function Stok() {
 
       <StokTable filters={filters} />
 
-      {/* OPTIONAL: If you want a modal, copy JournalFilterModal and modify fields */}
-      {/* <StokFilterModal ... /> */}
+      <StokFilterModal
+        open={filterOpen}
+        onClose={() => setFilterOpen(false)}
+        onApply={(f) => setFilters(f)}
+        initialFilters={filters}
+        />
     </div>
   );
 }

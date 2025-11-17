@@ -74,7 +74,7 @@ const StokTable = ({ filters }) => {
             ) : (
               <tr>
                 <td colSpan="6" className="text-center text-gray-500 italic py-3">
-                  Tidak ada stok
+                  Tidak ada barang atau stok kosong.
                 </td>
               </tr>
             )}
