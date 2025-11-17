@@ -66,6 +66,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
 
   const [items, setItems] = useState(data?.items || []);
   const [units, setUnits] = useState([]);
+  const [unitsPBF, setUnitsPBF] = useState([]);
   const [barang, setBarangOptions] = useState([]);
   const [satuan, setSatuanOptions] = useState([]);
   const [itemModalOpen, setItemModalOpen] = useState(false);
@@ -84,23 +85,30 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
     setLoading((l) => ({ ...l, unit: true }));
 
     axiosClient
-      .get("/unit")
-      .then((res) => {
-        setUnits(
-          (res.data?.data || []).map((u) => ({
-            value: u.id,
-            label: u.nama,
-          }))
-        );
-      })
-      .catch((err) => {
-        console.error("Failed to load units:", err);
-        toast.error("Gagal memuat data unit");
-      })
-      .finally(() => setLoading((l) => ({ ...l, unit: false })));
+    .get("/unit")
+    .then((res) => {
+      const list = res.data?.data || [];
 
-      // Fetch Barang
-      setLoading((l) => ({ ...l, barang: true }));
+      const pbfUnits = [];
+      const normalUnits = [];
+
+      list.forEach((u) => {
+        const item = { value: u.id, label: u.nama };
+
+        if (String(u.is_pbf).toLowerCase() === "ya") {
+          pbfUnits.push(item);
+        } else {
+          normalUnits.push(item);
+        }
+      });
+
+      setUnitsPBF(pbfUnits);
+      setUnits(normalUnits);
+    })
+    .catch((err) => {
+      console.error("Failed to load units:", err);
+      toast.error("Gagal memuat data unit");
+    })
     axiosClient
       .get("/barang/items")
       .then((res) => {
@@ -280,10 +288,10 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                   <label className="block text-sm font-medium">Unit Tujuan</label>
                   <Select
                     isLoading={loading.unit}
-                    options={units}
+                    options={unitsPBF}
                     placeholder="Pilih unit tujuan..."
                     isDisabled={isView}
-                    value={units.find((u) => u.value === formData.id_master_unit_tujuan) || null}
+                    value={unitsPBF.find((u) => u.value === formData.id_master_unit_tujuan) || null}
                     onChange={(opt) => handleSelectChange("id_master_unit_tujuan", opt)}
                     className="react-select-container"
                     classNamePrefix="react-select"
