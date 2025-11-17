@@ -17,6 +17,7 @@ import PermintaanDistribusi from './pages/distribusi/PermintaanDistribusi'
 import Distribusi from './pages/distribusi/Distribusi'
 import StokOpname from './pages/inventory/StokOpname'
 import PemakaianDistribusi from './pages/pemakaian/PemakaianDistribusi'
+import Stok from './pages/stok/Stok'
 
 import Journal from './pages/journal/Journal'
 
@@ -47,6 +48,7 @@ export default function App() {
           <Route path="inventory">
             <Route path="stok-opname" element={<StokOpname />} />
             <Route path="journal" element={<Journal />} />
+            <Route path="stok-barang" element={<Stok />} />
           </Route>
 
           <Route path="settings" element={<Settings />} />

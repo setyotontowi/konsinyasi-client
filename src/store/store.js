@@ -8,6 +8,7 @@ import permintaanDistribusiReducer from "./permintaanDistribusiSlice";
 import distribusiReducer from "./distribusiSlice"
 import stokOpnameSlice from "./stokOpnameSlice"
 import journalSlice from "./journalSlice"
+import stokSlice from "./stokSlice"
 
 export const store = configureStore({
   reducer: {
@@ -19,7 +20,8 @@ export const store = configureStore({
     permintaanDistribusi: permintaanDistribusiReducer,
     distribusi: distribusiReducer,
     stokOpname: stokOpnameSlice,
-    journal: journalSlice 
+    journal: journalSlice,
+    stok: stokSlice,
   },
 });
 
