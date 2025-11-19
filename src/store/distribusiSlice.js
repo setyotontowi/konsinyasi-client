@@ -5,24 +5,39 @@ import { toast } from "react-toastify";
 
 export const fetchDistribusi = createAsyncThunk(
   "distribusi/fetch",
-  async ({ page = 1, limit = 20 }, { rejectWithValue }) => {
+  async ({ page = 1, limit = 20, filters = {} }, { rejectWithValue }) => {
     try {
-      const res = await axiosClient.get(`/distribusi/distribusi?page=${page}&limit=${limit}`);
+      const params = new URLSearchParams();
 
-      // Modify each item in the data array to include pd_id
+      params.append("page", page);
+      params.append("limit", limit);
+
+      // Only append filters that actually have values
+      if (filters.id_master_unit?.value)
+        params.append("id_master_unit", filters.id_master_unit.value);
+
+      if (filters.id_master_unit_tujuan?.value)
+        params.append("id_master_unit_tujuan", filters.id_master_unit_tujuan.value);
+
+      if (filters.id_permintaan_distribusi)
+        params.append("id_permintaan_distribusi", filters.id_permintaan_distribusi);
+
+      if (filters.start_date)
+        params.append("start_date", filters.start_date);
+
+      if (filters.end_date)
+        params.append("end_date", filters.end_date);
+
+      const res = await axiosClient.get(
+        `/distribusi/distribusi?${params.toString()}`
+      );
+
       const modifiedData = res.data.data.map((item) => ({
         ...item,
-        pd_id: item.id_permintaan_distribusi, // append new key
+        pd_id: item.id_permintaan_distribusi,
       }));
 
-      // Return the same structure, but with modified data
-      const response = {
-        ...res.data,
-        data: modifiedData,
-      };
-
-      console.log(response);
-      return response;
+      return { ...res.data, data: modifiedData };
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }

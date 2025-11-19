@@ -5,15 +5,15 @@ import Pagination from "../../components/Pagination";
 import { EyeIcon } from "@heroicons/react/24/outline";
 import { formatToReadableLocal } from "../../helper/helper";
 
-export default function DistribusiTable({ onView }) {
+export default function DistribusiTable({ onView, filters }) {
   const dispatch = useDispatch();
   const { list, pagination, loading } = useSelector((state) => state.distribusi);
   const { page, totalPages, totalItems } = pagination;
   const limit = 20;
 
   useEffect(() => {
-    dispatch(fetchDistribusi({ page, limit }));
-  }, [dispatch, page]);
+    dispatch(fetchDistribusi({ page, limit, filters }));
+  }, [dispatch, page, filters]);
 
   return (
     <div className="m-6 bg-white">
@@ -74,7 +74,7 @@ export default function DistribusiTable({ onView }) {
           totalPages={totalPages}
           perPage={limit}
           totalItems={totalItems}
-          onPageChange={(p) => dispatch(fetchDistribusi({ page: p }))}
+          onPageChange={(p) => dispatch(fetchDistribusi({ page: p, limit, filters }))}
         />
       </div>
     </div>
