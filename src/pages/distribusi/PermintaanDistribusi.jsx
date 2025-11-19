@@ -55,6 +55,7 @@ export default function PermintaanDistribusi() {
           onEdit={(item) => dispatch(openEditModal(item))}
           onView={(item) => dispatch(openViewModal(item))}
           onDelete={(item) => dispatch(openDeleteConfirm(item))}
+          permintaanDistribusi = {undefined}
         />
 
         <PermintaanDistribusiModal

@@ -30,7 +30,6 @@ export default function PemakaianDistribusi() {
         hideAdd={true}
       />
 
-      {/* Reuse the same table but pass onDistribusi = true to filter delivered ones */}
       <PermintaanDistribusiTable
         search={search}
         onView={(item) => dispatch(openDistribusiModal(item))}

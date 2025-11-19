@@ -131,8 +131,6 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
         details: prev.details.filter((_, i) => i !== index),
     }));
 
-    console.log(form);
-
     toast.info("Detail barang dihapus dari daftar");
   };
 

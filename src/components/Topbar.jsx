@@ -10,7 +10,6 @@ export default function Topbar() {
     const token = localStorage.getItem("auth_token");
     if (token) {
       const decoded = jwtDecode(token);
-      console.log(decoded);
       username = decoded.name || "";
       unit = decoded.unit_name ? ` - ${decoded.unit_name}` : "";
     }

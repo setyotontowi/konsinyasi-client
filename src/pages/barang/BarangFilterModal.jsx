@@ -44,8 +44,6 @@ export default function BarangFilterModal({ open, onClose, onApply, initialFilte
   useEffect(() => {
     if (!open || !initialFilters) return;
 
-    console.log("initialFilters", initialFilters);
-
     setSelectedUnit(
       initialFilters.nama_pabrik
         ? { value: initialFilters.nama_pabrik, label: initialFilters.label_pabrik }

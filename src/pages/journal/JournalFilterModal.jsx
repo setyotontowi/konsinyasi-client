@@ -28,7 +28,6 @@ export default function JournalFilterModal({
 
   // 🧹 Prefill when re-opened
   useEffect(() => {
-    console.log("filtered");
     if (initialFilters) setFilters(initialFilters);
   }, [initialFilters]);
 

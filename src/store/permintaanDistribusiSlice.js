@@ -9,7 +9,7 @@ import { toast } from "react-toastify";
 // Fetch list
 export const fetchPermintaanDistribusi = createAsyncThunk(
   "permintaanDistribusi/fetch",
-  async ({ page = 1, limit = 20, search = "", onDistribusi = false }, { rejectWithValue }) => {
+  async ({ page = 1, limit = 20, search = "", onDistribusi = null }, { rejectWithValue }) => {
     try {
       const res = await axiosClient.get(
         `/distribusi/permintaan?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}&permintaan=${onDistribusi}`
