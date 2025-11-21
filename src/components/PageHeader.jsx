@@ -111,6 +111,14 @@ export default function PageHeader({
         {/* Normal layout when add is enabled */}
         {!disableAdd && !disableSearch && !disableFilter && (
           <div className="flex items-center gap-3">
+            <button
+                onClick={onFilter}
+                className="flex items-center gap-2 px-4 py-2 bg-orange-400 hover:bg-orange-500 text-white text-sm font-medium rounded-lg shadow-md"
+              >
+                <FunnelIcon className="w-5 h-5" />
+                Filter
+            </button>
+
             <div className="relative">
               <MagnifyingGlassIcon className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
@@ -121,14 +129,6 @@ export default function PageHeader({
                 onChange={(e) => setSearch(e.target.value)}
               />
             </div>
-
-            <button
-                onClick={onFilter}
-                className="flex items-center gap-2 px-4 py-2 bg-orange-400 hover:bg-orange-500 text-white text-sm font-medium rounded-lg shadow-md"
-              >
-                <FunnelIcon className="w-5 h-5" />
-                Filter
-            </button>
           </div>
         )}
       </div>

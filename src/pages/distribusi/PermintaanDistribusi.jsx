@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   openAddModal,
@@ -15,6 +15,8 @@ import PageHeader from "../../components/PageHeader";
 import PermintaanDistribusiTable from "./PermintaanDistribusiTable";
 import ConfirmModal from "../../components/ConfirmationModal";
 import PermintaanDistribusiModal from "./PermintaanDistribusiModal";
+import DistribusiFilterModal from "./DistribusiFilterModal";
+import axiosClient from "../../api/axiosClient";
 
 export default function PermintaanDistribusi() {
   const dispatch = useDispatch();
@@ -28,6 +30,16 @@ export default function PermintaanDistribusi() {
 
   const [search, setSearch] = useState("");
   const [deleting, setDeleting] = useState(false);
+  const [units, setUnits] = useState([]);
+  const [unitsPBF, setUnitsPBF] = useState([]);
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [filters, setFilters] = useState({
+    id_master_unit: null,
+    id_master_unit_tujuan: null,
+    id_permintaan_distribusi: "",
+    start_date: "",
+    end_date: "",
+  });
 
   const handleDeleteConfirm = () => {
     if (!itemToDelete) return;
@@ -36,6 +48,29 @@ export default function PermintaanDistribusi() {
       setDeleting(false)
     );
   };
+
+  // LOAD UNITS
+  useEffect(() => {
+    axiosClient.get("/unit").then((res) => {
+      const list = res.data?.data || [];
+
+      const pbfUnits = [];
+      const normalUnits = [];
+
+      list.forEach((u) => {
+        const item = { value: u.id, label: u.nama };
+
+        if (String(u.is_pbf).toLowerCase() === "ya") {
+          pbfUnits.push(item);
+        } else {
+          normalUnits.push(item);
+        }
+      });
+
+      setUnits(normalUnits);
+      setUnitsPBF(pbfUnits);
+    });
+  }, []);
 
   return (
     <>
@@ -48,6 +83,8 @@ export default function PermintaanDistribusi() {
           setSearch={setSearch}
           addLabel="Tambah Permintaan"
           AddIcon={ClipboardDocumentListIcon}
+          disableFilter={false}
+          onFilter={() => setFilterOpen(true)}
         />
 
         <PermintaanDistribusiTable
@@ -55,6 +92,7 @@ export default function PermintaanDistribusi() {
           onEdit={(item) => dispatch(openEditModal(item))}
           onView={(item) => dispatch(openViewModal(item))}
           onDelete={(item) => dispatch(openDeleteConfirm(item))}
+          filters={filters}
           permintaanDistribusi = {undefined}
         />
 
@@ -77,6 +115,15 @@ export default function PermintaanDistribusi() {
         onConfirm={handleDeleteConfirm}
         onClose={() => dispatch(closeDeleteConfirm())}
         loading={deleting}
+      />
+
+      <DistribusiFilterModal
+        open={filterOpen}
+        onClose={() => setFilterOpen(false)}
+        filters={filters}
+        setFilters={setFilters}
+        units={units}
+        unitsPBF={unitsPBF}
       />
     </>
   );
