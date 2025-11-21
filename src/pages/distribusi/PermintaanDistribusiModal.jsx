@@ -301,6 +301,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
             </div>
 
             {/* Data Pasien */}
+            {mode !== "distribusi" && (
             <div>
               <h3 className="font-semibold text-sm mb-2 text-gray-600 uppercase">Data Pasien</h3>
               <div className="space-y-2">
@@ -350,13 +351,14 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                 </div>
               </div>
             </div>
+            )}
           </div>
 
           {/* === Section B: Detail === */}
           <div className="mt-8">
             <div className="flex justify-between items-center mb-2">
               <h3 className="font-semibold text-sm text-gray-600 uppercase">Detail Barang</h3>
-              {!isView && mode !== "pemakaian" && (
+              {!isView && mode !== "pemakaian" && mode !== "distribusi" && (
                 <button
                     type="button"
                     onClick={() => setItemModalOpen(true)}
