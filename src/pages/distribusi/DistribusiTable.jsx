@@ -23,6 +23,7 @@ export default function DistribusiTable({ onView, filters }) {
             <tr>
               <th className="px-6 py-3 border border-gray-200">No</th>
               <th className="px-6 py-3 border border-gray-200">Unit yang meminta</th>
+              <th className="px-6 py-3 border border-gray-200">Unit tujuan</th>
               <th className="px-6 py-3 border border-gray-200">Waktu Kirim</th>
               <th className="px-6 py-3 border border-gray-200">Oleh User</th>
               <th className="px-6 py-3 border border-gray-200 text-center w-20">
@@ -39,6 +40,9 @@ export default function DistribusiTable({ onView, filters }) {
                   </td>
                   <td className="border border-gray-200 px-6 py-2 text-gray-700">
                     {d.nama_unit}
+                  </td>
+                  <td className="border border-gray-200 px-6 py-2 text-gray-700">
+                    {d.nama_unit_tujuan}
                   </td>
                   <td className="border border-gray-200 px-6 py-2 text-gray-700">
                     {formatToReadableLocal(d.waktu_kirim)}
