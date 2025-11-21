@@ -9,13 +9,32 @@ import { toast } from "react-toastify";
 // Fetch list
 export const fetchPermintaanDistribusi = createAsyncThunk(
   "permintaanDistribusi/fetch",
-  async ({ page = 1, limit = 20, search = "", onDistribusi = null }, { rejectWithValue }) => {
+  async ({ page = 1, limit = 20, search = "", onDistribusi = null, filters }, { rejectWithValue }) => {
     try {
+      const params = new URLSearchParams();
+
+      // Only append filters that actually have values
+      if (filters.id_master_unit?.value)
+        params.append("id_master_unit", filters.id_master_unit.value);
+
+      if (filters.id_master_unit_tujuan?.value)
+        params.append("id_master_unit_tujuan", filters.id_master_unit_tujuan.value);
+
+      if (filters.id_permintaan_distribusi)
+        params.append("id_permintaan_distribusi", filters.id_permintaan_distribusi);
+
+      if (filters.start_date)
+        params.append("start_date", filters.start_date);
+
+      if (filters.end_date)
+        params.append("end_date", filters.end_date);
+
       const res = await axiosClient.get(
-        `/distribusi/permintaan?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}&permintaan=${onDistribusi}`
+        `/distribusi/permintaan?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}&permintaan=${onDistribusi}&${params.toString()}`
       );
       return res.data;
     } catch (err) {
+      console.log(err);
       return rejectWithValue(err.response?.data || err.message);
     }
   }

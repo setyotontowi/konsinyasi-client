@@ -6,7 +6,7 @@ import Pagination from "../../components/Pagination";
 import { EyeIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
 
 
-export default function PermintaanDistribusiTable({ search, onView, onEdit, onDelete, onDistribusi, onCountChange}) {
+export default function PermintaanDistribusiTable({ search, filters, onView, onEdit, onDelete, onDistribusi, onCountChange}) {
   const dispatch = useDispatch();
   const { list, pagination, loading } = useSelector((state) => state.permintaanDistribusi);
   const { page, totalPages, totalItems } = pagination;
@@ -14,10 +14,10 @@ export default function PermintaanDistribusiTable({ search, onView, onEdit, onDe
 
   useEffect(() => {
     const delay = setTimeout(() => {
-      dispatch(fetchPermintaanDistribusi({ page, limit, search, onDistribusi }));
+      dispatch(fetchPermintaanDistribusi({ page, limit, search, filters, onDistribusi }));
     }, 400);
     return () => clearTimeout(delay);
-  }, [dispatch, page, search]);
+  }, [dispatch, page, search, filters]);
 
   useEffect(() => {
     if (onCountChange) {
