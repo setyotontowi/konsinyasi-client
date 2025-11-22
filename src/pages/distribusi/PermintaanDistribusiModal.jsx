@@ -73,6 +73,8 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
   const [loading, setLoading] = useState({ unit: false, group: false });
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
+  const [stockAvailable, setStockAvailable] = useState(null);
+  const [qtyError, setQtyError] = useState("");
 
   const [newItem, setNewItem] = useState({
     id_master_barang: "",
@@ -144,6 +146,10 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
         toast.error("Gagal memuat barang berdasarkan unit tujuan");
       });
   }, [formData.id_master_unit_tujuan]);
+
+  // Use effect call get inventory/get-all-stok with filtered id_barang
+  // it will return list of data on different ed and nobatch
+  // sum it all, named it as stock_available
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -522,9 +528,29 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                     placeholder="Pilih barang"
                     isDisabled={isView}
                     value={barang.find((u) => u.value === newItem.id_master_barang) || null}
-                    onChange={(opt) => {
-                        handleItemOptionChange("id_master_barang", opt ? opt.value : "")
-                        handleItemOptionChange("nama_barang", opt ? opt.label : "")
+                    onChange={async (opt) => {
+                        const id = opt ? opt.value : "";
+
+                        handleItemOptionChange("id_master_barang", id);
+                        handleItemOptionChange("nama_barang", opt ? opt.label : "");
+
+                        setStockAvailable(null);   // reset before fetching
+                        setQtyError("");
+
+                        if (!id) return;
+
+                        try {
+                          const res = await axiosClient.get(`/inventory/get-all-stok?id_barang=${id}`);
+                          const list = res.data?.data || [];
+
+                          // sum sisa across all ed & batch
+                          const total = list.reduce((sum, row) => sum + Number(row.sisa || 0), 0);
+
+                          setStockAvailable(total);
+                        } catch (err) {
+                          console.error("failed to fetch stock:", err);
+                          setStockAvailable(0);
+                        }
                     }}
                     className="react-select-container"
                     classNamePrefix="react-select"
@@ -551,14 +577,29 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                   <input
                     type="number"
                     value={newItem.qty}
-                    onChange={(e) =>
-                      setNewItem((prev) => ({
-                        ...prev,
-                        qty: e.target.value,
-                      }))
-                    }
+                    onChange={(e) => {
+                      const val = Number(e.target.value);
+                      setNewItem((prev) => ({ ...prev, qty: val }));
+
+                      if (stockAvailable !== null && val > stockAvailable) {
+                        setQtyError(`Qty melebihi stok tersedia (${stockAvailable})`);
+                      } else {
+                        setQtyError("");
+                      }
+                    }}
                     className="w-full border border-gray-300 rounded p-2"
                   />
+
+                  {/* add label stock_available and validation if newItem is exceeding stock_available */}
+                  {stockAvailable !== null && (
+                    <p className="text-xs text-gray-600 mt-1">
+                      Stok tersedia: <span className="font-semibold">{stockAvailable}</span>
+                    </p>
+                  )}
+
+                  {qtyError && (
+                    <p className="text-xs text-red-600 mt-1">{qtyError}</p>
+                  )}
                 </div>
               </div>
 
@@ -573,7 +614,13 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                 <button
                   type="button"
                   onClick={handleAddItem}
-                  className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded"
+                  disabled={!!qtyError || newItem.qty <= 0}
+                  className={`
+                    px-3 py-1 rounded text-white
+                    ${qtyError || newItem.qty <= 0 
+                      ? "bg-gray-400 cursor-not-allowed" 
+                      : "bg-blue-600 hover:bg-blue-700"}
+                  `}
                 >
                   Tambah
                 </button>
