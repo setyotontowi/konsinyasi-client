@@ -61,7 +61,7 @@ export default function PermintaanDistribusiTable({ search, filters, onView, onE
               </tr>
             ) : (
             list.map((d, index) => (
-              <tr key={d.pd_id} className="hover:bg-gray-50 transition">
+              <tr key={`${d.pd_id}-${index}`} className="hover:bg-gray-50 transition">
                 <td className="border border-gray-200 px-6 py-2 text-center text-gray-600">
                   {(page - 1) * limit + index + 1}
                 </td>

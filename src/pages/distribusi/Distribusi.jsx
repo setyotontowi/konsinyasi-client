@@ -125,7 +125,10 @@ export default function Distribusi() {
         open={modalOpen}
         mode={mode}
         data={selectedItem}
-        onClose={() => dispatch(closeModal())}
+        onClose={() => {
+          setFilters((f) => ({ ...f }));
+          dispatch(closeModal())
+        }}
       />
     </>
   );

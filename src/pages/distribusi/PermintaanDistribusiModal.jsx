@@ -220,10 +220,9 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
     dispatch(action)
         .unwrap()
         .then(() => {
-        // 🧠 same pattern as UserModal.jsx
-        const distribusi = mode === "distribusi"
-        dispatch(fetchPermintaanDistribusi({ page: 1, limit: 20, onDistribusi: distribusi }));
-        onClose();
+          const distribusi = mode === "add"? null : mode === "distribusi"? true : false;
+          dispatch(fetchPermintaanDistribusi({ page: 1, limit: 20, onDistribusi: distribusi }));
+          onClose();
         })
         .catch((err) => {
         console.error("Save failed:", err);
@@ -453,7 +452,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                           )}
                         </td>
                       )}
-                      {!isView && mode !== "pemakaian" && (
+                      {!isView && mode !== "pemakaian" && mode !== "distribusi" && (
                       <td className="border border-gray-200 px-3 py-2 text-center">
                           <button
                           type="button"

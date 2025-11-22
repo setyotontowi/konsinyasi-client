@@ -9,8 +9,10 @@ import { toast } from "react-toastify";
 // Fetch list
 export const fetchPermintaanDistribusi = createAsyncThunk(
   "permintaanDistribusi/fetch",
-  async ({ page = 1, limit = 20, search = "", onDistribusi = null, filters }, { rejectWithValue }) => {
+  async ({ page = 1, limit = 20, search = "", onDistribusi = null, filters = {} }, { rejectWithValue }) => {
     try {
+      filters = filters || {};
+
       const params = new URLSearchParams();
 
       // Only append filters that actually have values
@@ -20,14 +22,14 @@ export const fetchPermintaanDistribusi = createAsyncThunk(
       if (filters.id_master_unit_tujuan?.value)
         params.append("id_master_unit_tujuan", filters.id_master_unit_tujuan.value);
 
-      if (filters.id_permintaan_distribusi)
-        params.append("id_permintaan_distribusi", filters.id_permintaan_distribusi);
+      if (filters.id_permintaan_distribusi?.value)
+        params.append("id_permintaan_distribusi", filters.id_permintaan_distribusi.value);
 
-      if (filters.start_date)
-        params.append("start_date", filters.start_date);
+      if (filters.start_date?.value)
+        params.append("start_date", filters.start_date.value);
 
-      if (filters.end_date)
-        params.append("end_date", filters.end_date);
+      if (filters.end_date?.value)
+        params.append("end_date", filters.end_date.value);
 
       const res = await axiosClient.get(
         `/distribusi/permintaan?page=${page}&limit=${limit}&search=${encodeURIComponent(search)}&permintaan=${onDistribusi}&${params.toString()}`
