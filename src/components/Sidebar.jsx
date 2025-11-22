@@ -18,7 +18,9 @@ import {
   CircleStackIcon,
   BookOpenIcon,
   BeakerIcon,
-  CubeIcon
+  CubeIcon,
+  PrinterIcon,
+  BanknotesIcon
 } from "@heroicons/react/24/outline";
 
 // Map DB icon names to Heroicons
@@ -36,7 +38,9 @@ const iconMap = {
   CircleStackIcon,
   BookOpenIcon,
   BeakerIcon,
-  CubeIcon
+  CubeIcon,
+  PrinterIcon,
+  BanknotesIcon
 };
 
 export default function Sidebar() {

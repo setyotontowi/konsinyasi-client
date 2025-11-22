@@ -51,6 +51,11 @@ export default function App() {
             <Route path="stok-barang" element={<Stok />} />
           </Route>
 
+          <Route path="penjualan">
+            <Route path="order" element={<StokOpname />} />
+            <Route path="purchase" element={<Journal />} />
+          </Route>
+
           <Route path="settings" element={<Settings />} />
         </Route>
 
