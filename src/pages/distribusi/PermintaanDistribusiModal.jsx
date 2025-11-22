@@ -281,7 +281,6 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                 <div>
                   <label className="block text-sm font-medium">Unit Asal</label>
                   <Select
-                    isLoading={loading.unit}
                     options={units}
                     placeholder="Pilih unit asal..."
                     isDisabled={isView}
@@ -296,7 +295,6 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                 <div>
                   <label className="block text-sm font-medium">Unit Tujuan</label>
                   <Select
-                    isLoading={loading.unit}
                     options={unitsPBF}
                     placeholder="Pilih unit tujuan..."
                     isDisabled={isView}
