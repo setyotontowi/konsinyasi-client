@@ -19,7 +19,6 @@ export default function PageHeader({
 }) {
   const location = useLocation();
   const paths = location.pathname.split("/").filter(Boolean);
-
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -28,11 +27,9 @@ export default function PageHeader({
     }
   }, []);
 
-  const justifyClass = disableAdd ? "justify-end" : "justify-between";
-
   return (
     <div>
-      {/* Header title + breadcrumb */}
+      {/* Title + Breadcrumb */}
       <div className="p-6 flex items-center justify-between">
         <h2 className="text-lg font-semibold">
           {title ? title : capitalizeFirstLetter(paths[paths.length - 1])}
@@ -64,61 +61,33 @@ export default function PageHeader({
         </nav>
       </div>
 
-      {/* Buttons and Search */}
-      <div
-        className={`pt-6 pl-6 pr-6 flex ${justifyClass} items-center border-t border-gray-200 gap-3 flex-wrap`}
-      >
-        {/* Left controls (Add + Filter) */}
+      {/* Controls Layout */}
+      <div className="pt-6 pl-6 pr-6 pb-4 flex items-center justify-between border-t border-gray-200 flex-wrap gap-3">
+
+        {/* LEFT: Add */}
         {!disableAdd && (
-          <div className="flex items-center gap-3">
+          <button
+            onClick={onAdd}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg shadow-md"
+          >
+            {AddIcon && <AddIcon className="w-5 h-5" />}
+            <span>{addLabel}</span>
+          </button>
+        )}
+
+        {/* RIGHT: Filter + Search */}
+        <div className="flex items-center gap-3 ml-auto">
+          {!disableFilter && (
             <button
-              onClick={onAdd}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg shadow-md"
+              onClick={onFilter}
+              className="flex items-center gap-2 px-4 py-2 bg-orange-400 hover:bg-orange-500 text-white text-sm font-medium rounded-lg shadow-md"
             >
-              {AddIcon && <AddIcon className="w-5 h-5" />}
-              <span>{addLabel}</span>
+              <FunnelIcon className="w-5 h-5" />
+              Filter
             </button>
-          </div>
-        )}
+          )}
 
-        {/* When add button is disabled, move filter beside search */}
-        {disableAdd && (
-          <div className="flex items-center gap-3">
-            {!disableFilter && (
-              <button
-                onClick={onFilter}
-                className="flex items-center gap-2 px-4 py-2 bg-orange-400 hover:bg-orange-500 text-white text-sm font-medium rounded-lg shadow-md"
-              >
-                <FunnelIcon className="w-5 h-5" />
-                Filter
-              </button>
-            )}
-            {!disableSearch && (
-              <div className="relative">
-                <MagnifyingGlassIcon className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                <input
-                  type="text"
-                  placeholder={searchPlaceholder || "Search..."}
-                  className="pl-10 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                />
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Normal layout when add is enabled */}
-        {!disableAdd && !disableSearch && !disableFilter && (
-          <div className="flex items-center gap-3">
-            <button
-                onClick={onFilter}
-                className="flex items-center gap-2 px-4 py-2 bg-orange-400 hover:bg-orange-500 text-white text-sm font-medium rounded-lg shadow-md"
-              >
-                <FunnelIcon className="w-5 h-5" />
-                Filter
-            </button>
-
+          {!disableSearch && (
             <div className="relative">
               <MagnifyingGlassIcon className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
@@ -129,8 +98,8 @@ export default function PageHeader({
                 onChange={(e) => setSearch(e.target.value)}
               />
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );
