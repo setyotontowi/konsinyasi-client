@@ -226,7 +226,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
     dispatch(action)
         .unwrap()
         .then(() => {
-          const distribusi = mode === "add"? null : mode === "distribusi"? true : false;
+          const distribusi = mode === "pemakaian"? false : mode === "distribusi"? true : null;
           dispatch(fetchPermintaanDistribusi({ page: 1, limit: 20, onDistribusi: distribusi }));
           onClose();
         })
@@ -424,8 +424,6 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                             onBlur={(e) => {
                               let val = parseFloat(e.target.value);
 
-                              if (isNaN(val) || val < 0) val = 0;
-
                               const max = Number(item.qty);
 
                               // Validation text (no toast)
@@ -433,6 +431,11 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                                 setErrors((prev) => ({
                                   ...prev,
                                   [i]: `Pemakaian tidak boleh lebih dari ${max}`,
+                                }));
+                              }else if (val < 0 === true) {
+                                setErrors((prev) => ({
+                                  ...prev,
+                                  [i]: `Pemakaian tidak boleh kurang dari 0`,
                                 }));
                               } else {
                                 setErrors((prev) => {
@@ -606,7 +609,10 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
               <div className="flex justify-end gap-2 mt-4">
                 <button
                   type="button"
-                  onClick={() => setItemModalOpen(false)}
+                  onClick={() => {
+                    setNewItem({ id_master_barang: "", id_master_satuan: "", qty: "" });
+                    setItemModalOpen(false)}
+                  }
                   className="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded"
                 >
                   Batal

@@ -80,6 +80,9 @@ const StokTable = ({ filters }) => {
             )}
           </tbody>
         </table>
+        
+        <br></br>
+        <small><i>Stok barang diurutkan berdasarkan <b>sisa stok</b> yang akan habis, kemudian <b>expired date</b> terdekat</i></small>
       </div>
 
       <Pagination

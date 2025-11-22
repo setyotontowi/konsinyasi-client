@@ -93,7 +93,7 @@ export default function PermintaanDistribusi() {
           onView={(item) => dispatch(openViewModal(item))}
           onDelete={(item) => dispatch(openDeleteConfirm(item))}
           filters={filters}
-          permintaanDistribusi = {undefined}
+          onDistribusi = {null}
         />
 
         <PermintaanDistribusiModal
