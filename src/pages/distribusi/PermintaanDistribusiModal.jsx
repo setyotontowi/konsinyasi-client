@@ -138,6 +138,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
           (res.data?.data || []).map((b) => ({
             value: b.barang_id,
             label: b.barang_nama,
+            id_satuan_kecil: b.id_satuan_kecil
           }))
         );
       })
@@ -524,7 +525,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
               <h3 className="text-md font-semibold mb-4">Tambah Item Barang</h3>
               <div className="space-y-3">
                 <div>
-                  <label className="block text-sm font-medium">ID Barang</label>
+                  <label className="block text-sm font-medium">Barang</label>
                   <Select
                     isLoading={loading.barang}
                     options={barang}
@@ -536,6 +537,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
 
                         handleItemOptionChange("id_master_barang", id);
                         handleItemOptionChange("nama_barang", opt ? opt.label : "");
+                        handleItemOptionChange("id_master_satuan", opt ? opt.id_satuan_kecil : "");
 
                         setStockAvailable(null);   // reset before fetching
                         setQtyError("");
@@ -560,12 +562,12 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium">ID Satuan</label>
+                  <label className="block text-sm font-medium">Satuan</label>
                   <Select
                     isLoading={loading.satuan}
                     options={satuan}
                     placeholder="Pilih satuan terkecil"
-                    isDisabled={isView}
+                    isDisabled={true}
                     value={satuan.find((u) => u.value === newItem.id_master_satuan) || null}
                     onChange={(opt) => {
                         handleItemOptionChange("id_master_satuan",  opt ? opt.value : "")
