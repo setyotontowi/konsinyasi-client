@@ -109,16 +109,6 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
       console.error("Failed to load units:", err);
       toast.error("Gagal memuat data unit");
     })
-    axiosClient
-      .get("/barang/items")
-      .then((res) => {
-          setBarangOptions((res.data?.data || []).map((b) => ({ value: b.barang_id, label: b.barang_nama })));
-      })
-      .catch((err) => {
-          console.error("Failed to load barang:", err);
-          toast.error("Gagal memuat daftar barang");
-      })
-      .finally(() => setLoading((l) => ({ ...l, barang: false })));
 
       // Fetch Satuan
       setLoading((l) => ({ ...l, satuan: true }));
@@ -133,6 +123,25 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
       })
       .finally(() => setLoading((l) => ({ ...l, satuan: false })));
   }, [open]);
+
+  useEffect(() => {
+    if (!formData.id_master_unit_tujuan) return;
+
+    axiosClient
+      .get(`/barang/items?nama_pabrik=${formData.id_master_unit_tujuan}`)
+      .then((res) => {
+        setBarangOptions(
+          (res.data?.data || []).map((b) => ({
+            value: b.barang_id,
+            label: b.barang_nama,
+          }))
+        );
+      })
+      .catch((err) => {
+        console.error("Failed to load filtered barang:", err);
+        toast.error("Gagal memuat barang berdasarkan unit tujuan");
+      });
+  }, [formData.id_master_unit_tujuan]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -361,7 +370,13 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
               {!isView && mode !== "pemakaian" && mode !== "distribusi" && (
                 <button
                     type="button"
-                    onClick={() => setItemModalOpen(true)}
+                    onClick={() => {
+                      if (!formData.id_master_unit_tujuan) {
+                        toast.error("Pilih unit tujuan terlebih dahulu sebelum menambah item.");
+                        return;
+                      }
+                      setItemModalOpen(true);
+                    }}
                     className="flex items-center gap-1 text-blue-600 hover:text-blue-800"
                 >
                     <PlusCircleIcon className="h-5 w-5" /> Tambah Item
