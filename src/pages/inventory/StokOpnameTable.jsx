@@ -5,15 +5,15 @@ import { fetchStokOpname } from "../../store/stokOpnameSlice";
 import Pagination from "../../components/Pagination";
 import { EyeIcon } from "@heroicons/react/24/outline";
 
-export default function StokOpnameTable({ search, onView, onEdit, onDelete}) {
+export default function StokOpnameTable({ search, filters, onView, onEdit, onDelete}) {
   const dispatch = useDispatch();
   const { list, pagination, loading } = useSelector((state) => state.stokOpname);
   const { page, totalPages, totalItems } = pagination;
   const limit = 20;
 
   useEffect(() => {
-    dispatch(fetchStokOpname({ page, limit }));
-  }, [dispatch, page]);
+    dispatch(fetchStokOpname({ page, limit, search, filters }));
+  }, [dispatch, page, search, filters]);
 
   if (loading)
     return (

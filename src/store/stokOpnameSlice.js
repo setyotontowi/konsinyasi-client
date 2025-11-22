@@ -4,10 +4,24 @@ import { getAuthUser } from "../helper/helper";
 
 export const fetchStokOpname = createAsyncThunk(
   "stokOpname/fetch",
-  async ({ page = 1, limit = 20, search = "" }, { rejectWithValue }) => {
+  async ({ page = 1, limit = 20, search = "", filters = {} }, { rejectWithValue }) => {
     try {
+      const params = new URLSearchParams();
+
+      if (search) params.append("search", search);
+
+      // Only append filters that actually have values
+      if (filters.id_master_unit?.value)
+        params.append("id_master_unit", filters.id_master_unit.value);
+
+      if (filters.start_date)
+        params.append("start_date", filters.start_date);
+
+      if (filters.end_date)
+        params.append("end_date", filters.end_date);
+
       const res = await axiosClient.get(
-        `/inventory/stok-opname?page=${page}&limit=${limit}`
+        `/inventory/stok-opname?page=${page}&limit=${limit}&${params.toString()}`
       );
       return res.data;
     } catch (err) {
