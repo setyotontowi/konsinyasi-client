@@ -72,6 +72,8 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
   const [itemModalOpen, setItemModalOpen] = useState(false);
   const [loading, setLoading] = useState({ unit: false, group: false });
   const [submitting, setSubmitting] = useState(false);
+  const [errors, setErrors] = useState({});
+
   const [newItem, setNewItem] = useState({
     id_master_barang: "",
     nama_barang : "",
@@ -408,13 +410,34 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                       <td className="border border-gray-200 px-3 py-2">{item.nama_barang}</td>
                       <td className="border border-gray-200 px-3 py-2">{item.nama_satuan}</td>
                       <td className="border border-gray-200 px-3 py-2">{item.qty}</td>
+                      {/* Input Pemakaian */}
                       {mode === "pemakaian" && (
                         <td className="border border-gray-200 px-3 py-2 w-50">
                           <input
                             type="text"
-                            value={item.qty_real || item.qty}
-                            onChange={(e) => {
-                              const val = e.target.value;
+                            defaultValue={item.qty_real || item.qty}
+                            onBlur={(e) => {
+                              let val = parseFloat(e.target.value);
+
+                              if (isNaN(val) || val < 0) val = 0;
+
+                              const max = Number(item.qty);
+
+                              // Validation text (no toast)
+                              if (val > max) {
+                                setErrors((prev) => ({
+                                  ...prev,
+                                  [i]: `Pemakaian tidak boleh lebih dari ${max}`,
+                                }));
+                              } else {
+                                setErrors((prev) => {
+                                  const p = { ...prev };
+                                  delete p[i];
+                                  return p;
+                                });
+                              }
+
+                              // Save the corrected value
                               setItems((prev) =>
                                 prev.map((it, idx) =>
                                   idx === i ? { ...it, qty_real: val } : it
@@ -423,6 +446,11 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                             }}
                             className="w-full border border-blue-600 rounded p-1"
                           />
+
+                          {/* Inline error text */}
+                          {errors[i] && (
+                            <p className="text-red-600 text-xs mt-1">{errors[i]}</p>
+                          )}
                         </td>
                       )}
                       {!isView && mode !== "pemakaian" && (
@@ -455,8 +483,13 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
             {!isView && (
               <button
                 type="submit"
-                disabled = {submitting}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
+                disabled={submitting || (mode === "pemakaian" && Object.keys(errors).length > 0)}
+                className={`
+                  px-4 py-2 rounded text-white
+                  ${submitting || (mode === "pemakaian" && Object.keys(errors).length > 0)
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-blue-600 hover:bg-blue-700"}
+                `}
               >
                 {mode === "add"
                   ? "Simpan"
