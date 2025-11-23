@@ -65,6 +65,19 @@ export const printPurchaseOrder = createAsyncThunk(
   }
 );
 
+export const confirmPurchaseOrder = createAsyncThunk(
+  "purchase/confirmPurchaseOrder",
+  async ({ id }, { rejectWithValue }) => {
+    try {
+      // TODO: backend endpoint will be implemented later
+      const res = await axiosClient.post(`/purchase/${id}/confirm`);
+      return res.data; // { id }
+    } catch (err) {
+      return rejectWithValue(err.response?.data || err.message);
+    }
+  }
+);
+
 // ----- SLICE -----
 
 const purchaseSlice = createSlice({
@@ -131,6 +144,13 @@ const purchaseSlice = createSlice({
         const idx = state.purchaseOrders.list.findIndex((po) => po.id === id);
         if (idx !== -1) {
           state.purchaseOrders.list[idx].print_path = print_path;
+        }
+      })
+      .addCase(confirmPurchaseOrder.fulfilled, (state, action) => {
+        const { id } = action.payload;
+        const idx = state.purchaseOrders.list.findIndex((po) => po.id === id);
+        if (idx !== -1) {
+          state.purchaseOrders.list[idx].confirmed = true;
         }
       });
   },

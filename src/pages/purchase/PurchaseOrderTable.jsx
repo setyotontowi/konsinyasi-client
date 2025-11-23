@@ -4,8 +4,9 @@ import { fetchPurchaseOrders } from "../../store/purchaseSlice";
 import Pagination from "../../components/Pagination";
 import { formatToReadableLocal } from "../../helper/helper";
 
-export default function PurchaseOrderTable({ filters, onPrint }) {
+export default function PurchaseOrderTable({ mode="purchase", filters, onPrint, onConfirm}) {
   const dispatch = useDispatch();
+  
   const { list, pagination, loading } = useSelector(
     (state) => state.purchase.purchaseOrders
   );
@@ -27,12 +28,16 @@ export default function PurchaseOrderTable({ filters, onPrint }) {
           <thead className="bg-blue-50 text-gray-700 text-xs uppercase">
             <tr>
               <th className="px-6 py-3 border border-gray-200">No</th>
+              <th className="px-6 py-3 border border-gray-200">No. PO</th>
               <th className="px-6 py-3 border border-gray-200">Tanggal</th>
               <th className="px-6 py-3 border border-gray-200">Tanggal Datang</th>
               <th className="px-6 py-3 border border-gray-200">Tanggal Entri</th>
               <th className="px-6 py-3 border border-gray-200">PPN</th>
               <th className="px-6 py-3 border border-gray-200">Subtotal</th>
               <th className="px-6 py-3 border border-gray-200">Cetak</th>
+              {mode === "sale" && (
+                <th className="px-6 py-3 border border-gray-200">Konfirmasi</th>
+              )}
             </tr>
           </thead>
           <tbody>
@@ -50,6 +55,9 @@ export default function PurchaseOrderTable({ filters, onPrint }) {
                 <tr key={po.id} className="hover:bg-gray-50">
                   <td className="border border-gray-200 px-6 py-2 text-center text-gray-600">
                     {(page - 1) * limit + index + 1}
+                  </td>
+                  <td className="border border-gray-200 px-6 py-2 text-center text-gray-600">
+                    #{po.id}
                   </td>
                   <td className="border border-gray-200 px-6 py-2 text-gray-700">
                     {po.tanggal ? formatToReadableLocal(po.tanggal) : "-"}
@@ -86,6 +94,16 @@ export default function PurchaseOrderTable({ filters, onPrint }) {
                       </button>
                     )}
                   </td>
+                  {mode === "sale" && (
+                  <td className="border border-gray-200 px-6 py-2 text-center">
+                    <button
+                      onClick={() => onConfirm(po)}
+                      className="px-3 py-1 bg-green-50 hover:bg-green-100 text-green-700 rounded text-sm"
+                    >
+                      Konfirmasi
+                    </button>
+                  </td>
+                )}
                 </tr>
               ))
             ) : (

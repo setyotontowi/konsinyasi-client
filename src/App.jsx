@@ -21,6 +21,7 @@ import Stok from './pages/stok/Stok'
 
 import Journal from './pages/journal/Journal'
 import Purchase from './pages/purchase/Purchase'
+import Sale from './pages/sale/Sale'
 
 export default function App() {
   return (
@@ -54,7 +55,7 @@ export default function App() {
 
           <Route path="penjualan">
             <Route path="order" element={<Purchase />} />
-            <Route path="purchase" element={<Journal />} />
+            <Route path="purchase" element={<Sale />} />
           </Route>
 
           <Route path="settings" element={<Settings />} />

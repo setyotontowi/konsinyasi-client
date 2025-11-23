@@ -7,6 +7,7 @@ export default function ConfirmModal({
   onConfirm,
   onClose,
   loading = false,
+  mode = "delete",
 }) {
   if (!open) return null;
 
@@ -31,7 +32,7 @@ export default function ConfirmModal({
 
         <div className="px-5 py-4 text-gray-700 text-sm">{message}</div>
 
-        <div className="flex justify-end gap-2 border-t border-gray-200 px-5 py-3 bg-gray-50">
+        <div className="flex justify-end gap-2 border-t border-gray-200 px-5 py-3">
           <button
             onClick={onClose}
             disabled={loading}
@@ -48,7 +49,7 @@ export default function ConfirmModal({
                 : "bg-red-600 hover:bg-red-700"
             }`}
           >
-            {loading ? "Menghapus..." : "Hapus"}
+            {mode === "delete" ? "Hapus" : "Konfirmasi"}
           </button>
         </div>
       </div>
