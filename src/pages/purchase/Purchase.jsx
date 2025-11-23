@@ -4,6 +4,7 @@ import PurchaseUsedTable from "./PurchaseUsedTable";
 import PurchaseOrderTable from "./PurchaseOrderTable";
 import PermintaanDistribusiModal from "../distribusi/PermintaanDistribusiModal";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline";
+import PurchaseUsedModal from "./PurchaseUsedModal";
 
 export default function Purchase() {
   const [showUsed, setShowUsed] = useState(true);
@@ -68,9 +69,8 @@ export default function Purchase() {
       </div>
 
       {/* Modal */}
-      <PermintaanDistribusiModal
+      <PurchaseUsedModal
         open={modalOpen}
-        mode="purchase"
         data={selectedItem}
         onClose={() => setModalOpen(false)}
       />

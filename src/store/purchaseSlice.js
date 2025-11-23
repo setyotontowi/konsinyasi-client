@@ -38,6 +38,27 @@ export const fetchPurchaseOrders = createAsyncThunk(
   }
 );
 
+export const createPurchaseOrder = createAsyncThunk(
+  "purchase/createPurchaseOrder",
+  async ({ page = 1, limit = 20, filters = {} } = {}, { rejectWithValue }) => {
+    try {
+      const params = new URLSearchParams();
+      params.append("page", page);
+      params.append("limit", limit);
+
+      // you can extend this later for real filters
+      if (filters.cetak) params.append("cetak", filters.cetak);
+      if (filters.id_master_unit_supplier)
+        params.append("id_master_unit_supplier", filters.id_master_unit_supplier);
+
+      const res = await axiosClient.get(`/purchase?${params.toString()}`);
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data || err.message);
+    }
+  }
+);
+
 // ----- SLICE -----
 
 const purchaseSlice = createSlice({
