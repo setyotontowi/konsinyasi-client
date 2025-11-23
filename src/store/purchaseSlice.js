@@ -52,6 +52,19 @@ export const createPurchaseOrder = createAsyncThunk(
   }
 );
 
+export const printPurchaseOrder = createAsyncThunk(
+  "purchase/printPurchaseOrder",
+  async ({ id }, { rejectWithValue }) => {
+    try {
+      // Server should generate PDF & return print_path
+      const res = await axiosClient.post(`/purchase/${id}/print`);
+      return res.data; // { print_path }
+    } catch (err) {
+      return rejectWithValue(err.response?.data || err.message);
+    }
+  }
+);
+
 // ----- SLICE -----
 
 const purchaseSlice = createSlice({
@@ -111,6 +124,14 @@ const purchaseSlice = createSlice({
       .addCase(fetchPurchaseOrders.rejected, (state, action) => {
         state.purchaseOrders.loading = false;
         state.purchaseOrders.error = action.payload;
+      })
+      .addCase(printPurchaseOrder.fulfilled, (state, action) => {
+        const { id, print_path } = action.payload;
+
+        const idx = state.purchaseOrders.list.findIndex((po) => po.id === id);
+        if (idx !== -1) {
+          state.purchaseOrders.list[idx].print_path = print_path;
+        }
       });
   },
 });

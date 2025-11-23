@@ -4,7 +4,7 @@ import { fetchPurchaseOrders } from "../../store/purchaseSlice";
 import Pagination from "../../components/Pagination";
 import { formatToReadableLocal } from "../../helper/helper";
 
-export default function PurchaseOrderTable({ filters }) {
+export default function PurchaseOrderTable({ filters, onPrint }) {
   const dispatch = useDispatch();
   const { list, pagination, loading } = useSelector(
     (state) => state.purchase.purchaseOrders
@@ -55,7 +55,7 @@ export default function PurchaseOrderTable({ filters }) {
                     {po.tanggal ? formatToReadableLocal(po.tanggal) : "-"}
                   </td>
                   <td className="border border-gray-200 px-6 py-2 text-gray-700">
-                    {po.tanggal_datang || "-"}
+                    {po.tanggal_datang ? formatToReadableLocal(po.tanggal_datang) : "-"}
                   </td>
                   <td className="border border-gray-200 px-6 py-2 text-gray-700">
                     {po.tanggal_entri
@@ -68,8 +68,23 @@ export default function PurchaseOrderTable({ filters }) {
                   <td className="border border-gray-200 px-6 py-2 text-gray-700">
                     {po.subtotal ?? 0}
                   </td>
-                  <td className="border border-gray-200 px-6 py-2 text-gray-700">
-                    {po.cetak}
+                  <td className="border border-gray-200 px-6 py-2 text-gray-700 text-center">
+                    {po.print_path ? (
+                      <a
+                        href={po.print_path}
+                        target="_blank"
+                        className="text-blue-600 hover:underline"
+                      >
+                        Lihat PDF
+                      </a>
+                    ) : (
+                      <button
+                        onClick={() => onPrint(po)}
+                        className="px-3 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded text-sm"
+                      >
+                        Cetak
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))

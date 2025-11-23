@@ -1,12 +1,15 @@
 import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import PageHeader from "../../components/PageHeader";
 import PurchaseUsedTable from "./PurchaseUsedTable";
 import PurchaseOrderTable from "./PurchaseOrderTable";
 import PermintaanDistribusiModal from "../distribusi/PermintaanDistribusiModal";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline";
 import PurchaseUsedModal from "./PurchaseUsedModal";
+import { fetchPurchaseOrders, printPurchaseOrder } from "../../store/purchaseSlice";
 
 export default function Purchase() {
+  const dispatch = useDispatch();
   const [showUsed, setShowUsed] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
@@ -21,6 +24,12 @@ export default function Purchase() {
     cetak: "",
     id_master_unit_supplier: "",
   });
+
+  const handlePrint = (po) => {
+    dispatch(printPurchaseOrder({ id: po.id }))
+      .unwrap()
+      .then(() => dispatch(fetchPurchaseOrders({ page: 1, limit: 20 })));
+  };
 
   return (
     <>
@@ -64,7 +73,10 @@ export default function Purchase() {
         />
 
         <div>
-          <PurchaseOrderTable filters={filters} />
+          <PurchaseOrderTable 
+            filters={filters} 
+            onPrint={handlePrint}
+          />
         </div>
       </div>
 
