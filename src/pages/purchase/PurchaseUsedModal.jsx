@@ -3,17 +3,12 @@ import { useDispatch } from "react-redux";
 import Select from "react-select";
 import axiosClient from "../../api/axiosClient";
 import { 
-  addPermintaanDistribusi,
-  editPermintaanDistribusi,
-  fetchPermintaanDistribusi,
   fetchPermintaanDistribusiById,
-  pemakaianBarang,
 } from "../../store/permintaanDistribusiSlice";
-import { kirimDistribusi } from "../../store/distribusiSlice";
 import { XMarkIcon, PlusCircleIcon } from "@heroicons/react/24/outline";
 import { toast } from "react-toastify";
 import { formatToReadableLocal, getLocalNow } from "../../helper/helper";
-import { createPurchaseOrder } from "../../store/purchaseSlice";
+import { createPurchaseOrder, fetchUsedBarang } from "../../store/purchaseSlice";
 
 export default function PurchaseUsedModal({ open, data, onClose }) {
   const dispatch = useDispatch();
@@ -60,9 +55,21 @@ export default function PurchaseUsedModal({ open, data, onClose }) {
   });
 
   const [items, setItems] = useState(data?.items || []);
-  const [itemModalOpen, setItemModalOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [errors, setErrors] = useState({});
+  const [subtotal, setSubtotal] = useState(0);
+  const [ppn, setPpn] = useState(11); // default 11%
+  const [grandTotal, setGrandTotal] = useState(0);
+  const [ppnValue, setPpnValue] = useState(0);
+
+  useEffect(() => {
+    const sub = items.reduce((sum, it) => sum + (parseFloat(it.total_harga) || 0), 0);
+    const ppnCalc = sub * (ppn / 100);
+    const total = sub + ppnCalc;
+
+    setSubtotal(sub);
+    setPpnValue(ppnCalc);
+    setGrandTotal(total);
+  }, [items, ppn]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -79,34 +86,36 @@ export default function PurchaseUsedModal({ open, data, onClose }) {
 
     setSubmitting(true);
 
-    // perlu diubah
     const payload = {
-      waktu: new Date(formData.waktu),
-      id_master_unit: parseInt(formData.id_master_unit),
-      id_master_unit_tujuan: parseInt(formData.id_master_unit_tujuan),
-      nomor_rm: formData.nomor_rm,
-      nama_pasien: formData.nama_pasien,
-      nama_ruang : formData.nama_ruang,
-      diagnosa: formData.diagnosa,
-      items: items.map((it) => ({
-        pdd_id : parseInt(it.pdd_id),
-        id_master_barang: parseInt(it.id_master_barang),
-        id_master_satuan: parseInt(it.id_master_satuan),
-        qty: it.qty,
-        qty_real: it.qty_real,
-      })),
+        tanggal_entri: new Date(formData.waktu),
+        tanggal_datang: new Date(formData.waktu_kirim),
+        id_master_unit: parseInt(formData.id_master_unit),
+        id_master_unit_tujuan: parseInt(formData.id_master_unit_tujuan),
+        nomor_rm: formData.nomor_rm,
+        nama_pasien: formData.nama_pasien,
+        nama_ruang : formData.nama_ruang,
+        diagnosa: formData.diagnosa,
+        subtotal: subtotal,
+        ppn: ppn,
+        total: grandTotal,
+        id_permintaan_distribusi: formData.pd_id,
+        items: items.map((it) => ({
+            id_permintaan_pemesanan_detail : parseInt(it.pdd_id),
+            id_barang: parseInt(it.id_master_barang),
+            harga_satuan: parseInt(it.barang_hpp),
+            qty: it.qty,
+            permintaan: it.qty_real,
+        })),
     };
-
 
     dispatch(createPurchaseOrder({payload}))
         .unwrap()
         .then(() => {
-          const distribusi = mode === "pemakaian"? false : mode === "distribusi"? true : null;
-          dispatch(fetchPermintaanDistribusi({ page: 1, limit: 20, onDistribusi: distribusi }));
+          dispatch(fetchUsedBarang({ page: 1, limit: 20 }));
           onClose();
         })
         .catch((err) => {
-        console.error("Save failed:", err);
+            console.error("Save failed:", err);
         })
         .finally(() => setSubmitting(false));
 
@@ -142,7 +151,7 @@ export default function PurchaseUsedModal({ open, data, onClose }) {
                   <label className="block text-sm font-medium">Waktu PO</label>
                   <input
                     type="datetime"
-                    name="waktu"
+                    name="tanggal_entri"
                     value={formData.waktu}
                     onChange={handleChange}
                     className="w-full border border-gray-300 rounded p-2 text-gray-500"
@@ -152,7 +161,7 @@ export default function PurchaseUsedModal({ open, data, onClose }) {
                   <label className="block text-sm font-medium">Waktu Pengiriman</label>
                   <input
                     type="datetime"
-                    name="waktu"
+                    name="tanggal_datang"
                     disabled={true}
                     value={formData.waktu_kirim}
                     onChange={handleChange}
@@ -273,6 +282,49 @@ export default function PurchaseUsedModal({ open, data, onClose }) {
                 )}
               </tbody>
             </table>
+
+            {/* ChatGPT: Do this, placed in right side */}
+            {/* === SUBTOTAL + PPN + TOTAL === */}
+            <div className="flex justify-end mt-6">
+                <div className="w-64 space-y-3 text-sm">
+                    
+                    {/* Subtotal */}
+                    <div className="flex justify-between">
+                        <span className="text-gray-600">Subtotal</span>
+                        <span className="font-semibold text-gray-800">
+                            {subtotal.toLocaleString("id-ID")}
+                        </span>
+                    </div>
+
+                    {/* PPN */}
+                    <div className="flex justify-between items-center">
+                        <span className="text-gray-600">PPN (%)</span>
+                        <div className="flex items-center">
+                            <input
+                                type="number"
+                                min="0"
+                                max="100"
+                                step="1"
+                                className="w-20 border border-gray-300 rounded p-1 text-right"
+                                value={ppn}
+                                onChange={(e) => setPpn(parseFloat(e.target.value) || 0)}
+                            />
+                        </div>
+                        
+                        <span className="text-gray-700 font-medium">
+                                {ppnValue.toLocaleString("id-ID")}
+                        </span>
+                    </div>
+
+                    {/* Total */}
+                    <div className="flex justify-between border-t pt-2">
+                        <span className="text-gray-700 font-medium">Total</span>
+                        <span className="text-lg font-bold text-gray-900">
+                            {grandTotal.toLocaleString("id-ID")}
+                        </span>
+                    </div>
+                </div>
+            </div>
           </div>
 
           {/* Footer */}
