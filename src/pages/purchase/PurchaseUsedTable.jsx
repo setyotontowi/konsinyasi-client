@@ -4,7 +4,7 @@ import { fetchUsedBarang } from "../../store/purchaseSlice";
 import Pagination from "../../components/Pagination";
 import { formatToReadableLocal } from "../../helper/helper";
 
-export default function PurchaseUsedTable() {
+export default function PurchaseUsedTable({ onDetail }) {
   const dispatch = useDispatch();
   const { list, pagination, loading } = useSelector(
     (state) => state.purchase.used
@@ -32,6 +32,7 @@ export default function PurchaseUsedTable() {
               <th className="px-6 py-3 border border-gray-200">No RM</th>
               <th className="px-6 py-3 border border-gray-200">Ruang</th>
               <th className="px-6 py-3 border border-gray-200">Jumlah Item</th>
+              <th className="px-6 py-3 border border-gray-200 text-center w-24">Aksi</th>
             </tr>
           </thead>
           <tbody>
@@ -66,6 +67,14 @@ export default function PurchaseUsedTable() {
                   </td>
                   <td className="border border-gray-200 px-6 py-2 text-gray-700">
                     {item.jumlah}
+                  </td>
+                  <td className="border border-gray-200 px-6 py-2 text-center">
+                    <button
+                      onClick={() => onDetail(item)}
+                      className="px-3 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded text-sm"
+                    >
+                      Detail
+                    </button>
                   </td>
                 </tr>
               ))

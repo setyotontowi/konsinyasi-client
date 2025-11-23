@@ -2,10 +2,18 @@ import { useState } from "react";
 import PageHeader from "../../components/PageHeader";
 import PurchaseUsedTable from "./PurchaseUsedTable";
 import PurchaseOrderTable from "./PurchaseOrderTable";
+import PermintaanDistribusiModal from "../distribusi/PermintaanDistribusiModal";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline";
 
 export default function Purchase() {
   const [showUsed, setShowUsed] = useState(true);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
+
+  const openDetailModal = (item) => {
+    setSelectedItem(item);
+    setModalOpen(true);
+  };
 
   // simple filters placeholder for future use
   const [filters] = useState({
@@ -38,7 +46,9 @@ export default function Purchase() {
           }`}
         >
           <div className="p-4">
-            <PurchaseUsedTable />
+            <PurchaseUsedTable 
+              onDetail={openDetailModal}
+            />
           </div>
         </div>
       </div>
@@ -56,6 +66,14 @@ export default function Purchase() {
           <PurchaseOrderTable filters={filters} />
         </div>
       </div>
+
+      {/* Modal */}
+      <PermintaanDistribusiModal
+        open={modalOpen}
+        mode="purchase"
+        data={selectedItem}
+        onClose={() => setModalOpen(false)}
+      />
     </>
   );
 }

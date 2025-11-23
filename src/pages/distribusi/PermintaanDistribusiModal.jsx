@@ -15,7 +15,7 @@ import { toast } from "react-toastify";
 import { formatToReadableLocal, getLocalNow } from "../../helper/helper";
 
 export default function PermintaanDistribusiModal({ open, mode, data, onClose }) {
-  const isView = mode === "view";
+  const isView = mode === "view" || mode === "purchase";
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -222,7 +222,9 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
       ? kirimDistribusi({id: data.pd_id, payload})
       : mode === "pemakaian" 
       ? pemakaianBarang({payload})
-      :null
+      : mode === "purchase"
+      ? null
+      : null
 
     dispatch(action)
         .unwrap()
@@ -263,6 +265,8 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
           ? "Pengiriman Barang"
           : mode === "pemakaian"
           ? "Pemakaian Barang"
+          : mode === "purchase"
+          ? "Detail Pemakaian - Buat PO"
           : "Permintaan Distribusi"
         }
         </h2>
@@ -489,7 +493,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
             >
               Batal
             </button>
-            {!isView && (
+            {!isView || mode === "purchase" && (
               <button
                 type="submit"
                 disabled={submitting || (mode === "pemakaian" && Object.keys(errors).length > 0)}
@@ -508,6 +512,8 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                   ? "Kirim Barang"
                   : mode === "pemakaian"
                   ? "Simpan Transaksi"
+                  : mode === "purchase"
+                  ? "Buat PO"
                   : ""}
               </button>
             )}
