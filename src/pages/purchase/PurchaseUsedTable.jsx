@@ -81,7 +81,7 @@ export default function PurchaseUsedTable({ onDetail }) {
             ) : (
               <tr>
                 <td
-                  colSpan="4"
+                  colSpan="7"
                   className="text-center text-gray-500 py-4 border border-gray-200"
                 >
                   Tidak ada data barang terpakai.
