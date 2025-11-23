@@ -9,6 +9,7 @@ import distribusiReducer from "./distribusiSlice"
 import stokOpnameSlice from "./stokOpnameSlice"
 import journalSlice from "./journalSlice"
 import stokSlice from "./stokSlice"
+import purchaseSlice from "./purchaseSlice"
 
 export const store = configureStore({
   reducer: {
@@ -22,6 +23,7 @@ export const store = configureStore({
     stokOpname: stokOpnameSlice,
     journal: journalSlice,
     stok: stokSlice,
+    purchase: purchaseSlice, 
   },
 });
 

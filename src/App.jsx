@@ -20,6 +20,7 @@ import PemakaianDistribusi from './pages/pemakaian/PemakaianDistribusi'
 import Stok from './pages/stok/Stok'
 
 import Journal from './pages/journal/Journal'
+import Purchase from './pages/purchase/Purchase'
 
 export default function App() {
   return (
@@ -52,7 +53,7 @@ export default function App() {
           </Route>
 
           <Route path="penjualan">
-            <Route path="order" element={<StokOpname />} />
+            <Route path="order" element={<Purchase />} />
             <Route path="purchase" element={<Journal />} />
           </Route>
 
