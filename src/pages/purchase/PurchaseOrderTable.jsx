@@ -19,7 +19,7 @@ export default function PurchaseOrderTable({ mode="purchase", filters, onPrint, 
       dispatch(fetchPurchaseOrders({ page, limit, filters }));
     }, 400);
     return () => clearTimeout(delay);
-  }, [dispatch, page, filters]);
+  }, [dispatch, page, filters, onConfirm]);
 
   return (
     <div className="m-6 bg-white">
@@ -95,15 +95,25 @@ export default function PurchaseOrderTable({ mode="purchase", filters, onPrint, 
                     )}
                   </td>
                   {mode === "sale" && (
-                  <td className="border border-gray-200 px-6 py-2 text-center">
-                    <button
-                      onClick={() => onConfirm(po)}
-                      className="px-3 py-1 bg-green-50 hover:bg-green-100 text-green-700 rounded text-sm"
-                    >
-                      Konfirmasi
-                    </button>
-                  </td>
-                )}
+                    <td className="border border-gray-200 px-6 py-2 text-center">
+
+                      {po.vendor_confirmation_at ? (
+                        // Already confirmed → show timestamp
+                        <span className="text-green-700 font-medium">
+                          {formatToReadableLocal(po.vendor_confirmation_at)}
+                        </span>
+                      ) : (
+                        // Not confirmed → show button
+                        <button
+                          onClick={() => onConfirm(po)}
+                          className="px-3 py-1 bg-green-50 hover:bg-green-100 text-green-700 rounded text-sm"
+                        >
+                          Konfirmasi
+                        </button>
+                      )}
+
+                    </td>
+                  )}
                 </tr>
               ))
             ) : (

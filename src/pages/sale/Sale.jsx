@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import PageHeader from "../../components/PageHeader";
 import PurchaseOrderTable from "../purchase/PurchaseOrderTable";
 import ConfirmationModal from "../../components/ConfirmationModal";
+import { confirmPurchaseOrder } from "../../store/purchaseSlice";
 
 export default function Sale() {
   const dispatch = useDispatch();

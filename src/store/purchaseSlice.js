@@ -69,7 +69,6 @@ export const confirmPurchaseOrder = createAsyncThunk(
   "purchase/confirmPurchaseOrder",
   async ({ id }, { rejectWithValue }) => {
     try {
-      // TODO: backend endpoint will be implemented later
       const res = await axiosClient.post(`/purchase/${id}/confirm`);
       return res.data; // { id }
     } catch (err) {
