@@ -14,6 +14,13 @@ import { XMarkIcon, PlusCircleIcon } from "@heroicons/react/24/outline";
 import { toast } from "react-toastify";
 import { formatToReadableLocal, getLocalNow } from "../../helper/helper";
 
+
+// Mode
+// add, edit, view [Permintaan Distribusi]
+// distribusi, [Distribusi] 
+// pemakaian, [Penggunaan Barang]
+// purchase [Purchase Order]
+// 
 export default function PermintaanDistribusiModal({ open, mode, data, onClose }) {
   const isView = mode === "view" || mode === "purchase";
   const dispatch = useDispatch();
@@ -50,11 +57,12 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
       nama_ruang: "",
       diagnosa: "",
     });
-    setItems([]); // ✅ clear item list
+    setItems([]); 
   }
 }, [data?.pd_id, open, mode]);
 
   const [formData, setFormData] = useState({
+    pd_id: data?.pd_id,
     waktu: data?.waktu ? formatToReadableLocal(data.waktu) : getLocalNow(),
     id_master_unit: data?.id_master_unit || "",
     id_master_unit_tujuan: data?.id_master_unit_tujuan || "",
@@ -214,6 +222,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
     };
 
 
+    console.log(mode);
     const action = mode === "add"
       ? addPermintaanDistribusi(payload)
       : mode === "edit"
@@ -221,7 +230,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
       : mode === "distribusi"
       ? kirimDistribusi({id: data.pd_id, payload})
       : mode === "pemakaian" 
-      ? pemakaianBarang({payload})
+      ? pemakaianBarang({id: data.pd_id, payload})
       : mode === "purchase"
       ? null
       : null
@@ -424,8 +433,9 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                       {mode === "pemakaian" && (
                         <td className="border border-gray-200 px-3 py-2 w-50">
                           <input
+                            key={`${open}-${i}-${item.qty_real ?? "empty"}`}
                             type="text"
-                            defaultValue={item.qty_real || item.qty}
+                            defaultValue={item.qty_real}
                             onBlur={(e) => {
                               let val = parseFloat(e.target.value);
 
@@ -451,7 +461,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                               }
 
                               // Save the corrected value
-                              setItems((prev) =>
+                              setItems((prev) => 
                                 prev.map((it, idx) =>
                                   idx === i ? { ...it, qty_real: val } : it
                                 )
@@ -493,7 +503,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
             >
               Batal
             </button>
-            {!isView || mode === "purchase" && (
+            {!isView  && (
               <button
                 type="submit"
                 disabled={submitting || (mode === "pemakaian" && Object.keys(errors).length > 0)}

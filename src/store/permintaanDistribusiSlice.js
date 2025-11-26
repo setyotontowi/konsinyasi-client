@@ -94,7 +94,7 @@ export const pemakaianBarang = createAsyncThunk(
   "permintaanDistribusi/edit",
   async ({ id, payload }, { rejectWithValue }) => {
     try {
-      const res = await axiosClient.put(`/distribusi/pemakaian`, payload);
+      const res = await axiosClient.put(`/distribusi/pemakaian/${id}`, payload);
       toast.success("Permintaan distribusi berhasil diperbarui!");
       return res.data;
     } catch (err) {

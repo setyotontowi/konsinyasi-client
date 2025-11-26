@@ -6,6 +6,10 @@ import Pagination from "../../components/Pagination";
 import { EyeIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
 
 
+// onDistribusi
+// true = dipakai di halaman distribusi. menampilkan data yang belum didistribusikan saja
+// false = dipakai di halaman pemakaian distribusi. menampilkan data yang sudah didistribusikan saja.
+// null = dipakai di halaman permintaan distribusi. menampilkan semua data, baik yang belum dan yang sudah.
 export default function PermintaanDistribusiTable({ search, filters, onView, onEdit, onDelete, onDistribusi, onCountChange}) {
   const dispatch = useDispatch();
   const { list, pagination, loading } = useSelector((state) => state.permintaanDistribusi);
@@ -45,8 +49,12 @@ export default function PermintaanDistribusiTable({ search, filters, onView, onE
               <th className="px-6 py-3 font-medium border border-gray-200">Unit Asal</th>
               <th className="px-6 py-3 font-medium border border-gray-200">Unit Tujuan</th>
               <th className="px-6 py-3 font-medium border border-gray-200">Status</th>
+              {
+                onDistribusi === false && (
+                  <th className="px-6 py-3 font-medium border border-gray-200 w-10">Sudah dipakai</th>
+                )
+              }
               <th className="px-6 py-3 font-medium border border-gray-200 w-10">Aksi</th>
-              
             </tr>
           </thead>
           <tbody>
@@ -89,6 +97,20 @@ export default function PermintaanDistribusiTable({ search, filters, onView, onE
                 >
                   {d.status_distribusi || "Belum Didistribusikan"}
                 </td>
+
+                {onDistribusi === false && (
+                  <td className="border border-gray-200 px-6 py-2 text-center">
+                    {d.sudah_dipakai ? (
+                      <span className="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
+                        Ya
+                      </span>
+                    ) : (
+                      <span className="px-2 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-medium">
+                        Belum
+                      </span>
+                    )}
+                  </td>
+                )}
 
                 {/* Actions */}
                 {!onDistribusi && (
