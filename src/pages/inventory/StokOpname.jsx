@@ -46,7 +46,7 @@ export default function StokOpname() {
 
   // LOAD UNITS
   useEffect(() => {
-    axiosClient.get("/unit").then((res) => {
+    axiosClient.get("/unit?.is_pbf=Ya").then((res) => {
       const list = res.data?.data || [];
 
       const pbfUnits = [];

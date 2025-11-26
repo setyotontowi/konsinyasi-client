@@ -83,7 +83,7 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
 
     setLoading((l) => ({ ...l, unit: true }));
     axiosClient
-      .get("/unit")
+      .get("/unit?is_pbf=Ya")
       .then((res) => {
         setUnits(
           (res.data?.data || []).map((u) => ({
@@ -400,6 +400,7 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
                 }
             }}
             initialData={editingIndex !== null ? form.details[editingIndex] : null}
+            pbf = {form.id_master_unit}
         />
 
       </div>

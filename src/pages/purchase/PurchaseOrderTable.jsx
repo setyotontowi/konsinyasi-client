@@ -119,7 +119,7 @@ export default function PurchaseOrderTable({ mode="purchase", filters, onPrint, 
             ) : (
               <tr>
                 <td
-                  colSpan="7"
+                  colSpan="9"
                   className="text-center text-gray-500 py-4 border border-gray-200"
                 >
                   Tidak ada data purchase order.

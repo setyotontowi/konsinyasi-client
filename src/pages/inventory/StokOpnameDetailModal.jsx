@@ -9,6 +9,7 @@ export default function StokOpnameDetailModal({
   onClose,
   onAddDetail,
   initialData,
+  pbf,
 }) {
   const [barangOptions, setBarangOptions] = useState([]);
   const [edOptions, setEdOptions] = useState([]);
@@ -79,7 +80,7 @@ export default function StokOpnameDetailModal({
   useEffect(() => {
     if (open) {
       axiosClient
-        .get("/barang/items")
+        .get(`/barang/items?nama_pabrik=${pbf}`)
         .then((res) =>
           setBarangOptions(
             res.data.data.map((b) => ({
