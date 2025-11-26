@@ -4,7 +4,7 @@ import { fetchUsedBarang } from "../../store/purchaseSlice";
 import Pagination from "../../components/Pagination";
 import { formatToReadableLocal } from "../../helper/helper";
 
-export default function PurchaseUsedTable({ onDetail }) {
+export default function PurchaseUsedTable({ onDetail, refresh }) {
   const dispatch = useDispatch();
   const { list, pagination, loading } = useSelector(
     (state) => state.purchase.used
@@ -18,7 +18,7 @@ export default function PurchaseUsedTable({ onDetail }) {
       dispatch(fetchUsedBarang({ page, limit }));
     }, 400);
     return () => clearTimeout(delay);
-  }, [dispatch, page]);
+  }, [dispatch, page, refresh]);
 
   return (
     <div className="m-6 bg-white">

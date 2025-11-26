@@ -98,7 +98,7 @@ export default function PurchaseUsedModal({ open, data, onClose }) {
         subtotal: subtotal,
         ppn: ppn,
         total: grandTotal,
-        id_permintaan_distribusi: formData.pd_id,
+        id_permintaan_distribusi: data?.pd_id,
         items: items.map((it) => ({
             id_permintaan_pemesanan_detail : parseInt(it.pdd_id),
             id_barang: parseInt(it.id_master_barang),
@@ -111,6 +111,7 @@ export default function PurchaseUsedModal({ open, data, onClose }) {
     dispatch(createPurchaseOrder({payload}))
         .unwrap()
         .then(() => {
+          toast.success("Berhasil membuat Purchase Order")
           dispatch(fetchUsedBarang({ page: 1, limit: 20 }));
           onClose();
         })

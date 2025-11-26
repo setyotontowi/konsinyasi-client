@@ -4,7 +4,7 @@ import { fetchPurchaseOrders } from "../../store/purchaseSlice";
 import Pagination from "../../components/Pagination";
 import { formatToReadableLocal } from "../../helper/helper";
 
-export default function PurchaseOrderTable({ mode="purchase", filters, onPrint, onConfirm}) {
+export default function PurchaseOrderTable({ mode="purchase", filters, onPrint, onConfirm, refresh}) {
   const dispatch = useDispatch();
   
   const { list, pagination, loading } = useSelector(
@@ -19,7 +19,7 @@ export default function PurchaseOrderTable({ mode="purchase", filters, onPrint, 
       dispatch(fetchPurchaseOrders({ page, limit, filters }));
     }, 400);
     return () => clearTimeout(delay);
-  }, [dispatch, page, filters, onConfirm]);
+  }, [dispatch, page, filters, onConfirm, refresh]);
 
   return (
     <div className="m-6 bg-white">
@@ -71,7 +71,7 @@ export default function PurchaseOrderTable({ mode="purchase", filters, onPrint, 
                       : "-"}
                   </td>
                   <td className="border border-gray-200 px-6 py-2 text-gray-700">
-                    {po.ppn ?? 0}
+                    {po.ppn ?? 0}%
                   </td>
                   <td className="border border-gray-200 px-6 py-2 text-gray-700">
                     {po.subtotal ?? 0}

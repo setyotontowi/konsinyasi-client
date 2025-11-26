@@ -13,6 +13,12 @@ export default function Purchase() {
   const [showUsed, setShowUsed] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
+  const [refreshUsed, setRefreshUsed] = useState(false);
+
+  const closeModal = () => {
+    setModalOpen(false);
+    setRefreshUsed(prev => !prev); // toggle to force refresh
+  };
 
   const openDetailModal = (item) => {
     setSelectedItem(item);
@@ -58,6 +64,7 @@ export default function Purchase() {
           <div className="p-4">
             <PurchaseUsedTable 
               onDetail={openDetailModal}
+              refresh={refreshUsed}
             />
           </div>
         </div>
@@ -76,6 +83,7 @@ export default function Purchase() {
           <PurchaseOrderTable 
             filters={filters} 
             onPrint={handlePrint}
+            refresh={refreshUsed}
           />
         </div>
       </div>
@@ -84,7 +92,7 @@ export default function Purchase() {
       <PurchaseUsedModal
         open={modalOpen}
         data={selectedItem}
-        onClose={() => setModalOpen(false)}
+        onClose={closeModal}
       />
     </>
   );
