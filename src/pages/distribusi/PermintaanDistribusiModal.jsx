@@ -412,7 +412,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                 <tr>
                   <th className="px-3 py-2 border border-gray-200">Barang</th>
                   <th className="px-3 py-2 border border-gray-200">Satuan</th>
-                  <th className="px-3 py-2 border border-gray-200">Qty</th>
+                  <th className="px-3 py-2 border border-gray-200 text-center">Qty</th>
                   {mode === "pemakaian" ? (
                   <th className="px-3 py-2 border border-gray-200">Pemakaian</th>
                   ) : (
@@ -432,7 +432,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                     <tr key={i} className="border border-gray-200 hover:bg-gray-50">
                       <td className="border border-gray-200 px-3 py-2">{item.nama_barang}</td>
                       <td className="border border-gray-200 px-3 py-2">{item.nama_satuan}</td>
-                      <td className="border border-gray-200 px-3 py-2">{item.qty}</td>
+                      <td className="border border-gray-200 px-3 py-2 text-center">{item.qty}</td>
                       {/* Input Pemakaian */}
                       {mode === "pemakaian" && (
                         <td className="border border-gray-200 px-3 py-2 w-50">
@@ -471,7 +471,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                                 )
                               );
                             }}
-                            className="w-full border border-blue-600 rounded p-1"
+                            className="w-full border border-blue-600 rounded p-1 text-center"
                           />
 
                           {/* Inline error text */}
