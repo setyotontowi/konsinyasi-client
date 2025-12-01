@@ -22,8 +22,10 @@ import { formatToReadableLocal, getLocalNow } from "../../helper/helper";
 // purchase [Purchase Order]
 // 
 export default function PermintaanDistribusiModal({ open, mode, data, onClose }) {
-  const isView = mode === "view" || mode === "purchase";
+  const isView = mode === "view" || mode === "purchase" || mode === "distribusi_view";
   const dispatch = useDispatch();
+
+  console.log(mode);
 
   useEffect(() => {
    if (open && (mode !== "add") && data?.pd_id) {
@@ -330,7 +332,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
             </div>
 
             {/* Data Pasien */}
-            {mode !== "distribusi" && (
+            {mode !== "distribusi" && mode !== "distribusi_view" && (
             <div>
               <h3 className="font-semibold text-sm mb-2 text-gray-600 uppercase">Data Pasien</h3>
               <div className="space-y-2">

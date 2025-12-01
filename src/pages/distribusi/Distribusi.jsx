@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   openAddModal,
-  openViewModal,
+  openDistribusiViewModal,
   openDistribusiModal,
   closeModal,
 } from "../../store/permintaanDistribusiSlice";
@@ -116,7 +116,7 @@ export default function Distribusi() {
         <div>
           <DistribusiTable
             filters={filters}
-            onView={(item) => dispatch(openViewModal(item))}
+            onView={(item) => dispatch(openDistribusiViewModal(item))}
           />
         </div>
       </div>
