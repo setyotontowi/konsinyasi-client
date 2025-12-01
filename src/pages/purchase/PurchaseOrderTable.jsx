@@ -29,9 +29,9 @@ export default function PurchaseOrderTable({ mode="purchase", filters, onPrint, 
             <tr>
               <th className="px-6 py-3 border border-gray-200">No</th>
               <th className="px-6 py-3 border border-gray-200">No. PO</th>
-              <th className="px-6 py-3 border border-gray-200">Tanggal</th>
-              <th className="px-6 py-3 border border-gray-200">Tanggal Datang</th>
-              <th className="px-6 py-3 border border-gray-200">Tanggal Entri</th>
+              <th className="px-6 py-3 border border-gray-200">Waktu Input</th>
+              <th className="px-6 py-3 border border-gray-200">Waktu Distribusi</th>
+              <th className="px-6 py-3 border border-gray-200">Waktu Penggunaan</th>
               <th className="px-6 py-3 border border-gray-200">PPN</th>
               <th className="px-6 py-3 border border-gray-200">Subtotal</th>
               <th className="px-6 py-3 border border-gray-200">Cetak</th>

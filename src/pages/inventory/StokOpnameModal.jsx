@@ -255,7 +255,7 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
                   Detail Barang
                 </h3>
                 <p className="text-gray-500 text-xs italic">
-                  Barang yang sudah ditambahkan dapat dilihat di tabel
+                  Barang yang sudah ditransaksikan tidak dapat diubah
                 </p>
               </div>
 
