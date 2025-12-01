@@ -4,6 +4,8 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   openViewModal,
   openDistribusiModal,
+  openPemakaianInputModal,
+  openPemakaianViewModal,
   closeModal,
   fetchPermintaanDistribusi,
 } from "../../store/permintaanDistribusiSlice";
@@ -72,7 +74,8 @@ export default function PemakaianDistribusi() {
 
       <PermintaanDistribusiTable
         search={search}
-        onView={(item) => dispatch(openDistribusiModal(item))}
+        onView={(item) => dispatch(openPemakaianViewModal(item))}
+        onInput={(item) => dispatch(openPemakaianInputModal(item))}
         onDistribusi={false}
         filters={filters}
       />
@@ -80,7 +83,7 @@ export default function PemakaianDistribusi() {
       {/* Reuse the same modal, but we'll detect mode = 'pemakaian' inside it */}
       <PermintaanDistribusiModal
         open={modalOpen}
-        mode={"pemakaian"}
+        mode={mode}
         data={selectedItem}
         onClose={() => dispatch(closeModal())}
       />

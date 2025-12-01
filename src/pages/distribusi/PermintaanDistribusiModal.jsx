@@ -22,7 +22,7 @@ import { formatToReadableLocal, getLocalNow } from "../../helper/helper";
 // purchase [Purchase Order]
 // 
 export default function PermintaanDistribusiModal({ open, mode, data, onClose }) {
-  const isView = mode === "view" || mode === "purchase" || mode === "distribusi_view";
+  const isView = mode === "view" || mode === "purchase" || mode === "distribusi_view" || mode === "pemakaian_view";
   const dispatch = useDispatch();
 
   console.log(mode);
@@ -241,7 +241,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
     dispatch(action)
         .unwrap()
         .then(() => {
-          const distribusi = mode === "pemakaian"? false : mode === "distribusi"? true : null;
+          const distribusi = (mode === "pemakaian" || mode === "pemakaian_view")? false : mode === "distribusi"? true : null;
           dispatch(fetchPermintaanDistribusi({ page: 1, limit: 20, onDistribusi: distribusi }));
           onClose();
         })
@@ -413,7 +413,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                   <th className="px-3 py-2 border border-gray-200">Barang</th>
                   <th className="px-3 py-2 border border-gray-200">Satuan</th>
                   <th className="px-3 py-2 border border-gray-200 text-center">Qty</th>
-                  {mode === "pemakaian" ? (
+                  {mode === "pemakaian" || mode === "pemakaian_view" ? (
                   <th className="px-3 py-2 border border-gray-200">Pemakaian</th>
                   ) : (
                     <th className="px-3 py-2 border border-gray-200 w-10">Aksi</th>
@@ -434,11 +434,12 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                       <td className="border border-gray-200 px-3 py-2">{item.nama_satuan}</td>
                       <td className="border border-gray-200 px-3 py-2 text-center">{item.qty}</td>
                       {/* Input Pemakaian */}
-                      {mode === "pemakaian" && (
+                      {(mode === "pemakaian" || mode === "pemakaian_view") && (
                         <td className="border border-gray-200 px-3 py-2 w-50">
                           <input
                             key={`${open}-${i}-${item.qty_real ?? "empty"}`}
-                            type="text"
+                            type="number"
+                            disabled={mode === "pemakaian_view"}
                             defaultValue={item.qty_real}
                             onBlur={(e) => {
                               let val = parseFloat(e.target.value);

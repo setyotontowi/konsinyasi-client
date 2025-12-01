@@ -10,7 +10,7 @@ import { EyeIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
 // true = dipakai di halaman distribusi. menampilkan data yang belum didistribusikan saja
 // false = dipakai di halaman pemakaian distribusi. menampilkan data yang sudah didistribusikan saja.
 // null = dipakai di halaman permintaan distribusi. menampilkan semua data, baik yang belum dan yang sudah.
-export default function PermintaanDistribusiTable({ search, filters, onView, onEdit, onDelete, onDistribusi, onCountChange}) {
+export default function PermintaanDistribusiTable({ search, filters, onView, onInput, onEdit, onDelete, onDistribusi, onCountChange}) {
   const dispatch = useDispatch();
   const { list, pagination, loading } = useSelector((state) => state.permintaanDistribusi);
   const { page, totalPages, totalItems } = pagination;
@@ -117,12 +117,25 @@ export default function PermintaanDistribusiTable({ search, filters, onView, onE
                   <td className="border border-gray-200 px-6 py-2 text-center">
                     <div className="flex justify-center gap-2">
                       {d.terdistribusi ? (
-                        <button
-                          onClick={() => onView(d)}
-                          className="flex items-center gap-1 px-3 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded text-sm transition"
-                        >
-                          <EyeIcon className="h-4 w-4" /> Lihat
-                        </button>
+                        <>
+                          {d.sudah_dipakai ? (
+                            // === Lihat Button ===
+                            <button
+                              onClick={() => onView(d)}
+                              className="flex items-center gap-1 px-3 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded text-sm transition"
+                            >
+                              <EyeIcon className="h-4 w-4" /> Lihat
+                            </button>
+                          ) : (
+                            // === Input Button ===
+                            <button
+                              onClick={() => onInput(d)}
+                              className="flex items-center gap-1 px-3 py-1 bg-green-50 hover:bg-green-100 text-green-700 rounded text-sm transition"
+                            >
+                              <PencilIcon className="h-4 w-4" /> Input
+                            </button>
+                          )}
+                        </>
                       ) : (
                         <>
                           <button

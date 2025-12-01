@@ -179,6 +179,16 @@ const permintaanDistribusiSlice = createSlice({
       state.mode = "distribusi";
       state.selectedItem = action.payload;
     },
+    openPemakaianViewModal: (state, action) => {
+      state.modalOpen = true;
+      state.mode = "pemakaian_view";
+      state.selectedItem = action.payload;
+    },
+    openPemakaianInputModal: (state, action) => {
+      state.modalOpen = true;
+      state.mode = "pemakaian";
+      state.selectedItem = action.payload;
+    },
   },
 
   extraReducers: (builder) => {
@@ -233,6 +243,8 @@ export const {
   openViewModal, 
   openDistribusiModal,
   openDistribusiViewModal,
+  openPemakaianViewModal,
+  openPemakaianInputModal,
   closeModal,
   openDeleteConfirm,
   closeDeleteConfirm,
