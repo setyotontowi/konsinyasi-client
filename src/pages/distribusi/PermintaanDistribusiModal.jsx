@@ -146,7 +146,8 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
           (res.data?.data || []).map((b) => ({
             value: b.barang_id,
             label: b.barang_nama,
-            id_satuan_kecil: b.id_satuan_kecil
+            id_satuan_kecil: b.id_satuan_kecil,
+            nama_satuan : b.nama_satuan
           }))
         );
       })
@@ -318,7 +319,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                   <Select
                     options={unitsPBF}
                     placeholder="Pilih unit tujuan..."
-                    isDisabled={isView}
+                    isDisabled={isView || items.length > 0} 
                     value={unitsPBF.find((u) => u.value === formData.id_master_unit_tujuan) || null}
                     onChange={(opt) => handleSelectChange("id_master_unit_tujuan", opt)}
                     className="react-select-container"
@@ -394,6 +395,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                         toast.error("Pilih unit tujuan terlebih dahulu sebelum menambah item.");
                         return;
                       }
+                      setStockAvailable(null);
                       setItemModalOpen(true);
                     }}
                     className="flex items-center gap-1 text-blue-600 hover:text-blue-800"
@@ -554,6 +556,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                         handleItemOptionChange("id_master_barang", id);
                         handleItemOptionChange("nama_barang", opt ? opt.label : "");
                         handleItemOptionChange("id_master_satuan", opt ? opt.id_satuan_kecil : "");
+                        handleItemOptionChange("nama_satuan", opt ? opt.nama_satuan : "");
 
                         setStockAvailable(null);   // reset before fetching
                         setQtyError("");
