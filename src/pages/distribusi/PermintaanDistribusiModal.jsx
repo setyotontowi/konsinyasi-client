@@ -414,7 +414,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                   <th className="px-3 py-2 border border-gray-200">Satuan</th>
                   <th className="px-3 py-2 border border-gray-200 text-center">Qty</th>
                   {mode === "pemakaian" || mode === "pemakaian_view" ? (
-                  <th className="px-3 py-2 border border-gray-200">Pemakaian</th>
+                    <th className="px-3 py-2 border border-gray-200">Pemakaian</th>
                   ) : (
                     <th className="px-3 py-2 border border-gray-200 w-10">Aksi</th>
                   )}
@@ -481,16 +481,20 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                           )}
                         </td>
                       )}
-                      {!isView && mode !== "pemakaian" && mode !== "distribusi" && (
-                      <td className="border border-gray-200 px-3 py-2 text-center">
-                          <button
-                          type="button"
-                          onClick={() => handleRemoveItem(i)}
-                          className="text-red-600 hover:underline"
-                          >
-                          Hapus
-                          </button>
-                      </td>
+                      {!isView && mode !== "pemakaian" && mode !== "distribusi" ? (
+                        <td className="border border-gray-200 px-3 py-2 text-center">
+                            <button
+                            type="button"
+                            onClick={() => handleRemoveItem(i)}
+                            className="text-red-600 hover:underline"
+                            >
+                            Hapus
+                            </button>
+                        </td>
+                      ) : isView && (
+                        <td className="border border-gray-200 px-3 py-2 text-center">
+                            <span className="text-gray-400 text-xs italic">Locked</span>
+                        </td>
                       )}
                     </tr>
                   ))

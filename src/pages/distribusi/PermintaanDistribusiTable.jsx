@@ -118,21 +118,21 @@ export default function PermintaanDistribusiTable({ search, filters, onView, onI
                     <div className="flex justify-center gap-2">
                       {d.terdistribusi ? (
                         <>
-                          {d.sudah_dipakai ? (
-                            // === Lihat Button ===
-                            <button
-                              onClick={() => onView(d)}
-                              className="flex items-center gap-1 px-3 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded text-sm transition"
-                            >
-                              <EyeIcon className="h-4 w-4" /> Lihat
-                            </button>
-                          ) : (
-                            // === Input Button ===
+                          {( !d.sudah_dipakai && onDistribusi === false ) ? (
+                            // --- Input Button ---
                             <button
                               onClick={() => onInput(d)}
                               className="flex items-center gap-1 px-3 py-1 bg-green-50 hover:bg-green-100 text-green-700 rounded text-sm transition"
                             >
                               <PencilIcon className="h-4 w-4" /> Input
+                            </button>
+                          ) : (
+                            // --- Lihat Button ---
+                            <button
+                              onClick={() => onView(d)}
+                              className="flex items-center gap-1 px-3 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded text-sm transition"
+                            >
+                              <EyeIcon className="h-4 w-4" /> Lihat
                             </button>
                           )}
                         </>
