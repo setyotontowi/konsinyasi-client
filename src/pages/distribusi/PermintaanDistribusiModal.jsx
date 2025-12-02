@@ -207,6 +207,16 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
 
     setSubmitting(true);
 
+    if (mode === "pemakaian") {
+      const ok = window.confirm(
+        "Apakah data sudah benar? Transaksi pemakaian tidak bisa diubah kembali."
+      );
+      if (!ok) {
+        setSubmitting(false);
+        return;
+      }
+    }
+
     const payload = {
       waktu: new Date(formData.waktu),
       id_master_unit: parseInt(formData.id_master_unit),
@@ -225,7 +235,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
     };
 
 
-    console.log(mode);
+    
     const action = mode === "add"
       ? addPermintaanDistribusi(payload)
       : mode === "edit"
