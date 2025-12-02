@@ -307,7 +307,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                   <Select
                     options={units}
                     placeholder="Pilih unit asal..."
-                    isDisabled={isView}
+                    isDisabled={isView || mode === 'distribusi'}
                     value={units.find((u) => u.value === formData.id_master_unit) || null}
                     onChange={(opt) => handleSelectChange("id_master_unit", opt)}
                     className="react-select-container"
