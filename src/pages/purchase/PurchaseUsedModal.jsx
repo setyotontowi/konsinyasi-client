@@ -151,7 +151,7 @@ export default function PurchaseUsedModal({ open, data, onClose }) {
                 <div>
                   <label className="block text-sm font-medium">Waktu PO</label>
                   <input
-                    type="datetime"
+                    type="datetime-local"
                     name="tanggal_entri"
                     value={formData.waktu}
                     onChange={handleChange}
@@ -161,7 +161,7 @@ export default function PurchaseUsedModal({ open, data, onClose }) {
                 <div>
                   <label className="block text-sm font-medium">Waktu Pengiriman</label>
                   <input
-                    type="datetime"
+                    type="datetime-local"
                     name="tanggal_datang"
                     disabled={true}
                     value={formData.waktu_kirim}

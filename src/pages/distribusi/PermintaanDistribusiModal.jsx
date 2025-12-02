@@ -293,7 +293,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                 <div>
                   <label className="block text-sm font-medium">Waktu</label>
                   <input
-                    type="datetime"
+                    type="datetime-local"
                     name="waktu"
                     disabled={isView}
                     value={formData.waktu}
