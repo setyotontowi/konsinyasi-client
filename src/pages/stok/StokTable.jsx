@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchStok } from "../../store/stokSlice";
 import Pagination from "../../components/Pagination";
 
-const StokTable = ({ filters }) => {
+const StokTable = ({ search }) => {
   const dispatch = useDispatch();
   const { list, loading, error, pagination } = useSelector(
     (state) => state.stok
@@ -20,11 +20,11 @@ const StokTable = ({ filters }) => {
 
   useEffect(() => {
     const delay = setTimeout(() => {
-      dispatch(fetchStok({ page: currentPage, limit, ...filters }));
+      dispatch(fetchStok({ page: currentPage, limit, search:search }));
     }, 400);
 
     return () => clearTimeout(delay);
-  }, [dispatch, currentPage, filters]);
+  }, [dispatch, currentPage, search]);
 
   if (loading) return <div>Loading...</div>;
   if (error)

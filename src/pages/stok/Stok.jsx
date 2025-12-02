@@ -7,7 +7,7 @@ import StokFilterModal from "./StokFilterModal";
 
 export default function Stok() {
   const [filters, setFilters] = useState({});
-  const [filterOpen, setFilterOpen] = useState(false);
+  const [search, setSearch] = useState("");
 
   return (
     <div className="rounded-2xl bg-white border border-gray-200">
@@ -16,19 +16,15 @@ export default function Stok() {
         AddIcon={ArchiveBoxIcon}
         addLabel="Stok"
         disableAdd={true}
-        disableSearch={true}
-        onFilter={() => setFilterOpen(true)}
-        disableFilter={false}
+        disableSearch={false}
+        searchPlaceholder={"Cari Barang"}
+        search={search}
+        setSearch={setSearch}
+        disableFilter={true}
       />
 
-      <StokTable filters={filters} />
+      <StokTable search={search} />
 
-      <StokFilterModal
-        open={filterOpen}
-        onClose={() => setFilterOpen(false)}
-        onApply={(f) => setFilters(f)}
-        initialFilters={filters}
-        />
     </div>
   );
 }
