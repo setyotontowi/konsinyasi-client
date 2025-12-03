@@ -139,11 +139,13 @@ export default function StokOpnameDetailModal({
     const ed = isNewEd ? newEd : selectedEd?.value;
     const nobatch = isNewNoBatch ? newNoBatch : selectedNobatch?.value;
 
+    console.log(barang, ed, nobatch)
+
     if (barang && ed && nobatch && !isNewEd && !isNewNoBatch) {
       axiosClient
-        .get("/inventory/check-stock", { barang, ed, nobatch })
+        .get("/inventory/check-stock", {params: { barang, ed, nobatch }})
         .then((res) => setSisa(res.data.data?.sisa ?? 0))
-        // .catch(() => toast.error("Gagal memeriksa stok"));
+        .catch(() => toast.error("Gagal memeriksa stok"));
     }
   }, [
     selectedBarang,
@@ -319,7 +321,7 @@ export default function StokOpnameDetailModal({
           </div>
 
           {/* HPP */}
-          <div>
+          {/* <div>
             <label className="block text-xs mb-1">HPP (Harga Pokok)</label>
             <input
               type="text"
@@ -328,7 +330,7 @@ export default function StokOpnameDetailModal({
               className="border border-gray-300 rounded w-full p-2"
               placeholder="Masukkan harga pokok"
             />
-          </div>
+          </div> */}
 
 
           {/* Keterangan */}

@@ -282,7 +282,7 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
                     No. Batch
                   </th>
                   <th className="border border-gray-200 px-3 py-2 text-center">
-                    Sisa
+                    Stok Awal
                   </th>
                   <th className="border border-gray-200 px-3 py-2 text-center">
                     Kenyataan
@@ -312,7 +312,7 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
                         {d.nobatch}
                         </td>
                         <td className="border border-gray-200 px-3 py-2 text-center">
-                        {d.sisa}
+                        {d.awal}
                         </td>
                         <td className="border border-gray-200 px-3 py-2 text-center">
                         {d.kenyataan}
