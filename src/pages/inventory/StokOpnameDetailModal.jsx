@@ -143,7 +143,7 @@ export default function StokOpnameDetailModal({
       axiosClient
         .get("/inventory/check-stock", { barang, ed, nobatch })
         .then((res) => setSisa(res.data.data?.sisa ?? 0))
-        .catch(() => toast.error("Gagal memeriksa stok"));
+        // .catch(() => toast.error("Gagal memeriksa stok"));
     }
   }, [
     selectedBarang,
