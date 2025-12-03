@@ -72,11 +72,11 @@ export default function StokOpname() {
         <PageHeader
           title="Stok Opname"
           onAdd={() => dispatch(openAddModal())}
-          disableSearch={false}
           searchPlaceholder="Cari unit atau user"
           addLabel="Stok Opname"
           AddIcon={ArrowDownOnSquareIcon}
           disableFilter={false}
+          disableSearch={true}
           onFilter={() => setFilterOpen(true)}
         />
 

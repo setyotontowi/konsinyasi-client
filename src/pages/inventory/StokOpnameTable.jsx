@@ -37,7 +37,17 @@ export default function StokOpnameTable({ search, filters, onView, onEdit, onDel
             </tr>
           </thead>
           <tbody>
-            {list.map((item, index) => (
+          {list.length === 0 ? (
+            <tr>
+              <td
+                colSpan="6"
+                className="text-center text-gray-500 py-6 italic"
+              >
+                Belum ada data stok opname.
+              </td>
+            </tr>
+          ) : (
+            list.map((item, index) => (
               <tr key={item.id} className="hover:bg-gray-50 transition">
                 <td className="border border-gray-200 px-6 py-2 text-center text-gray-600">
                   {(page - 1) * limit + index + 1}
@@ -54,7 +64,7 @@ export default function StokOpnameTable({ search, filters, onView, onEdit, onDel
                 <td className="border border-gray-200 px-6 py-2 text-gray-700">
                   {item.jumlah_barang}
                 </td>
-                 {/* ✅ Action buttons */}
+
                 <td className="border border-gray-200 px-6 py-2 text-center">
                   <button
                     onClick={() => onView && onView(item)}
@@ -64,8 +74,9 @@ export default function StokOpnameTable({ search, filters, onView, onEdit, onDel
                   </button>
                 </td>
               </tr>
-            ))}
-          </tbody>
+            ))
+          )}
+        </tbody>
         </table>
 
         <Pagination
