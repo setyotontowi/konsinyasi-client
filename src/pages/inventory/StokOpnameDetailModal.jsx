@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Select from "react-select";
 import axiosClient from "../../api/axiosClient";
 import { toast } from "react-toastify";
-import { formatToReadableDate } from "../../helper/helper";
+import { formatToReadableDate, formatRupiah } from "../../helper/helper";
 
 export default function StokOpnameDetailModal({
   open,
@@ -321,7 +321,7 @@ export default function StokOpnameDetailModal({
           </div>
 
           {/* HPP */}
-          {/* <div>
+          <div>
             <label className="block text-xs mb-1">HPP (Harga Pokok)</label>
             <input
               type="text"
@@ -330,7 +330,7 @@ export default function StokOpnameDetailModal({
               className="border border-gray-300 rounded w-full p-2"
               placeholder="Masukkan harga pokok"
             />
-          </div> */}
+          </div>
 
 
           {/* Keterangan */}

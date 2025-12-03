@@ -7,7 +7,7 @@ import {
 } from "../../store/permintaanDistribusiSlice";
 import { XMarkIcon, PlusCircleIcon } from "@heroicons/react/24/outline";
 import { toast } from "react-toastify";
-import { formatToReadableLocal, getLocalNow } from "../../helper/helper";
+import { formatToReadableLocal, getLocalNow, formatRupiah } from "../../helper/helper";
 import { createPurchaseOrder, fetchUsedBarang } from "../../store/purchaseSlice";
 
 export default function PurchaseUsedModal({ open, data, onClose }) {
@@ -276,8 +276,8 @@ export default function PurchaseUsedModal({ open, data, onClose }) {
                       <td className="border border-gray-200 px-3 py-2">{item.nama_satuan}</td>
                       <td className="border border-gray-200 px-3 py-2">{item.qty}</td>
                       <td className="border border-gray-200 px-3 py-2">{item.qty_real}</td>
-                      <td className="border border-gray-200 px-3 py-2">{item.barang_hpp}</td>
-                      <td className="border border-gray-200 px-3 py-2">{item.total_harga}</td>
+                      <td className="border border-gray-200 px-3 py-2">{formatRupiah(item.barang_hpp)}</td>
+                      <td className="border border-gray-200 px-3 py-2">{formatRupiah(item.total_harga)}</td>
                     </tr>
                   ))
                 )}

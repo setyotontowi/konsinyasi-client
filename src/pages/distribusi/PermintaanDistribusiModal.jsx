@@ -285,7 +285,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
           ? "Edit Permintaan Distribusi"
           : mode === "distribusi"
           ? "Pengiriman Barang"
-          : mode === "pemakaian"
+          : (mode === "pemakaian_view" || mode === "pemakaian")
           ? "Pemakaian Barang"
           : mode === "purchase"
           ? "Detail Pemakaian - Buat PO"

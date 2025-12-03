@@ -8,7 +8,7 @@ import {
 } from "../../store/stokOpnameSlice";
 import axiosClient from "../../api/axiosClient";
 import Select from "react-select";
-import { formatToReadableDate, getAuthUser } from "../../helper/helper";
+import { formatToReadableDate, getAuthUser, formatRupiah } from "../../helper/helper";
 import { toast } from "react-toastify";
 import StokOpnameDetailModal from "./StokOpnameDetailModal";
 
@@ -180,7 +180,7 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
       onClick={onClose}
     >
       <div
-        className="bg-white w-full max-w-6xl rounded-lg shadow-lg relative max-h-[90vh] animate-fadeIn "
+        className="bg-white w-full max-w-7xl rounded-lg shadow-lg relative max-h-[90vh] animate-fadeIn "
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -287,6 +287,9 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
                   <th className="border border-gray-200 px-3 py-2 text-center">
                     Kenyataan
                   </th>
+                  <th className="border border-gray-200 px-3 py-2 text-center">
+                    HPP
+                  </th>
                   <th className="border border-gray-200 px-3 py-2">
                     Keterangan
                   </th>
@@ -316,6 +319,9 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
                         </td>
                         <td className="border border-gray-200 px-3 py-2 text-center">
                         {d.kenyataan}
+                        </td>
+                        <td className="border border-gray-200 px-3 py-2 text-center">
+                        {formatRupiah(d.hpp)}
                         </td>
                         <td className="border border-gray-200 px-3 py-2">
                         {d.keterangan || "-"}

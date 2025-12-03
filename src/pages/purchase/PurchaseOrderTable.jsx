@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchPurchaseOrders } from "../../store/purchaseSlice";
 import Pagination from "../../components/Pagination";
-import { formatToReadableLocal } from "../../helper/helper";
+import { formatToReadableLocal, formatRupiah } from "../../helper/helper";
 
 export default function PurchaseOrderTable({ mode="purchase", filters, onPrint, onConfirm, refresh}) {
   const dispatch = useDispatch();
@@ -74,7 +74,7 @@ export default function PurchaseOrderTable({ mode="purchase", filters, onPrint, 
                     {po.ppn ?? 0}%
                   </td>
                   <td className="border border-gray-200 px-6 py-2 text-gray-700">
-                    {po.subtotal ?? 0}
+                    {formatRupiah(po.subtotal ?? 0)}
                   </td>
                   <td className="border border-gray-200 px-6 py-2 text-gray-700 text-center">
                     {po.print_path ? (
