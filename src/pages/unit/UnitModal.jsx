@@ -12,6 +12,7 @@ export default function UnitModal({ open, onClose, mode, unit }) {
     nama: "",
     keterangan: "",
     is_pbf: "Tidak",
+    unit_id_simrs: "",
   });
 
   const [errors, setErrors] = useState({});
@@ -24,12 +25,14 @@ export default function UnitModal({ open, onClose, mode, unit }) {
         nama: unit.nama || "",
         keterangan: unit.keterangan || "",
         is_pbf: unit.is_pbf || "Tidak",
+        unit_id_simrs: unit.unit_id_simrs || "",
       });
     } else {
       setFormData({
         nama: "",
         keterangan: "",
         is_pbf: "Tidak",
+        unit_id_simrs: "",
       });
     }
     setErrors({});
@@ -58,6 +61,7 @@ export default function UnitModal({ open, onClose, mode, unit }) {
       nama: formData.nama.trim(),
       keterangan: formData.keterangan.trim(),
       is_pbf: formData.is_pbf,
+      unit_id_simrs: formData.unit_id_simrs,
     };
 
     const queryParams = {
@@ -138,6 +142,20 @@ export default function UnitModal({ open, onClose, mode, unit }) {
               <option value="Ya">Ya</option>
               <option value="Tidak">Tidak</option>
             </select>
+          </div>
+
+          {/* Unit SIMRS */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Id Unit SIMRS
+            </label>
+            <input
+              type="text"
+              name="unit_id_simrs"
+              value={formData.unit_id_simrs}
+              onChange={handleChange}
+              className={`w-full mt-1 px-3 py-2 border border-gray-200  rounded-md focus:ring-2 focus:ring-blue-500`}
+            />
           </div>
 
           {/* Keterangan */}

@@ -20,6 +20,7 @@ export default function UserModal({ open, onClose, mode, user }) {
     grupUser: "",
     unit: "",
     keterangan: "",
+    users_id_simrs: "",
   });
 
   const [errors, setErrors] = useState({});
@@ -39,6 +40,7 @@ export default function UserModal({ open, onClose, mode, user }) {
         grupUser: user.id_users_group || "",
         unit: user.id_master_unit || "",
         keterangan: user.keterangan || "",
+        users_id_simrs: user.users_id_simrs || "",
       });
     } else {
       setFormData({
@@ -50,6 +52,7 @@ export default function UserModal({ open, onClose, mode, user }) {
         grupUser: "",
         unit: "",
         keterangan: "",
+        users_id_simrs: "",
       });
     }
     setErrors({});
@@ -123,6 +126,7 @@ export default function UserModal({ open, onClose, mode, user }) {
       id_master_unit: formData.unit || null,
       nip: formData.nip || "",
       keterangan: formData.keterangan || "",
+      users_id_simrs: formData.users_id_simrs || "",
     };
 
     if (formData.password && formData.password.trim()) payload.password = formData.password;
@@ -273,6 +277,20 @@ export default function UserModal({ open, onClose, mode, user }) {
               styles={customSelectStyle}
             />
             {errors.unit && <p className="text-xs text-red-500 mt-1">{errors.unit}</p>}
+          </div>
+
+          {/* Id User SIMRS */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Id User SIMRS 
+            </label>
+            <input
+              type="text"
+              name="users_id_simrs"
+              value={formData.users_id_simrs}
+              onChange={handleChange}
+              className={`w-full mt-1 px-3 py-2 border border-gray-200  rounded-md focus:ring-2 focus:ring-blue-500`}
+            />
           </div>
 
           {/* Keterangan */}

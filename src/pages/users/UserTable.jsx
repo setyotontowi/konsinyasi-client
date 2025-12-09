@@ -35,6 +35,7 @@ export default function UserTable({ search, onEdit, onDelete }) {
                 <th className="px-6 py-3 font-medium border border-gray-200">Nama</th>
                 <th className="px-6 py-3 font-medium border border-gray-200">Role</th>
                 <th className="px-6 py-3 font-medium border border-gray-200">Unit</th>
+                <th className="px-6 py-3 font-medium border border-gray-200">Id User SIMRS</th>
                 <th className="px-6 py-3 font-medium border border-gray-200">Keterangan</th>
                 <th className="px-6 py-3 font-medium border border-gray-200 w-10">Aksi</th>
               </tr>
@@ -56,6 +57,9 @@ export default function UserTable({ search, onEdit, onDelete }) {
                   </td>
                   <td className="border border-gray-200 px-6 py-2 text-gray-700">
                     {u.nama_unit}
+                  </td>
+                  <td className="border border-gray-200 px-6 py-2 text-gray-700">
+                    {u.users_id_simrs}
                   </td>
                   <td className="border border-gray-200 px-6 py-2 text-gray-700">
                     {u.keterangan}

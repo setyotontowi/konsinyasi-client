@@ -54,6 +54,9 @@ const UnitTable = ({search}) => {
               <th className="px-6 py-3 font-medium border border-gray-200">
                 PBF
               </th>
+              <th className="px-6 py-3 font-medium border border-gray-200">
+                Id Unit SIMRS
+              </th>
               <th className="px-6 py-3 font-medium border border-gray-200 w-10">
                 Aksi
               </th>
@@ -75,6 +78,9 @@ const UnitTable = ({search}) => {
                   </td>
                   <td className="border border-gray-200 px-6 py-2 text-gray-700">
                     {u.is_pbf}
+                  </td>
+                  <td className="border border-gray-200 px-6 py-2 text-gray-700">
+                    {u.unit_id_simrs}
                   </td>
 
                   {/* Actions */}
