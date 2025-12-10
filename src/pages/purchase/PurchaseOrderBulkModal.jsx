@@ -3,22 +3,28 @@ import Select from "react-select";
 import axiosClient from "../../api/axiosClient";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { toast } from "react-toastify";
-import { formatToReadableDate } from "../../helper/helper";
+import { formatToReadableDate, getLocalNow } from "../../helper/helper";
 
 export default function PurchaseOrderBulkModal({ open, onClose }) {
-  const [tanggal, setTanggal] = useState("");
+  
+  const [formData, setFormData] = useState({
+    tanggal: getLocalNow(),
+    id_unit: "",
+  });
+
   const [units, setUnits] = useState([]);
-  const [selectedUnit, setSelectedUnit] = useState(null);
   const [items, setItems] = useState([]);
   const [loadingUnits, setLoadingUnits] = useState(false);
   const [loadingItems, setLoadingItems] = useState(false);
 
+  // Reset items when modal closes
   useEffect(() => {
     if (!open) {
-        setItems([]);
-        return
-    };
+      setItems([]);
+      return;
+    }
 
+    // fetch PBF list
     setLoadingUnits(true);
     axiosClient
       .get("/unit?is_pbf=Ya")
@@ -34,31 +40,42 @@ export default function PurchaseOrderBulkModal({ open, onClose }) {
       .finally(() => setLoadingUnits(false));
   }, [open]);
 
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleUnitChange = (opt) => {
+    const id = opt?.value || "";
+    setFormData((prev) => ({ ...prev, id_unit: id }));
+    if (id) fetchPurchasedList(id);
+  };
+
+
   const fetchPurchasedList = (unitId) => {
     setLoadingItems(true);
     axiosClient
-      .get(`purchase/used-items-bulk?id_unit=${unitId}`)
+      .get(`/purchase/used-items-bulk?id_unit=${unitId}`)
       .then((res) => {
-        setItems(res.data.data || []);
+        setItems(res.data.data || []); // backend returns rows, min_time, max_time
       })
       .catch(() => toast.error("Gagal memuat list pembelian"))
       .finally(() => setLoadingItems(false));
   };
 
-  const handleUnitChange = (opt) => {
-    setSelectedUnit(opt);
-    if (opt) fetchPurchasedList(opt.value);
-  };
-
+  // -------------------------
+  // Submit Form
+  // -------------------------
   const handleSubmit = () => {
-    if (!tanggal) return toast.error("Tanggal wajib diisi");
-    if (!selectedUnit) return toast.error("PBF wajib dipilih");
-    if (items.length === 0) return toast.error("Tidak ada item");
+    if (!formData.tanggal) return toast.error("Tanggal wajib diisi");
+    if (!formData.id_unit) return toast.error("PBF wajib dipilih");
+    if (!items.rows || items.rows.length === 0) return toast.error("Tidak ada item");
 
     const payload = {
-      tanggal: tanggal,
-      unit_id: selectedUnit.value,
-      items: items.map((it) => it.id_purchase_used),
+      tanggal: formData.tanggal,
+      id_unit: formData.id_unit,
+      items: items.rows.map((it) => it.pdd_id), // depends on your backend structure
     };
 
     axiosClient
@@ -94,17 +111,17 @@ export default function PurchaseOrderBulkModal({ open, onClose }) {
         </h2>
 
         <div className="space-y-6">
-          
-          {/* === Date + PBF NEXT TO EACH OTHER === */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            
             {/* Date */}
             <div>
               <label className="block text-sm font-medium mb-1">Tanggal</label>
               <input
-                type="date"
-                className="w-full border border-gray-300 rounded p-2"
-                value={tanggal}
-                onChange={(e) => setTanggal(e.target.value)}
+                type="datetime-local"
+                name="tanggal"
+                value={formData.tanggal}
+                onChange={handleChange}
+                className="w-full border border-gray-300 rounded p-2 text-gray-500"
               />
             </div>
 
@@ -118,42 +135,53 @@ export default function PurchaseOrderBulkModal({ open, onClose }) {
                 placeholder="Pilih PBF..."
               />
             </div>
+
           </div>
 
           {/* === TABLE BELOW === */}
           <div className="max-h-80 overflow-auto">
             {loadingItems ? (
               <div className="text-center py-6 text-gray-500">Loading...</div>
-            ) : items.length === 0 ? (
+            ) : !items.rows || items.rows.length === 0 ? (
               <div className="text-center py-6 text-gray-400 text-sm">
                 Tidak ada data pembelian.
               </div>
             ) : (
-            <>
-              <table className="min-w-full text-sm border border-gray-200 mb-4">
-                <thead className="bg-gray-50">
-                  <tr className="bg-gray-50 border-b">
-                    <th className="px-3 py-2 border border-gray-200">Barang</th>
-                    <th className="px-3 py-2 border border-gray-200">Pemakaian</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {items.rows.map((it, idx) => (
-                    <tr key={idx} className="border-b">
-                      <td className="px-3 py-2 border border-gray-200">{it.nama_barang}</td>
-                      <td className="px-3 py-2 border border-gray-200 text-right">{it.qty}</td>
+              <>
+                <table className="min-w-full text-sm border border-gray-200 mb-4">
+                  <thead className="bg-gray-50">
+                    <tr className="border-b">
+                      <th className="px-3 py-2 border border-gray-200">Barang</th>
+                      <th className="px-3 py-2 border border-gray-200">Pemakaian</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {items.rows.map((it, idx) => (
+                      <tr key={idx} className="border-b">
+                        <td className="px-3 py-2 border border-gray-200">
+                          {it.nama_barang}
+                        </td>
+                        <td className="px-3 py-2 border border-gray-200 text-right">
+                          {it.qty}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
 
-    
-              <small className="mt-12"><i>Data transaksi dari tanggal {formatToReadableDate(items.min_time)} sampai tanggal {formatToReadableDate(items.max_time)} </i></small>
-            </>
+                {/* Date Range Label */}
+                <small className="mt-12 block">
+                  <i>
+                    Data transaksi dari tanggal{" "}
+                    {formatToReadableDate(items.min_time)} sampai{" "}
+                    {formatToReadableDate(items.max_time)}
+                  </i>
+                </small>
+              </>
             )}
           </div>
 
-          {/* === Footer Buttons === */}
+          {/* === Footer Button === */}
           <div className="flex justify-end gap-2 mt-4">
             <button
               onClick={onClose}
@@ -168,6 +196,7 @@ export default function PurchaseOrderBulkModal({ open, onClose }) {
               Buat PO
             </button>
           </div>
+
         </div>
       </div>
     </div>
