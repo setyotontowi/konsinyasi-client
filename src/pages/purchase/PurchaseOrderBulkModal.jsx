@@ -5,7 +5,7 @@ import { XMarkIcon } from "@heroicons/react/24/outline";
 import { toast } from "react-toastify";
 import { formatRupiah, formatToReadableDate, getLocalNow } from "../../helper/helper";
 
-export default function PurchaseOrderBulkModal({ open, onClose }) {
+export default function PurchaseOrderBulkModal({ open, onClose, onSuccess }) {
   
   const [formData, setFormData] = useState({
     tanggal: getLocalNow(),
@@ -114,6 +114,7 @@ export default function PurchaseOrderBulkModal({ open, onClose }) {
       .post("/purchase/bulk", payload)
       .then(() => {
         toast.success("Berhasil membuat Purchase Order");
+        onSuccess();
         onClose();
       })
       .catch(() => toast.error("Gagal membuat PO"));

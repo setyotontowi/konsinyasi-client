@@ -106,6 +106,7 @@ export default function Purchase() {
 
       <PurchaseOrderBulkModal
         open={poModalOpen}
+        onSuccess={refreshUsed}
         onClose={() => setPoModalOpen(false)}
       />
     </>
