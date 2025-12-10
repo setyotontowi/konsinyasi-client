@@ -7,6 +7,7 @@ import PermintaanDistribusiModal from "../distribusi/PermintaanDistribusiModal";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline";
 import PurchaseUsedModal from "./PurchaseUsedModal";
 import { fetchPurchaseOrders, printPurchaseOrder } from "../../store/purchaseSlice";
+import PurchaseOrderBulkModal from "./PurchaseOrderBulkModal";
 
 export default function Purchase() {
   const dispatch = useDispatch();
@@ -14,6 +15,7 @@ export default function Purchase() {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [refreshUsed, setRefreshUsed] = useState(false);
+  const [poModalOpen, setPoModalOpen] = useState(false);
 
   const closeModal = () => {
     setModalOpen(false);
@@ -62,7 +64,7 @@ export default function Purchase() {
           }`}
         >
           <button
-            onClick={() => {}}
+            onClick={() => setPoModalOpen(true)}
             className="ml-10 mt-6 flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg shadow-md"
           >
             <span>Buat Purchase Order</span>
@@ -100,6 +102,11 @@ export default function Purchase() {
         open={modalOpen}
         data={selectedItem}
         onClose={closeModal}
+      />
+
+      <PurchaseOrderBulkModal
+        open={poModalOpen}
+        onClose={() => setPoModalOpen(false)}
       />
     </>
   );
