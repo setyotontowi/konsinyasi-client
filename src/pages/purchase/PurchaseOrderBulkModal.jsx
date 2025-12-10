@@ -33,7 +33,7 @@ export default function PurchaseOrderBulkModal({ open, onClose }) {
   const fetchPurchasedList = (unitId) => {
     setLoadingItems(true);
     axiosClient
-      .get(`/get_list_purchased?id_unit=${unitId}`)
+      .get(`purchase/used-items-bulk?id_unit=${unitId}`)
       .then((res) => {
         setItems(res.data.data || []);
       })
@@ -117,7 +117,7 @@ export default function PurchaseOrderBulkModal({ open, onClose }) {
           </div>
 
           {/* === TABLE BELOW === */}
-          <div className="border rounded p-3 max-h-80 overflow-auto">
+          <div className="max-h-80 overflow-auto">
             {loadingItems ? (
               <div className="text-center py-6 text-gray-500">Loading...</div>
             ) : items.length === 0 ? (
@@ -125,18 +125,18 @@ export default function PurchaseOrderBulkModal({ open, onClose }) {
                 Tidak ada data pembelian.
               </div>
             ) : (
-              <table className="w-full text-sm">
-                <thead>
+              <table className="min-w-full text-sm border border-gray-200">
+                <thead className="bg-gray-50">
                   <tr className="bg-gray-50 border-b">
-                    <th className="p-2 text-left">Barang</th>
-                    <th className="p-2 text-right">Qty</th>
+                    <th className="px-3 py-2 border border-gray-200">Barang</th>
+                    <th className="px-3 py-2 border border-gray-200">Pemakaian</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {items.map((it, idx) => (
+                  {items.rows.map((it, idx) => (
                     <tr key={idx} className="border-b">
-                      <td className="p-2">{it.nama_barang}</td>
-                      <td className="p-2 text-right">{it.qty}</td>
+                      <td className="px-3 py-2 border border-gray-200">{it.nama_barang}</td>
+                      <td className="px-3 py-2 border border-gray-200 text-right">{it.qty}</td>
                     </tr>
                   ))}
                 </tbody>
