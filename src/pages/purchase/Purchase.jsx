@@ -61,6 +61,13 @@ export default function Purchase() {
             showUsed ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0"
           }`}
         >
+          <button
+            onClick={() => {}}
+            className="ml-10 mt-6 flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg shadow-md"
+          >
+            <span>Buat Purchase Order</span>
+          </button>
+
           <div className="p-4">
             <PurchaseUsedTable 
               onDetail={openDetailModal}
