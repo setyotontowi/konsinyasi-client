@@ -28,6 +28,7 @@ export default function PurchaseUsedTable({ onDetail, refresh }) {
             <tr>
               <th className="px-6 py-3 border border-gray-200 w-5">No</th>
               <th className="px-6 py-3 border border-gray-200">Tanggal</th>
+              <th className="px-6 py-3 border border-gray-200">Nama PBF</th>
               <th className="px-6 py-3 border border-gray-200">Nama Pasien</th>
               <th className="px-6 py-3 border border-gray-200">No RM</th>
               <th className="px-6 py-3 border border-gray-200">Ruang</th>
@@ -55,6 +56,9 @@ export default function PurchaseUsedTable({ onDetail, refresh }) {
                     {item.tanggal || item.created_at
                       ? formatToReadableLocal(item.tanggal || item.created_at)
                       : "-"}
+                  </td>
+                  <td className="border border-gray-200 px-6 py-2 text-gray-700">
+                    {item.nama_unit}
                   </td>
                   <td className="border border-gray-200 px-6 py-2 text-gray-700">
                     {item.nama_pasien}
