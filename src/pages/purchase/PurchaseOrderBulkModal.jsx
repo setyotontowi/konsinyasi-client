@@ -3,7 +3,7 @@ import Select from "react-select";
 import axiosClient from "../../api/axiosClient";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { toast } from "react-toastify";
-import { formatToReadableDate, getLocalNow } from "../../helper/helper";
+import { formatRupiah, formatToReadableDate, getLocalNow } from "../../helper/helper";
 
 export default function PurchaseOrderBulkModal({ open, onClose }) {
   
@@ -16,6 +16,12 @@ export default function PurchaseOrderBulkModal({ open, onClose }) {
   const [items, setItems] = useState([]);
   const [loadingUnits, setLoadingUnits] = useState(false);
   const [loadingItems, setLoadingItems] = useState(false);
+
+   // --- NEW STATES FOR SUMMARY ---
+  const [subtotal, setSubtotal] = useState(0);
+  const [ppn, setPpn] = useState(11); // default 11%
+  const [ppnValue, setPpnValue] = useState(0);
+  const [grandTotal, setGrandTotal] = useState(0);
 
   // Reset items when modal closes
   useEffect(() => {
@@ -39,6 +45,30 @@ export default function PurchaseOrderBulkModal({ open, onClose }) {
       .catch(() => toast.error("Gagal memuat data pabrik"))
       .finally(() => setLoadingUnits(false));
   }, [open]);
+
+    // ----------------------------------
+  // CALCULATE SUBTOTAL, PPN, TOTAL
+  // ----------------------------------
+  useEffect(() => {
+    if (!items.rows || items.rows.length === 0) {
+      setSubtotal(0);
+      setPpnValue(0);
+      setGrandTotal(0);
+      return;
+    }
+
+    const sub = items.rows.reduce(
+      (sum, it) => sum + (Number(it.barang_hpp) * Number(it.qty)),
+      0
+    );
+
+    const ppnCalc = sub * (ppn / 100);
+    const total = sub + ppnCalc;
+
+    setSubtotal(sub);
+    setPpnValue(ppnCalc);
+    setGrandTotal(total);
+  }, [items, ppn]);
 
 
   const handleChange = (e) => {
@@ -75,11 +105,13 @@ export default function PurchaseOrderBulkModal({ open, onClose }) {
     const payload = {
       tanggal: formData.tanggal,
       id_unit: formData.id_unit,
-      items: items.rows.map((it) => it.pdd_id), // depends on your backend structure
+      subtotal,
+      ppn,
+      total: grandTotal,
     };
 
     axiosClient
-      .post("/purchase_order/bulk", payload)
+      .post("/purchase/bulk", payload)
       .then(() => {
         toast.success("Berhasil membuat Purchase Order");
         onClose();
@@ -152,7 +184,10 @@ export default function PurchaseOrderBulkModal({ open, onClose }) {
                   <thead className="bg-gray-50">
                     <tr className="border-b">
                       <th className="px-3 py-2 border border-gray-200">Barang</th>
+                      <th className="px-3 py-2 border border-gray-200">Satuan</th>
+                      <th className="px-3 py-2 border border-gray-200">HNA</th>
                       <th className="px-3 py-2 border border-gray-200">Pemakaian</th>
+                      <th className="px-3 py-2 border border-gray-200">Total Harga</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -161,8 +196,17 @@ export default function PurchaseOrderBulkModal({ open, onClose }) {
                         <td className="px-3 py-2 border border-gray-200">
                           {it.nama_barang}
                         </td>
+                        <td className="px-3 py-2 border border-gray-200">
+                          {it.nama_satuan}
+                        </td>
+                        <td className="px-3 py-2 border border-gray-200">
+                          {formatRupiah(it.barang_hpp)}
+                        </td>
                         <td className="px-3 py-2 border border-gray-200 text-right">
                           {it.qty}
+                        </td>
+                        <td className="px-3 py-2 border border-gray-200 text-right">
+                          {formatRupiah(it.barang_hpp * it.qty)}
                         </td>
                       </tr>
                     ))}
@@ -179,6 +223,46 @@ export default function PurchaseOrderBulkModal({ open, onClose }) {
                 </small>
               </>
             )}
+          </div>
+
+           {/* --- SUBTOTAL + PPN + TOTAL (NEW) --- */}
+          <div className="flex justify-end mt-6">
+            <div className="w-64 space-y-3 text-sm">
+              
+              {/* Subtotal */}
+              <div className="flex justify-between">
+                <span className="text-gray-600">Subtotal</span>
+                <span className="font-semibold text-gray-800">
+                  {subtotal.toLocaleString("id-ID")}
+                </span>
+              </div>
+
+              {/* PPN */}
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600">PPN (%)</span>
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="1"
+                  className="w-20 border border-gray-300 rounded p-1 text-right"
+                  value={ppn}
+                  onChange={(e) => setPpn(parseFloat(e.target.value) || 0)}
+                />
+                <span className="text-gray-700 font-medium">
+                  {ppnValue.toLocaleString("id-ID")}
+                </span>
+              </div>
+
+              {/* Total */}
+              <div className="flex justify-between border-t pt-2">
+                <span className="text-gray-700 font-medium">Total</span>
+                <span className="text-lg font-bold text-gray-900">
+                  {grandTotal.toLocaleString("id-ID")}
+                </span>
+              </div>
+
+            </div>
           </div>
 
           {/* === Footer Button === */}
