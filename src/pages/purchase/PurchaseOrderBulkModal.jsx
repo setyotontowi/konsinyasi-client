@@ -3,6 +3,7 @@ import Select from "react-select";
 import axiosClient from "../../api/axiosClient";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { toast } from "react-toastify";
+import { formatToReadableDate } from "../../helper/helper";
 
 export default function PurchaseOrderBulkModal({ open, onClose }) {
   const [tanggal, setTanggal] = useState("");
@@ -13,7 +14,10 @@ export default function PurchaseOrderBulkModal({ open, onClose }) {
   const [loadingItems, setLoadingItems] = useState(false);
 
   useEffect(() => {
-    if (!open) return;
+    if (!open) {
+        setItems([]);
+        return
+    };
 
     setLoadingUnits(true);
     axiosClient
@@ -125,7 +129,8 @@ export default function PurchaseOrderBulkModal({ open, onClose }) {
                 Tidak ada data pembelian.
               </div>
             ) : (
-              <table className="min-w-full text-sm border border-gray-200">
+            <>
+              <table className="min-w-full text-sm border border-gray-200 mb-4">
                 <thead className="bg-gray-50">
                   <tr className="bg-gray-50 border-b">
                     <th className="px-3 py-2 border border-gray-200">Barang</th>
@@ -141,6 +146,10 @@ export default function PurchaseOrderBulkModal({ open, onClose }) {
                   ))}
                 </tbody>
               </table>
+
+    
+              <small className="mt-12"><i>Data transaksi dari tanggal {formatToReadableDate(items.min_time)} sampai tanggal {formatToReadableDate(items.max_time)} </i></small>
+            </>
             )}
           </div>
 
