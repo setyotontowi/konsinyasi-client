@@ -67,7 +67,7 @@ export default function Purchase() {
             onClick={() => setPoModalOpen(true)}
             className="ml-10 mt-6 flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg shadow-md"
           >
-            <span>Buat Purchase Order</span>
+            <span>Buat Purchase Order (Bulk)</span>
           </button>
 
           <div className="p-4">

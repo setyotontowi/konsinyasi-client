@@ -186,7 +186,7 @@ export default function PurchaseOrderBulkModal({ open, onClose, onSuccess }) {
                     <tr className="border-b">
                       <th className="px-3 py-2 border border-gray-200">Barang</th>
                       <th className="px-3 py-2 border border-gray-200">Satuan</th>
-                      <th className="px-3 py-2 border border-gray-200">HNA</th>
+                      <th className="px-3 py-2 border border-gray-200">HPP</th>
                       <th className="px-3 py-2 border border-gray-200">Pemakaian</th>
                       <th className="px-3 py-2 border border-gray-200">Total Harga</th>
                     </tr>

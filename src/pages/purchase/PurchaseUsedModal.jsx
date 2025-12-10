@@ -343,7 +343,7 @@ export default function PurchaseUsedModal({ open, data, onClose }) {
                   px-4 py-2 rounded text-white bg-blue-600 hover:bg-blue-700
                 `}
               >
-              Buat PO
+              Buat PO Satuan
               </button>
           </div>
         </form>
