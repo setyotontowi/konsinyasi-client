@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { toast } from "react-toastify";
+import axiosClient from "../../api/axiosClient";
 
 export default function StokOpnameSerialNumberModal({
   open,
@@ -8,7 +9,6 @@ export default function StokOpnameSerialNumberModal({
   initialData,
   onAddSerialNumber,
 }) {
-  console.log("initial data", initialData);
   const [rawText, setRawText] = useState("");
 
   // Prefill when editing existing SN
@@ -16,9 +16,30 @@ export default function StokOpnameSerialNumberModal({
     if (open) {
       if (initialData?.serial_numbers?.length) {
         setRawText(initialData.serial_numbers.join("\n"));
-      } else {
+      } 
+
+      if (initialData?.id) {
+        axiosClient
+        .get("/inventory/serial-number", {
+            params: {
+            id_stok_opname_detail: initialData.id,
+            id_barang: initialData.id_master_barang,
+            },
+        })
+        .then((res) => {
+            const serialNumbers = (res.data?.data || []).map(
+            (row) => row.serial_number
+            );
+
+            setRawText(serialNumbers.join("\n"));
+        })
+        .catch(() => {
+            // do not block modal opening
+            setRawText("");
+        });
+    } else {
         setRawText("");
-      }
+    }
     }
   }, [open, initialData]);
 
