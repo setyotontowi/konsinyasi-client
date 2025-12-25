@@ -187,7 +187,7 @@ export default function StokOpnameDetailModal({
   return (
     <div
       className="fixed inset-0 bg-black/40 flex justify-center items-center z-50"
-      onClick={onClose}
+      //onClick={onClose}
     >
       <div
         className="bg-white w-full max-w-lg rounded-lg p-4 relative"

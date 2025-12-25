@@ -177,7 +177,7 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
   return (
     <div
       className="fixed inset-0 bg-black/40 flex justify-center items-center z-50"
-      onClick={onClose}
+      // onClick={onClose}
     >
       <div
         className="bg-white w-full max-w-7xl rounded-lg shadow-lg relative max-h-[90vh] animate-fadeIn "
@@ -294,6 +294,9 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
                     Keterangan
                   </th>
                   <th className="border border-gray-200 px-3 py-2">
+                    Serial Number
+                  </th>
+                  <th className="border border-gray-200 px-3 py-2">
                     Aksi
                   </th>
                 </tr>
@@ -325,6 +328,14 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
                         </td>
                         <td className="border border-gray-200 px-3 py-2">
                         {d.keterangan || "-"}
+                        </td>
+                        <td className="border border-gray-200 px-3 py-2 text-center">
+                          <button 
+                            type="button"
+                            className="px-2 py-1 text-xs bg-green-100 text-green-700 rounded hover:bg-yellow-200"
+                          >
+                            Masukkan SN
+                          </button>
                         </td>
 
                         <td className="border border-gray-200 px-3 py-2 text-center">
