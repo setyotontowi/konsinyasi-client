@@ -4,7 +4,7 @@ import { fetchPurchaseOrders } from "../../store/purchaseSlice";
 import Pagination from "../../components/Pagination";
 import { formatToReadableLocal, formatRupiah } from "../../helper/helper";
 
-export default function PurchaseOrderTable({ mode="purchase", filters, onPrint, onConfirm, refresh}) {
+export default function PurchaseOrderTable({ mode="purchase", filters, onPrint, onSend, onConfirm, refresh}) {
   const dispatch = useDispatch();
   
   const { list, pagination, loading } = useSelector(
@@ -34,6 +34,7 @@ export default function PurchaseOrderTable({ mode="purchase", filters, onPrint, 
               <th className="px-6 py-3 border border-gray-200">Waktu Penggunaan</th>
               <th className="px-6 py-3 border border-gray-200">PPN</th>
               <th className="px-6 py-3 border border-gray-200">Subtotal</th>
+              <th className="px-6 py-3 border border-gray-200 w-50">Terkirim ke SIMRS</th>
               <th className="px-6 py-3 border border-gray-200">Cetak</th>
               {mode === "sale" && (
                 <th className="px-6 py-3 border border-gray-200">Konfirmasi</th>
@@ -77,6 +78,20 @@ export default function PurchaseOrderTable({ mode="purchase", filters, onPrint, 
                     {formatRupiah(po.subtotal ?? 0)}
                   </td>
                   <td className="border border-gray-200 px-6 py-2 text-gray-700 text-center">
+                    {po.simrs_sync ? (
+                      <p >
+                        Sudah
+                      </p>
+                    ) : (
+                      <button
+                        onClick={() => onSend(po.id)}
+                        className="px-3 py-1 bg-green-100 hover:bg-green-200 text-black-700 rounded text-sm"
+                      >
+                        Kirim SIMRS
+                      </button>
+                    )}
+                  </td>
+                  <td className="border border-gray-200 px-6 py-2 text-gray-700 text-center">
                     {po.print_path ? (
                       <a
                         href={po.print_path}
@@ -94,6 +109,7 @@ export default function PurchaseOrderTable({ mode="purchase", filters, onPrint, 
                       </button>
                     )}
                   </td>
+
                   {mode === "sale" && (
                     <td className="border border-gray-200 px-6 py-2 text-center">
 

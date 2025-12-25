@@ -8,6 +8,7 @@ import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/outline";
 import PurchaseUsedModal from "./PurchaseUsedModal";
 import { fetchPurchaseOrders, printPurchaseOrder } from "../../store/purchaseSlice";
 import PurchaseOrderBulkModal from "./PurchaseOrderBulkModal";
+import { CloudArrowUpIcon } from "@heroicons/react/24/outline";
 
 export default function Purchase() {
   const dispatch = useDispatch();
@@ -16,6 +17,7 @@ export default function Purchase() {
   const [selectedItem, setSelectedItem] = useState(null);
   const [refreshUsed, setRefreshUsed] = useState(false);
   const [poModalOpen, setPoModalOpen] = useState(false);
+  const [poId, setPoId] = useState(null);
 
   const closeModal = () => {
     setModalOpen(false);
@@ -39,6 +41,10 @@ export default function Purchase() {
       .then(() => dispatch(fetchPurchaseOrders({ page: 1, limit: 20 })));
   };
 
+  const handleSend = (id_po) => {
+    setPoId(id_po);
+    setPoModalOpen(true);
+  };
   return (
     <>
       {/* Segment 1: Used items (like first card in Distribusi) */}
@@ -84,6 +90,8 @@ export default function Purchase() {
         <PageHeader
           title="Purchase Order"
           disableAdd={true}
+          addLabel={"Kirim Semua Ke SIMRS"}
+          AddIcon={CloudArrowUpIcon}
           disableSearch={true}
           disableFilter={true} // set to false when you add a filter modal
         />
@@ -92,6 +100,7 @@ export default function Purchase() {
           <PurchaseOrderTable 
             filters={filters} 
             onPrint={handlePrint}
+            onSend={handleSend}
             refresh={refreshUsed}
           />
         </div>
@@ -106,6 +115,7 @@ export default function Purchase() {
 
       <PurchaseOrderBulkModal
         open={poModalOpen}
+        id_unit={poId}
         onSuccess={refreshUsed}
         onClose={() => setPoModalOpen(false)}
       />

@@ -5,7 +5,7 @@ import { XMarkIcon } from "@heroicons/react/24/outline";
 import { toast } from "react-toastify";
 import { formatRupiah, formatToReadableDate, getLocalNow } from "../../helper/helper";
 
-export default function PurchaseOrderBulkModal({ open, onClose, onSuccess }) {
+export default function PurchaseOrderBulkModal({ open, id_po, onClose, onSuccess }) {
   
   const [formData, setFormData] = useState({
     tanggal: getLocalNow(),
@@ -28,6 +28,11 @@ export default function PurchaseOrderBulkModal({ open, onClose, onSuccess }) {
     if (!open) {
       setItems([]);
       return;
+    }
+
+    if (id_po) {
+      setFormData((prev) => ({ ...prev, id_po }));
+      // getPurchaseOrder(id_po);
     }
 
     // fetch PBF list
@@ -274,12 +279,16 @@ export default function PurchaseOrderBulkModal({ open, onClose, onSuccess }) {
             >
               Batal
             </button>
-            <button
-              onClick={handleSubmit}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
-            >
-              Buat PO
-            </button>
+
+            {!id_unit && (
+              <button
+                onClick={handleSubmit}
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
+              >
+                Buat PO
+              </button>
+            )}
+           
           </div>
 
         </div>
