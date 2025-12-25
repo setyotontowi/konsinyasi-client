@@ -11,6 +11,7 @@ import Select from "react-select";
 import { formatToReadableDate, getAuthUser, formatRupiah } from "../../helper/helper";
 import { toast } from "react-toastify";
 import StokOpnameDetailModal from "./StokOpnameDetailModal";
+import StokOpnameSerialNumberModal from "./StokOpnameSerialNumberModal";
 
 export default function StokOpnameModal({ open, data, onClose, onSave }) {
   const dispatch = useDispatch();
@@ -32,6 +33,9 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
   const [units, setUnits] = useState([]);
   const [detailModalOpen, setDetailModalOpen] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null);
+
+  const [snModalOpen, setSnModalOpen] = useState(false);
+  const [snIndex, setSnIndex] = useState(null);
 
   const formatDateTimeLocal = (dateString) => {
     if (!dateString) return "";
@@ -104,6 +108,7 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
         nama_unit: "",
         nama_user: "",
         details: [],
+        serialNUmber: [],
       });
     }
   }, [open]);
@@ -112,7 +117,12 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
   const handleAddDetail = (detail) => {
     setForm((prev) => ({
       ...prev,
-      details: [...prev.details, detail],
+      details: [
+        ...prev.details, 
+        {
+          ...detail,
+          serial_number: detail.serial_numbers || []
+        }],
     }));
   };
 
@@ -132,6 +142,20 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
     }));
 
     toast.info("Detail barang dihapus dari daftar");
+  };
+
+
+  const openSNModal = (index) => {
+    setSnIndex(index);
+    setSnModalOpen(true);
+  };
+
+  const saveSerialNumbers = (serialNumbers) => {
+    setForm((prev) => {
+      const updated = [...prev.details];
+      updated[snIndex].serial_numbers = serialNumbers;
+      return { ...prev, details: updated };
+    });
   };
 
 
@@ -332,6 +356,7 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
                         <td className="border border-gray-200 px-3 py-2 text-center">
                           <button 
                             type="button"
+                            onClick={() => openSNModal(index)}
                             className="px-2 py-1 text-xs bg-green-100 text-green-700 rounded hover:bg-yellow-200"
                           >
                             Masukkan SN
@@ -418,6 +443,31 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
             }}
             initialData={editingIndex !== null ? form.details[editingIndex] : null}
             pbf = {form.id_master_unit}
+        />
+
+        {/* Insert MOdal StokOpnameSerialNumberModal*/}
+        <StokOpnameSerialNumberModal
+            open={snModalOpen}
+            onClose={() => {
+                setSnModalOpen(false);
+            }}
+            onAddSerialNumber={(serialNumbers) => {
+              if (snIndex === null) return;
+
+              setForm((prev) => {
+                const updatedDetails = [...prev.details];
+                updatedDetails[snIndex] = {
+                  ...updatedDetails[snIndex],
+                  serial_numbers: serialNumbers,
+                };
+
+                return {
+                  ...prev,
+                  details: updatedDetails,
+                };
+              });
+            }}
+            initialData={snIndex !== null ? form.details[snIndex] : null}
         />
 
       </div>
