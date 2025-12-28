@@ -13,6 +13,7 @@ import { kirimDistribusi } from "../../store/distribusiSlice";
 import { XMarkIcon, PlusCircleIcon } from "@heroicons/react/24/outline";
 import { toast } from "react-toastify";
 import { formatToReadableLocal, getLocalNow } from "../../helper/helper";
+import SerialNumberSelect from "../distribusi/component/SerialNumberSelect";
 
 
 // Mode
@@ -21,11 +22,21 @@ import { formatToReadableLocal, getLocalNow } from "../../helper/helper";
 // pemakaian, [Penggunaan Barang]
 // purchase [Purchase Order]
 // 
+
+const options = [
+    { value: 'a', label: 'Option A' },
+    { value: 'b', label: 'Option B' },
+    { value: 'c', label: 'Option C' },
+  ];
+
+
 export default function PermintaanDistribusiModal({ open, mode, data, onClose }) {
   const isView = mode === "view" || mode === "purchase" || mode === "distribusi_view" || mode === "pemakaian_view";
   const dispatch = useDispatch();
 
   console.log(mode);
+
+  const [value, setValue] = useState([]);
 
   useEffect(() => {
    if (open && (mode !== "add") && data?.pd_id) {
@@ -96,8 +107,8 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
 
   useEffect(() => {
     if (!open) return;
-    setLoading((l) => ({ ...l, unit: true }));
 
+    setLoading((l) => ({ ...l, unit: true }));
     axiosClient
     .get("/unit")
     .then((res) => {
@@ -124,8 +135,8 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
       toast.error("Gagal memuat data unit");
     })
 
-      // Fetch Satuan
-      setLoading((l) => ({ ...l, satuan: true }));
+    // Fetch Satuan
+    setLoading((l) => ({ ...l, satuan: true }));
     axiosClient
       .get("/barang/satuan")
       .then((res) => {
@@ -231,6 +242,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
         id_master_satuan: parseInt(it.id_master_satuan),
         qty: it.qty,
         qty_real: it.qty_real,
+        serial_number: it.serial_number || [],
       })),
     };
 
@@ -266,9 +278,10 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
   return (
     <div
       className="fixed inset-0 bg-black/40 flex justify-center items-center z-50"
-      onClick={onClose}>
+      //onClick={onClose}
+      >
       <div 
-        className="bg-white w-full max-w-6xl rounded-lg shadow-lg p-6 relative overflow-y-auto max-h-[90vh] animate-fadeIn"
+        className="bg-white w-full max-w-6xl rounded-lg shadow-lg p-6 relative animate-fadeIn"
         onClick={(e) => {e.stopPropagation()}}
       >
         <button
@@ -424,7 +437,10 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                   <th className="px-3 py-2 border border-gray-200">Satuan</th>
                   <th className="px-3 py-2 border border-gray-200 text-center">Qty</th>
                   {mode === "pemakaian" || mode === "pemakaian_view" ? (
+                    <>
                     <th className="px-3 py-2 border border-gray-200">Pemakaian</th>
+                    <th className="px-3 py-2 border border-gray-200">Serial Number</th>
+                    </>
                   ) : (
                     <th className="px-3 py-2 border border-gray-200 w-10">Aksi</th>
                   )}
@@ -445,6 +461,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                       <td className="border border-gray-200 px-3 py-2 text-center">{item.qty}</td>
                       {/* Input Pemakaian */}
                       {(mode === "pemakaian" || mode === "pemakaian_view") && (
+                        <>
                         <td className="border border-gray-200 px-3 py-2 w-50">
                           <input
                             key={`${open}-${i}-${item.qty_real ?? "empty"}`}
@@ -490,6 +507,24 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                             <p className="text-red-600 text-xs mt-1">{errors[i]}</p>
                           )}
                         </td>
+
+                        <td className="border border-gray-200 px-3 py-2 w-100">
+                          <SerialNumberSelect
+                            idBarang={item.id_master_barang}
+                            qty={item.qty}
+                            onClose={(value) => {
+                              // Convert value to array of id
+                              const serialNumbersId = value.map(item => item.value);
+
+                              setItems((prev) => 
+                                prev.map((it, idx) =>
+                                  idx === i ? { ...it, serial_number: serialNumbersId } : it
+                                )
+                              );
+                            }}
+                          />
+                        </td>
+                        </>
                       )}
                       {!isView && mode !== "pemakaian" && mode !== "distribusi" ? (
                         <td className="border border-gray-200 px-3 py-2 text-center">
