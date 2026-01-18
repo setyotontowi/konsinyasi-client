@@ -32,7 +32,7 @@ export default function PurchaseOrderBulkModal({ open, id_po, onClose, onSuccess
 
     if (id_po) {
       setFormData((prev) => ({ ...prev, id_po }));
-      // getPurchaseOrder(id_po);
+      getPurchaseOrder(id_po);
     }
 
     // fetch PBF list
@@ -99,6 +99,59 @@ export default function PurchaseOrderBulkModal({ open, id_po, onClose, onSuccess
       .finally(() => setLoadingItems(false));
   };
 
+  const getPurchaseOrder = (id_po) => {
+    setLoadingItems(true);
+
+    axiosClient
+      .get(`/purchase/${id_po}`)
+      .then((res) => {
+        const data = res.data.data;
+
+        if (!data) {
+          toast.error("Data PO tidak ditemukan");
+          return;
+        }
+
+        const po = data.po
+        const items = data.items
+
+        // 1️⃣ Header / form
+        setFormData((prev) => ({
+          ...prev,
+          id_po: po.id,
+          tanggal: po.tanggal?.slice(0, 16), // for datetime-local
+          id_unit: po.id_master_unit_supplier,
+        }));
+
+        // 2️⃣ Normalize items → match UI contract
+        const normalizedRows = (items || []).map((it) => ({
+          nama_barang: it.nama_barang,
+          nama_satuan: it.satuan,
+          barang_hpp: Number(it.harga_satuan),
+          qty: Number(it.permintaan),
+        }));
+
+        setItems({
+          rows: normalizedRows,
+          min_time: po.tanggal_entri,
+          max_time: po.tanggal_datang,
+        });
+
+        // 3️⃣ Financials (trust backend)
+        setPpn(po.ppn ?? 11);
+        setSubtotal(Number(po.subtotal) || 0);
+        setGrandTotal(
+          Number(po.subtotal || 0) * (1 + (po.ppn || 0) / 100)
+        );
+
+      })
+      .catch((error) => {
+        console.error("Get PO error:", error);
+        toast.error("Gagal memuat data Purchase Order");
+      })
+      .finally(() => setLoadingItems(false));
+  };
+
   // -------------------------
   // Submit Form
   // -------------------------
@@ -122,7 +175,10 @@ export default function PurchaseOrderBulkModal({ open, id_po, onClose, onSuccess
         onSuccess();
         onClose();
       })
-      .catch(() => toast.error("Gagal membuat PO"));
+      .catch((error) => {
+        console.error("Create PO error:", error);
+        toast.error("Gagal membuat PO");
+      });
   };
 
   if (!open) return null;
@@ -280,7 +336,8 @@ export default function PurchaseOrderBulkModal({ open, id_po, onClose, onSuccess
               Batal
             </button>
 
-            {!id_unit && (
+
+            {formData.id_unit && (
               <button
                 onClick={handleSubmit}
                 className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"

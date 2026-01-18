@@ -9,6 +9,8 @@ import PurchaseUsedModal from "./PurchaseUsedModal";
 import { fetchPurchaseOrders, printPurchaseOrder } from "../../store/purchaseSlice";
 import PurchaseOrderBulkModal from "./PurchaseOrderBulkModal";
 import { CloudArrowUpIcon } from "@heroicons/react/24/outline";
+import axiosClient from "../../api/axiosClient";
+import { toast } from "react-toastify";
 
 export default function Purchase() {
   const dispatch = useDispatch();
@@ -42,9 +44,23 @@ export default function Purchase() {
   };
 
   const handleSend = (id_po) => {
-    setPoId(id_po);
-    setPoModalOpen(true);
+    axiosClient
+      .post(`/purchase/send_simrs/${id_po}`)
+      .then((res) => {
+        console.log("success", res)
+        toast.success("PO berhasil dikirim ke SIMRS");
+        setItems(res.data.data || []);
+      })
+      .catch((err) => {
+        console.log("error", err)
+        const msg =
+          err.response?.data?.message ||
+          "Gagal mengirim ke SIMRS";
+
+        toast.error(msg);
+      });
   };
+
   return (
     <>
       {/* Segment 1: Used items (like first card in Distribusi) */}
@@ -115,8 +131,8 @@ export default function Purchase() {
 
       <PurchaseOrderBulkModal
         open={poModalOpen}
-        id_unit={poId}
-        onSuccess={refreshUsed}
+        id_po={poId}
+        onSuccess={() => setRefreshUsed(true)}
         onClose={() => setPoModalOpen(false)}
       />
     </>
