@@ -43,24 +43,6 @@ export default function Purchase() {
       .then(() => dispatch(fetchPurchaseOrders({ page: 1, limit: 20 })));
   };
 
-  const handleSend = (id_po) => {
-    axiosClient
-      .post(`/purchase/send_simrs/${id_po}`)
-      .then((res) => {
-        console.log("success", res)
-        toast.success("PO berhasil dikirim ke SIMRS");
-        setItems(res.data.data || []);
-      })
-      .catch((err) => {
-        console.log("error", err)
-        const msg =
-          err.response?.data?.message ||
-          "Gagal mengirim ke SIMRS";
-
-        toast.error(msg);
-      });
-  };
-
   return (
     <>
       {/* Segment 1: Used items (like first card in Distribusi) */}
@@ -116,7 +98,6 @@ export default function Purchase() {
           <PurchaseOrderTable 
             filters={filters} 
             onPrint={handlePrint}
-            onSend={handleSend}
             refresh={refreshUsed}
           />
         </div>

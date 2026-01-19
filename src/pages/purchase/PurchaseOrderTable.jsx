@@ -1,25 +1,53 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchPurchaseOrders } from "../../store/purchaseSlice";
 import Pagination from "../../components/Pagination";
 import { formatToReadableLocal, formatRupiah } from "../../helper/helper";
+import { toast } from "react-toastify";
+import axiosClient from "../../api/axiosClient";
 
-export default function PurchaseOrderTable({ mode="purchase", filters, onPrint, onSend, onConfirm, refresh}) {
+export default function PurchaseOrderTable({ mode="purchase", filters, onPrint, onConfirm, refresh}) {
   const dispatch = useDispatch();
-  
+
   const { list, pagination, loading } = useSelector(
     (state) => state.purchase.purchaseOrders
   );
 
   const { page, totalPages, totalItems } = pagination;
   const limit = 20;
+  const [sendingId, setSendingId] = useState(null);
 
   useEffect(() => {
+    if (sendingId) return;
     const delay = setTimeout(() => {
       dispatch(fetchPurchaseOrders({ page, limit, filters }));
     }, 400);
     return () => clearTimeout(delay);
-  }, [dispatch, page, filters, onConfirm, refresh]);
+  }, [dispatch, page, filters, onConfirm, refresh, sendingId]);
+
+
+  
+  const handleSend = async (id_po) => {
+    try {
+      setSendingId(id_po);
+
+      const res = await axiosClient.post(
+        `/purchase/send_simrs/${id_po}`
+      );
+
+      toast.success("PO berhasil dikirim ke SIMRS");
+      setItems(res.data.data || []);
+    } catch (err) {
+      const msg =
+        err.response?.data?.message ||
+        "Gagal mengirim ke SIMRS";
+
+      toast.error(msg);
+    } finally {
+      setSendingId(null);
+    }
+  }
+
 
   return (
     <div className="m-6 bg-white">
@@ -78,18 +106,26 @@ export default function PurchaseOrderTable({ mode="purchase", filters, onPrint, 
                     {formatRupiah(po.subtotal ?? 0)}
                   </td>
                   <td className="border border-gray-200 px-6 py-2 text-gray-700 text-center">
-                    {po.simrs_sync ? (
-                      <p >
-                        Sudah
-                      </p>
-                    ) : (
-                      <button
-                        onClick={() => onSend(po.id)}
-                        className="px-3 py-1 bg-green-100 hover:bg-green-200 text-black-700 rounded text-sm"
-                      >
-                        Kirim SIMRS
-                      </button>
-                    )}
+                      {po.simrs_sync ? (
+                        <p>Terkirim</p>
+                      ) : (
+                        <button
+                          onClick={() => handleSend(po.id)}
+                          disabled={sendingId === po.id}
+                          className={`px-3 py-1 rounded text-sm flex items-center justify-center gap-2
+                            ${
+                              sendingId === po.id
+                                ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                                : "bg-green-100 hover:bg-green-200 text-gray-700"
+                            }
+                          `}
+                        >
+                          {sendingId === po.id && (
+                            <span className="w-3 h-3 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
+                          )}
+                          {sendingId === po.id ? "Mengirim..." : "Kirim SIMRS"}
+                        </button>
+                      )}
                   </td>
                   <td className="border border-gray-200 px-6 py-2 text-gray-700 text-center">
                     {po.print_path ? (
