@@ -36,7 +36,7 @@ export default function PurchaseOrderTable({ mode="purchase", filters, onPrint, 
       );
 
       toast.success("PO berhasil dikirim ke SIMRS");
-      setItems(res.data.data || []);
+      //setItems(res.data.data || []);
     } catch (err) {
       const msg =
         err.response?.data?.message ||
@@ -62,7 +62,6 @@ export default function PurchaseOrderTable({ mode="purchase", filters, onPrint, 
               <th className="px-6 py-3 border border-gray-200">Waktu Penggunaan</th>
               <th className="px-6 py-3 border border-gray-200">PPN</th>
               <th className="px-6 py-3 border border-gray-200">Subtotal</th>
-              <th className="px-6 py-3 border border-gray-200 w-50">Terkirim ke SIMRS</th>
               <th className="px-6 py-3 border border-gray-200">Cetak</th>
               {mode === "sale" && (
                 <th className="px-6 py-3 border border-gray-200">Konfirmasi</th>
@@ -104,28 +103,6 @@ export default function PurchaseOrderTable({ mode="purchase", filters, onPrint, 
                   </td>
                   <td className="border border-gray-200 px-6 py-2 text-gray-700">
                     {formatRupiah(po.subtotal ?? 0)}
-                  </td>
-                  <td className="border border-gray-200 px-6 py-2 text-gray-700 text-center">
-                      {po.simrs_sync ? (
-                        <p>Terkirim</p>
-                      ) : (
-                        <button
-                          onClick={() => handleSend(po.id)}
-                          disabled={sendingId === po.id}
-                          className={`px-3 py-1 rounded text-sm flex items-center justify-center gap-2
-                            ${
-                              sendingId === po.id
-                                ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                                : "bg-green-100 hover:bg-green-200 text-gray-700"
-                            }
-                          `}
-                        >
-                          {sendingId === po.id && (
-                            <span className="w-3 h-3 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
-                          )}
-                          {sendingId === po.id ? "Mengirim..." : "Kirim SIMRS"}
-                        </button>
-                      )}
                   </td>
                   <td className="border border-gray-200 px-6 py-2 text-gray-700 text-center">
                     {po.print_path ? (

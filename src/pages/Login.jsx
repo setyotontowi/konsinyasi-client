@@ -20,6 +20,7 @@ export default function Login() {
       localStorage.setItem("auth_token", res.data.token);
       navigate("/");
     } catch (err) {
+      console.log(err);
       setErr(err.response?.data?.message || "Login failed");
     }
   };

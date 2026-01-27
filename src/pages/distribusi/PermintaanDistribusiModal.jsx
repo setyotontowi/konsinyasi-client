@@ -17,17 +17,11 @@ import SerialNumberSelect from "../distribusi/component/SerialNumberSelect";
 
 
 // Mode
-// add, edit, view [Permintaan Distribusi]
-// distribusi, [Distribusi] 
-// pemakaian, [Penggunaan Barang]
-// purchase [Purchase Order]
-// 
+// add : edit, view [Permintaan Distribusi]
+// distribusi : [Distribusi] 
+// pemakaian : [Penggunaan Barang]
+// purchase : [Purchase Order]
 
-const options = [
-    { value: 'a', label: 'Option A' },
-    { value: 'b', label: 'Option B' },
-    { value: 'c', label: 'Option C' },
-  ];
 
 
 export default function PermintaanDistribusiModal({ open, mode, data, onClose }) {

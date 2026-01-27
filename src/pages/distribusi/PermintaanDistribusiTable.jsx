@@ -1,9 +1,11 @@
 // /pages/distribusi/PermintaanDistribusiTable.jsx
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchPermintaanDistribusi } from "../../store/permintaanDistribusiSlice";
 import Pagination from "../../components/Pagination";
 import { EyeIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { toast } from "react-toastify";
+import axiosClient from "../../api/axiosClient";
 
 
 // onDistribusi
@@ -14,14 +16,17 @@ export default function PermintaanDistribusiTable({ search, filters, onView, onI
   const dispatch = useDispatch();
   const { list, pagination, loading } = useSelector((state) => state.permintaanDistribusi);
   const { page, totalPages, totalItems } = pagination;
+  const [sendingId, setSendingId] = useState(null);
   const limit = 20;
 
   useEffect(() => {
+    if (sendingId) return;
+
     const delay = setTimeout(() => {
       dispatch(fetchPermintaanDistribusi({ page, limit, search, filters, onDistribusi }));
     }, 400);
     return () => clearTimeout(delay);
-  }, [dispatch, page, search, filters]);
+  }, [dispatch, page, search, filters, sendingId]);
 
   useEffect(() => {
     if (onCountChange) {
@@ -35,6 +40,33 @@ export default function PermintaanDistribusiTable({ search, filters, onView, onI
         <p className="text-gray-500 animate-pulse">Loading permintaan distribusi...</p>
       </div>
     );
+
+  const handleSend = async (id_pd) => {
+    try {
+      setSendingId(id_pd);
+
+      // await new Promise((resolve) => setTimeout(resolve, 1000));
+      // toast.success(`PO berhasil dikirim ke SIMRS (mock) ${id_pd}`);
+
+      const res = await axiosClient.post(
+        `/purchase/send_simrs/${id_pd}`
+      );
+
+      toast.success("PO berhasil dikirim ke SIMRS");
+      
+      // setItems(res.data.data || []);
+    } catch (err) {
+      console.log(err)
+      const msg =
+        err.response?.data?.message ||
+        "Gagal mengirim ke SIMRS";
+
+      toast.error(msg);
+    } finally {
+      setSendingId(null);
+    }
+  }
+  
 
   return (
     <div className="m-6 bg-white">
@@ -51,7 +83,10 @@ export default function PermintaanDistribusiTable({ search, filters, onView, onI
               <th className="px-6 py-3 font-medium border border-gray-200">Status</th>
               {
                 onDistribusi === false && (
+                  <>
                   <th className="px-6 py-3 font-medium border border-gray-200 w-10">Sudah dipakai</th>
+                  <th className="px-6 py-3 font-medium border border-gray-200">Kirim Ke SIMRS</th>
+                  </>
                 )
               }
               <th className="px-6 py-3 font-medium border border-gray-200 w-10">Aksi</th>
@@ -99,6 +134,7 @@ export default function PermintaanDistribusiTable({ search, filters, onView, onI
                 </td>
 
                 {onDistribusi === false && (
+                  <>
                   <td className="border border-gray-200 px-6 py-2 text-center">
                     {d.sudah_dipakai ? (
                       <span className="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
@@ -110,6 +146,29 @@ export default function PermintaanDistribusiTable({ search, filters, onView, onI
                       </span>
                     )}
                   </td>
+                  <td className="border border-gray-200 px-6 py-2 text-center">
+                    {d.simrs_sync ? (
+                        <p>Terkirim</p>
+                      ) : (
+                    <button
+                          onClick={() => handleSend(d.pd_id)}
+                          disabled={sendingId === d.pd_id}
+                          className={`px-3 py-1 rounded text-sm flex items-center justify-center gap-2
+                            ${
+                              sendingId === d.pd_id
+                                ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                                : "bg-green-100 hover:bg-green-200 text-gray-700"
+                            }
+                          `}
+                        >
+                          {sendingId === d.pd_id && (
+                            <span className="w-3 h-3 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
+                          )}
+                          {sendingId === d.pd_id ? "Mengirim..." : "Kirim SIMRS"}
+                    </button>
+                    )}
+                  </td>
+                  </>
                 )}
 
                 {/* Actions */}
