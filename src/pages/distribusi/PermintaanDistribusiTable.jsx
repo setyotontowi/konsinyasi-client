@@ -12,6 +12,9 @@ import axiosClient from "../../api/axiosClient";
 // true = dipakai di halaman distribusi. menampilkan data yang belum didistribusikan saja
 // false = dipakai di halaman pemakaian distribusi. menampilkan data yang sudah didistribusikan saja.
 // null = dipakai di halaman permintaan distribusi. menampilkan semua data, baik yang belum dan yang sudah.
+
+// Definisi unit asal dan unit tujuan sempat terbalik.
+// Unit asal adalah unit yang meminta (pbf nya), unit tujuan adalah non pbfnya
 export default function PermintaanDistribusiTable({ search, filters, onView, onInput, onEdit, onDelete, onDistribusi, onCountChange}) {
   const dispatch = useDispatch();
   const { list, pagination, loading } = useSelector((state) => state.permintaanDistribusi);
@@ -118,10 +121,10 @@ export default function PermintaanDistribusiTable({ search, filters, onView, onI
                   {new Date(d.waktu).toLocaleString("id-ID")}
                 </td>
                 <td className="border border-gray-200 px-6 py-2 text-gray-700">
-                  {d.unit_asal}
+                  {d.unit_tujuan}
                 </td>
                 <td className="border border-gray-200 px-6 py-2 text-gray-700">
-                  {d.unit_tujuan}
+                  {d.unit_asal}
                 </td>
                 <td
                   className={`border border-gray-200 px-6 py-2 text-center ${

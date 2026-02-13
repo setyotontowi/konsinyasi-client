@@ -322,11 +322,11 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                 <div>
                   <label className="block text-sm font-medium">Unit Asal</label>
                   <Select
-                    options={units}
+                    options={unitsPBF}
                     placeholder="Pilih unit asal..."
-                    isDisabled={isView || mode === 'distribusi'}
-                    value={units.find((u) => u.value === formData.id_master_unit) || null}
-                    onChange={(opt) => handleSelectChange("id_master_unit", opt)}
+                    isDisabled={isView || items.length > 0} 
+                    value={unitsPBF.find((u) => u.value === formData.id_master_unit_tujuan) || null}
+                    onChange={(opt) => handleSelectChange("id_master_unit_tujuan", opt)}
                     className="react-select-container"
                     classNamePrefix="react-select"
                   />
@@ -336,11 +336,11 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                 <div>
                   <label className="block text-sm font-medium">Unit Tujuan</label>
                   <Select
-                    options={unitsPBF}
+                    options={units}
                     placeholder="Pilih unit tujuan..."
-                    isDisabled={isView || items.length > 0} 
-                    value={unitsPBF.find((u) => u.value === formData.id_master_unit_tujuan) || null}
-                    onChange={(opt) => handleSelectChange("id_master_unit_tujuan", opt)}
+                    isDisabled={isView || mode === 'distribusi'}
+                    value={units.find((u) => u.value === formData.id_master_unit) || null}
+                    onChange={(opt) => handleSelectChange("id_master_unit", opt)}
                     className="react-select-container"
                     classNamePrefix="react-select"
                   />
