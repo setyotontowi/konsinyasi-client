@@ -14,9 +14,6 @@ export default function StokOpnameSerialNumberModal({
   // Prefill when editing existing SN
   useEffect(() => {
     if (open) {
-      if (initialData?.serial_numbers?.length) {
-        setRawText(initialData.serial_numbers.join("\n"));
-      } 
 
       if (initialData?.id) {
         axiosClient
@@ -37,9 +34,13 @@ export default function StokOpnameSerialNumberModal({
             // do not block modal opening
             setRawText("");
         });
-    } else {
-        setRawText("");
-    }
+      } else {
+        if (initialData?.serial_number?.length) {
+          setRawText(initialData.serial_number.join("\n"));
+        } else {
+          setRawText("");
+        }
+      }
     }
   }, [open, initialData]);
 

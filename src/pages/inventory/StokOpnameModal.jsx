@@ -122,7 +122,7 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
         ...prev.details, 
         {
           ...detail,
-          serial_number: detail.serial_numbers || []
+          serial_number: detail.serial_number || []
         }],
     }));
   };
@@ -470,7 +470,7 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
                 const updatedDetails = [...prev.details];
                 updatedDetails[snIndex] = {
                   ...updatedDetails[snIndex],
-                  serial_numbers: serialNumbers,
+                  serial_number: serialNumbers,
                 };
 
                 return {
@@ -478,6 +478,8 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
                   details: updatedDetails,
                 };
               });
+
+              
             }}
             initialData={snIndex !== null ? form.details[snIndex] : null}
         />
