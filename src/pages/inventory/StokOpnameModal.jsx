@@ -133,6 +133,16 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
     setDetailModalOpen(true);
   };
 
+  const handleModalBarangOpen = () => {
+    const unitSet = form.id_master_unit != null && form.id_master_unit != ''
+
+    if (!unitSet){
+      toast.info("Silahkan pilih unit tujuan terlebih dahulu");
+    } else {
+      setDetailModalOpen(true);
+    }
+  }
+
   // Todo This
   const handleRemoveDetail = (index) => {
     const confirmDelete = window.confirm("Hapus barang ini dari daftar?");
@@ -297,7 +307,7 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
 
               <button
                 type="button"
-                onClick={() => setDetailModalOpen(true)}
+                onClick={() => handleModalBarangOpen()}
                 className="text-xs px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition"
               >
                 + Tambah Barang
