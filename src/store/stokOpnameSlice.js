@@ -68,6 +68,18 @@ export const updateStokOpname = createAsyncThunk(
   }
 );
 
+export const deleteStokOpnameDetail = createAsyncThunk(
+  "stokOpname/delete",
+  async (id_stok_opname_detail, { rejectWithValue }) => {
+    try {
+      const res = await axiosClient.delete(`/inventory/stok-opname-detail/${id_stok_opname_detail}`);
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data || err.message);
+    }
+  }
+);
+
 
 const stokOpnameSlice = createSlice({
   name: "stokOpname",

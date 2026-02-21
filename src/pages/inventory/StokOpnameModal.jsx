@@ -5,6 +5,7 @@ import {
   fetchStokOpnameById,
   updateStokOpname,
   createStokOpname,
+  deleteStokOpnameDetail,
 } from "../../store/stokOpnameSlice";
 import axiosClient from "../../api/axiosClient";
 import Select from "react-select";
@@ -132,16 +133,25 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
     setDetailModalOpen(true);
   };
 
+  // Todo This
   const handleRemoveDetail = (index) => {
     const confirmDelete = window.confirm("Hapus barang ini dari daftar?");
     if (!confirmDelete) return;
 
-    setForm((prev) => ({
-        ...prev,
-        details: prev.details.filter((_, i) => i !== index),
-    }));
+    //which barang?
+    const deletedItem = form.details[index];
 
-    toast.info("Detail barang dihapus dari daftar");
+    dispatch(deleteStokOpnameDetail(deletedItem.id))
+      .unwrap()
+      .then(() => {
+        setForm((prev) => ({
+            ...prev,
+            details: prev.details.filter((_, i) => i !== index),
+        }));
+        toast.info("Detail barang dihapus dari daftar");
+      })
+      .catch(() => toast.error("Gagal menghapus stok opname"));
+    
   };
 
 
