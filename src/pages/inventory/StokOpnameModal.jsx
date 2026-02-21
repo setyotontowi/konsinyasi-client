@@ -232,6 +232,7 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
                 type="datetime-local"
                 name="waktu_input"
                 value={formatDateTimeLocal(form.waktu_input)}
+                disabled={form.id != null}
                 onChange={(e) =>
                   setForm((p) => ({ ...p, waktu_input: e.target.value }))
                 }
@@ -244,7 +245,7 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
               <Select
                 isLoading={loading.unit}
                 options={units}
-                placeholder="Pilih unit asal..."
+                placeholder="Pilih unit tujuan..."
                 value={
                   units.find((u) => u.value === form.id_master_unit) || null
                 }
@@ -254,7 +255,8 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
                     id_master_unit: opt ? opt.value : "",
                   }))
                 }
-                className="react-select-container"
+                isDisabled={form.id != null}
+                className="react-select-container text-sm text-black"
                 classNamePrefix="react-select"
               />
             </div>
