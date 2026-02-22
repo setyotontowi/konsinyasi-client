@@ -229,7 +229,7 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
       // onClick={onClose}
     >
       <div
-        className="bg-white w-full max-w-7xl rounded-lg shadow-lg relative max-h-[90vh] animate-fadeIn "
+        className="bg-white w-full max-w-7xl rounded-lg shadow-lg relative max-h-[90vh] animate-fadeIn overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -470,6 +470,7 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
             }}
             initialData={editingIndex !== null ? form.details[editingIndex] : null}
             pbf = {form.id_master_unit}
+            dataChecking={form.details}
         />
 
         {/* Insert MOdal StokOpnameSerialNumberModal*/}

@@ -10,6 +10,7 @@ export default function StokOpnameDetailModal({
   onAddDetail,
   initialData,
   pbf,
+  dataChecking,
 }) {
   const [barangOptions, setBarangOptions] = useState([]);
   const [edOptions, setEdOptions] = useState([]);
@@ -112,9 +113,17 @@ export default function StokOpnameDetailModal({
     }
   }, [selectedBarang, isNewEd]);
 
-  // Fetch HNA
+  // Fetch HNA & checking double barang
   useEffect(() => {
     if (selectedBarang) {
+      const exists = dataChecking.some(
+        (item) => item.id_master_barang === selectedBarang.value
+      );
+
+      if (exists) {
+        toast.warning("Barang sudah ada di daftar.");
+      }
+
       axiosClient
         .get(`/barang/item/${selectedBarang.value}`)
         .then((res) => {
@@ -176,11 +185,15 @@ export default function StokOpnameDetailModal({
     const barang = selectedBarang?.value;
     const ed = isNewEd ? newEd : selectedEd?.value;
     const nobatch = isNewNoBatch ? newNoBatch : selectedNobatch?.value;
+    const exists = dataChecking.some(
+      (item) => item.id_master_barang === selectedBarang?.value
+    );
 
     if (!barang || !ed || !nobatch)
       return toast.error("Barang, ED, dan NoBatch wajib diisi");
     if (kenyataan === "") return toast.error("Kenyataan wajib diisi");
     if (kenyataan < 0) return toast.error("Kenyataan tidak boleh diisi dengan angka minus")
+    //if (exists) return toast.error("Tidak bisa menambahkan barang. Barang sudah ada di daftar.");
 
     onAddDetail({
       id_master_barang: barang,
@@ -205,7 +218,7 @@ export default function StokOpnameDetailModal({
       //onClick={onClose}
     >
       <div
-        className="bg-white w-full max-w-lg rounded-lg p-4 relative"
+        className="bg-white w-full max-w-lg rounded-lg p-4 relative max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
         onKeyDown={(e) => {
           if (e.key === "Enter") {
