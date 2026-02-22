@@ -112,6 +112,21 @@ export default function StokOpnameDetailModal({
     }
   }, [selectedBarang, isNewEd]);
 
+  // Fetch HNA
+  useEffect(() => {
+    if (selectedBarang) {
+      axiosClient
+        .get(`/barang/item/${selectedBarang.value}`)
+        .then((res) => {
+          setHpp(res.data.data.barang_hpp)
+          }
+        )
+        .catch(() => toast.error("Gagal memuat Harga Barang"));
+    } else {
+      setEdOptions([]);
+    }
+  }, [selectedBarang]);
+
   // Fetch NoBatch options
   useEffect(() => {
     if (selectedBarang && selectedEd && !isNewNoBatch) {
@@ -192,6 +207,12 @@ export default function StokOpnameDetailModal({
       <div
         className="bg-white w-full max-w-lg rounded-lg p-4 relative"
         onClick={(e) => e.stopPropagation()}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            handleSave();
+          }
+        }}
       >
         <h2 className="text-lg font-semibold mb-4">
           {initialData ? "Edit Detail Barang" : "Tambah Detail Barang"}
