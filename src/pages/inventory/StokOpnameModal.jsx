@@ -145,6 +145,11 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
 
   // Todo This
   const handleRemoveDetail = (index) => {
+    if (form.details.length <= 1) {
+      toast.error("Harus ada setidaknya satu barang di Stok Opname")
+      return;
+    };
+
     const confirmDelete = window.confirm("Hapus barang ini dari daftar?");
     if (!confirmDelete) return;
 
@@ -308,7 +313,7 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
               <button
                 type="button"
                 onClick={() => handleModalBarangOpen()}
-                className="text-xs px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition"
+                className="text-xs px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition"
               >
                 + Tambah Barang
               </button>
@@ -415,7 +420,7 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
                 ) : (
                     <tr>
                     <td
-                        colSpan="8"
+                        colSpan="10"
                         className="text-center text-gray-400 py-3 italic"
                     >
                         Belum ada barang ditambahkan
