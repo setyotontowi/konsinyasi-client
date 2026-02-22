@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import Select from "react-select";
+import { AsyncPaginate } from "react-select-async-paginate";
 import axiosClient from "../../api/axiosClient";
 import { 
   addPermintaanDistribusi,
@@ -168,6 +169,10 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
   // it will return list of data on different ed and nobatch
   // sum it all, named it as stock_available
 
+  // useEffect(()=>{
+  //   console.log("formData renew", formData)
+  // }, [formData])
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -182,6 +187,38 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
     ...prev, [name]: value,
     }))
   }
+
+  const loadUnitOptions = async (search, loadedOptions, { page }) => {
+    try {
+      const res = await axiosClient.get("/unit", {
+        params: {
+          nama: search,
+          page,
+          limit: 20,
+        },
+      });
+
+      const list = res.data?.data || [];
+      const hasMore = res.data?.pagination.page < res.data?.pagination.total_pages
+
+      return {
+        options: list.map((u) => ({
+          value: u.id,
+          label: u.nama,
+        })),
+        hasMore,
+        additional: {
+          page: page + 1,
+        },
+      };
+    } catch (err) {
+      console.error(err);
+      return {
+        options: [],
+        hasMore: false,
+      };
+    }
+  };
 
 
   const handleAddItem = () => {
@@ -335,14 +372,18 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                 {/* Unit Tujuan */}
                 <div>
                   <label className="block text-sm font-medium">Unit Tujuan</label>
-                  <Select
-                    options={units}
-                    placeholder="Pilih unit tujuan..."
-                    isDisabled={isView || mode === 'distribusi'}
+
+                  <AsyncPaginate
                     value={units.find((u) => u.value === formData.id_master_unit) || null}
+                    loadOptions={loadUnitOptions}
                     onChange={(opt) => handleSelectChange("id_master_unit", opt)}
-                    className="react-select-container"
-                    classNamePrefix="react-select"
+                    isDisabled={isView || mode === "distribusi"}
+                    additional={{
+                      page: 1,
+                    }}
+                    placeholder="Pilih unit tujuan.."
+                    debounceTimeout={300}
+                    loadOptionsOnMenuOpen
                   />
                 </div>
               </div>

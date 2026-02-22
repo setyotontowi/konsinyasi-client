@@ -24,6 +24,7 @@
     "react-redux": "^9.2.0",
     "react-router-dom": "^6.14.1",
     "react-select": "^5.10.2",
+    "react-select-async-paginate": "^0.7.11",
     "react-toastify": "^11.0.5",
     "tailwindcss": "^4.1.16"
   },
