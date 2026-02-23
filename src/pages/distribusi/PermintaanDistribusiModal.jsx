@@ -15,6 +15,7 @@ import { XMarkIcon, PlusCircleIcon } from "@heroicons/react/24/outline";
 import { toast } from "react-toastify";
 import { formatToReadableLocal, getLocalNow } from "../../helper/helper";
 import SerialNumberSelect from "../distribusi/component/SerialNumberSelect";
+import UnitNonPbfSelect from "../../components/UnitNonPbfSelect";
 
 
 // Mode
@@ -29,45 +30,45 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
   const isView = mode === "view" || mode === "purchase" || mode === "distribusi_view" || mode === "pemakaian_view";
   const dispatch = useDispatch();
 
-  console.log(mode);
+  //console.log(mode);
 
   const [value, setValue] = useState([]);
 
   useEffect(() => {
-   if (open && (mode !== "add") && data?.pd_id) {
-    dispatch(fetchPermintaanDistribusiById(data.pd_id))
-      .unwrap()
-      .then((detail) => {
-        // fill formData & items from API result
-        setFormData({
-          waktu: detail?.waktu ? formatToReadableLocal(detail.waktu) : getLocalNow(),
-          id_master_unit: detail?.id_master_unit || "",
-          id_master_unit_tujuan: detail?.id_master_unit_tujuan || "",
-          nomor_rm: detail?.nomor_rm || "",
-          nama_pasien: detail?.nama_pasien || "",
-          nama_ruang: detail?.nama_ruang || "",
-          diagnosa: detail?.diagnosa || "",
+    if (open && (mode !== "add") && data?.pd_id) {
+      dispatch(fetchPermintaanDistribusiById(data.pd_id))
+        .unwrap()
+        .then((detail) => {
+          // fill formData & items from API result
+          setFormData({
+            waktu: detail?.waktu ? formatToReadableLocal(detail.waktu) : getLocalNow(),
+            id_master_unit: detail?.id_master_unit || "",
+            id_master_unit_tujuan: detail?.id_master_unit_tujuan || "",
+            nomor_rm: detail?.nomor_rm || "",
+            nama_pasien: detail?.nama_pasien || "",
+            nama_ruang: detail?.nama_ruang || "",
+            diagnosa: detail?.diagnosa || "",
+          });
+          setItems(detail?.items || []);
+        })
+        .catch(() => {
+          toast.error("Gagal memuat detail permintaan distribusi");
         });
-        setItems(detail?.items || []);
-      })
-      .catch(() => {
-        toast.error("Gagal memuat detail permintaan distribusi");
-      });
-  }
+    }
 
-  if (open && mode === "add") {
-    setFormData({
-      waktu: getLocalNow(),
-      id_master_unit: "",
-      id_master_unit_tujuan: "",
-      nomor_rm: "",
-      nama_pasien: "",
-      nama_ruang: "",
-      diagnosa: "",
-    });
-    setItems([]); 
-  }
-}, [data?.pd_id, open, mode]);
+    if (open && mode === "add") {
+      setFormData({
+        waktu: getLocalNow(),
+        id_master_unit: "",
+        id_master_unit_tujuan: "",
+        nomor_rm: "",
+        nama_pasien: "",
+        nama_ruang: "",
+        diagnosa: "",
+      });
+      setItems([]); 
+    }
+  }, [data?.pd_id, open, mode]);
 
   const [formData, setFormData] = useState({
     pd_id: data?.pd_id,
@@ -100,8 +101,12 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
     qty: "",
   });
 
+  // unused since we will use AsyncPagination
   useEffect(() => {
-    if (!open) return;
+    if (!open) {
+      setUnits({});
+      return
+    };
 
     setLoading((l) => ({ ...l, unit: true }));
     axiosClient
@@ -123,7 +128,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
       });
 
       setUnitsPBF(pbfUnits);
-      setUnits(normalUnits);
+      //setUnits(normalUnits);
     })
     .catch((err) => {
       console.error("Failed to load units:", err);
@@ -169,9 +174,9 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
   // it will return list of data on different ed and nobatch
   // sum it all, named it as stock_available
 
-  // useEffect(()=>{
-  //   console.log("formData renew", formData)
-  // }, [formData])
+  useEffect(()=>{
+    setUnits({value: formData.id_master_unit})
+  }, [formData])
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -179,6 +184,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
   };
 
   const handleSelectChange = (name, option) => {
+    setUnits(option)
     setFormData((prev) => ({ ...prev, [name]: option ? option.value : "" }));
   };
 
@@ -188,37 +194,6 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
     }))
   }
 
-  const loadUnitOptions = async (search, loadedOptions, { page }) => {
-    try {
-      const res = await axiosClient.get("/unit", {
-        params: {
-          nama: search,
-          page,
-          limit: 20,
-        },
-      });
-
-      const list = res.data?.data || [];
-      const hasMore = res.data?.pagination.page < res.data?.pagination.total_pages
-
-      return {
-        options: list.map((u) => ({
-          value: u.id,
-          label: u.nama,
-        })),
-        hasMore,
-        additional: {
-          page: page + 1,
-        },
-      };
-    } catch (err) {
-      console.error(err);
-      return {
-        options: [],
-        hasMore: false,
-      };
-    }
-  };
 
 
   const handleAddItem = () => {
@@ -363,7 +338,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                     placeholder="Pilih unit asal..."
                     isDisabled={isView || items.length > 0} 
                     value={unitsPBF.find((u) => u.value === formData.id_master_unit_tujuan) || null}
-                    onChange={(opt) => handleSelectChange("id_master_unit_tujuan", opt)}
+                    //onChange={(opt) => handleSelectChange("id_master_unit_tujuan", opt)}
                     className="react-select-container"
                     classNamePrefix="react-select"
                   />
@@ -373,17 +348,10 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                 <div>
                   <label className="block text-sm font-medium">Unit Tujuan</label>
 
-                  <AsyncPaginate
-                    value={units.find((u) => u.value === formData.id_master_unit) || null}
-                    loadOptions={loadUnitOptions}
-                    onChange={(opt) => handleSelectChange("id_master_unit", opt)}
+                  <UnitNonPbfSelect
+                    unitSelected={units}
+                    onChange={handleSelectChange}
                     isDisabled={isView || mode === "distribusi"}
-                    additional={{
-                      page: 1,
-                    }}
-                    placeholder="Pilih unit tujuan.."
-                    debounceTimeout={300}
-                    loadOptionsOnMenuOpen
                   />
                 </div>
               </div>
