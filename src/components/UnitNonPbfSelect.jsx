@@ -3,18 +3,20 @@ import { AsyncPaginate } from "react-select-async-paginate";
 import axiosClient from "../api/axiosClient";
 
 export default function UnitNonPbfSelect({ 
-    unitSelected,
+    unitSelected = null,
+    name,
     onChange,
-    isDisabled
+    isDisabled = false
 }) {
 
     const [unit, setUnit] = useState(unitSelected || null);
 
     useEffect(() => {
-        if (unitSelected.value == "" || unitSelected.value == undefined) {
+        if (unitSelected == undefined || unitSelected.value == null || unitSelected.value == "") {
           setDefaultUnit()
           return;
         }
+        console.log("unit selected", unitSelected)
         axiosClient.get("/unit", {
             params: {
               id: unitSelected.value,
@@ -70,7 +72,7 @@ export default function UnitNonPbfSelect({
         <AsyncPaginate
             value={unit} 
             loadOptions={loadUnitOptions}
-            onChange={(opt) => onChange("id_master_unit", opt)}
+            onChange={(opt) => onChange(name, opt)}
             isDisabled={isDisabled}
             additional={{
                 page: 1,

@@ -1,5 +1,7 @@
 import Select from "react-select";
 import { XMarkIcon } from "@heroicons/react/24/outline";
+import { AsyncPaginate } from "react-select-async-paginate";
+import UnitNonPbfSelect from "../../components/UnitNonPbfSelect";
 
 export default function FilterDistribusiModal({
   open,
@@ -41,16 +43,23 @@ export default function FilterDistribusiModal({
             {/* Unit */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Unit
+                Unit Tujuan (PBF)
               </label>
-              <Select
+              <UnitNonPbfSelect
+                name="id_master_unit"
+                unitSelected={{value: filters.id_master_unit}}
+                onChange={(name, option) => {
+                  setFilters((f) => ({...f, id_master_unit: option.value}))
+                }}
+              />
+              {/* <Select
                 options={units}
                 value={filters.id_master_unit}
                 onChange={(v) =>
                   setFilters((f) => ({ ...f, id_master_unit: v }))
                 }
                 isClearable
-              />
+              /> */}
             </div>
 
             {/* Unit Tujuan PBF */}

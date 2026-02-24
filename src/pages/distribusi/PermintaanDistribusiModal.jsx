@@ -350,6 +350,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
 
                   <UnitNonPbfSelect
                     unitSelected={units}
+                    name="id_master_unit"
                     onChange={handleSelectChange}
                     isDisabled={isView || mode === "distribusi"}
                   />
