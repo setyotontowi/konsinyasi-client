@@ -58,15 +58,15 @@ export default function FilterDistribusiModal({
             {/* Unit Tujuan PBF */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Unit Tujuan (PBF)
+                Unit Asal
               </label>
-              <Select
-                options={unitsPBF}
-                value={filters.id_master_unit_tujuan}
-                onChange={(v) =>
-                  setFilters((f) => ({ ...f, id_master_unit_tujuan: v }))
-                }
-                isClearable
+              <UnitSelect
+                name="id_master_unit_tujuan"
+                unitSelected={{value: filters.id_master_unit_tujuan}}
+                onChange={(name, option) => {
+                  setFilters((f) => ({...f, id_master_unit_tujuan: option.value}))
+                }}
+                isPbf="ya"
               />
             </div>
 

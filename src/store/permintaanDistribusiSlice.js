@@ -21,8 +21,8 @@ export const fetchPermintaanDistribusi = createAsyncThunk(
       if (filters.id_master_unit)
         params.append("id_master_unit", filters.id_master_unit);
 
-      if (filters.id_master_unit_tujuan?.value)
-        params.append("id_master_unit_tujuan", filters.id_master_unit_tujuan.value);
+      if (filters.id_master_unit_tujuan)
+        params.append("id_master_unit_tujuan", filters.id_master_unit_tujuan);
 
       if (filters.id_permintaan_distribusi?.value)
         params.append("id_permintaan_distribusi", filters.id_permintaan_distribusi.value);

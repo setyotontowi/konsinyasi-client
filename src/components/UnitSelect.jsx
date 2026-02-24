@@ -17,7 +17,6 @@ export default function UnitSelect({
           setDefaultUnit()
           return;
         }
-        console.log("unit selected", unitSelected)
         axiosClient.get("/unit", {
             params: {
               id: unitSelected.value,
@@ -31,7 +30,7 @@ export default function UnitSelect({
     }, [unitSelected]);
 
     const setDefaultUnit = () => {
-      setUnit({label: "Pilih unit tujuan...", value:null})
+      setUnit({label: "Pilih unit", value:null})
     }
 
     const loadUnitOptions = async (search, loadedOptions, { page }) => {
@@ -47,8 +46,6 @@ export default function UnitSelect({
     
           const list = res.data?.data || [];
           const hasMore = res.data?.pagination.page < res.data?.pagination.total_pages
-
-          console.log("refreshed", list);
     
           return {
             options: list.map((u) => ({
@@ -78,7 +75,7 @@ export default function UnitSelect({
             additional={{
                 page: 1,
             }}
-            placeholder="Pilih unit tujuan.."
+            placeholder="Pilih unit"
             debounceTimeout={300}
             loadOptionsOnMenuOpen
         />
