@@ -15,7 +15,7 @@ import { XMarkIcon, PlusCircleIcon } from "@heroicons/react/24/outline";
 import { toast } from "react-toastify";
 import { formatToReadableLocal, getLocalNow } from "../../helper/helper";
 import SerialNumberSelect from "../distribusi/component/SerialNumberSelect";
-import UnitNonPbfSelect from "../../components/UnitNonPbfSelect";
+import UnitSelect from "../../components/UnitSelect";
 
 
 // Mode
@@ -348,7 +348,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                 <div>
                   <label className="block text-sm font-medium">Unit Tujuan</label>
 
-                  <UnitNonPbfSelect
+                  <UnitSelect
                     unitSelected={units}
                     name="id_master_unit"
                     onChange={handleSelectChange}

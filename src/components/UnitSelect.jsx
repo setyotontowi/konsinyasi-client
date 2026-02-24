@@ -2,11 +2,12 @@ import { useState, useEffect } from "react";
 import { AsyncPaginate } from "react-select-async-paginate";
 import axiosClient from "../api/axiosClient";
 
-export default function UnitNonPbfSelect({ 
+export default function UnitSelect({ 
     unitSelected = null,
     name,
     onChange,
-    isDisabled = false
+    isDisabled = false,
+    isPbf = "tidak"
 }) {
 
     const [unit, setUnit] = useState(unitSelected || null);
@@ -38,7 +39,7 @@ export default function UnitNonPbfSelect({
           const res = await axiosClient.get("/unit", {
             params: {
               nama: search,
-              id: unitSelected.value,
+              is_pbf: isPbf,
               page,
               limit: 20,
             },
