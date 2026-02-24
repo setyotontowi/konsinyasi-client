@@ -4,6 +4,7 @@ import axiosClient from "../../api/axiosClient";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { toast } from "react-toastify";
 import { formatRupiah, formatToReadableDate, getLocalNow } from "../../helper/helper";
+import UnitSelect from "../../components/UnitSelect";
 
 export default function PurchaseOrderBulkModal({ open, id_po, onClose, onSuccess }) {
   
@@ -222,11 +223,13 @@ export default function PurchaseOrderBulkModal({ open, id_po, onClose, onSuccess
             {/* PBF */}
             <div>
               <label className="block text-sm font-medium mb-1">Pilih PBF</label>
-              <Select
-                options={units}
-                isLoading={loadingUnits}
-                onChange={handleUnitChange}
-                placeholder="Pilih PBF..."
+              <UnitSelect
+                name="id_master_unit_tujuan"
+                unitSelected={{value: formData.id_unit}}
+                onChange={(name, option) => {
+                  handleUnitChange(option)
+                }}
+                isPbf="ya"
               />
             </div>
 

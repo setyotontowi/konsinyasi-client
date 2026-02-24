@@ -13,6 +13,7 @@ import { formatToReadableDate, getAuthUser, formatRupiah } from "../../helper/he
 import { toast } from "react-toastify";
 import StokOpnameDetailModal from "./StokOpnameDetailModal";
 import StokOpnameSerialNumberModal from "./StokOpnameSerialNumberModal";
+import UnitSelect from "../../components/UnitSelect";
 
 export default function StokOpnameModal({ open, data, onClose, onSave }) {
   const dispatch = useDispatch();
@@ -267,22 +268,14 @@ export default function StokOpnameModal({ open, data, onClose, onSave }) {
 
             <div>
               <label className="block text-xs text-gray-500 mb-1">Unit</label>
-              <Select
-                isLoading={loading.unit}
-                options={units}
-                placeholder="Pilih unit tujuan..."
-                value={
-                  units.find((u) => u.value === form.id_master_unit) || null
-                }
-                onChange={(opt) =>
-                  setForm((p) => ({
-                    ...p,
-                    id_master_unit: opt ? opt.value : "",
-                  }))
-                }
+              <UnitSelect
+                name="id_master_unit_tujuan"
+                unitSelected={{value: form.id_master_unit}}
+                onChange={(name, option) => {
+                  setForm((f) => ({...f, id_master_unit: option.value}))
+                }}
+                isPbf="ya"
                 isDisabled={form.id != null}
-                className="react-select-container text-sm text-black"
-                classNamePrefix="react-select"
               />
             </div>
 
