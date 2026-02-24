@@ -12,6 +12,7 @@ export default function DistribusiTable({ onView, filters }) {
   const limit = 20;
 
   useEffect(() => {
+    console.log("filter", filters)
     dispatch(fetchDistribusi({ page, limit, filters }));
   }, [dispatch, page, filters]);
 

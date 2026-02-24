@@ -13,11 +13,11 @@ export const fetchDistribusi = createAsyncThunk(
       params.append("limit", limit);
 
       // Only append filters that actually have values
-      if (filters.id_master_unit?.value)
-        params.append("id_master_unit", filters.id_master_unit.value);
+      if (filters.id_master_unit)
+        params.append("id_master_unit", filters.id_master_unit);
 
-      if (filters.id_master_unit_tujuan?.value)
-        params.append("id_master_unit_tujuan", filters.id_master_unit_tujuan.value);
+      if (filters.id_master_unit_tujuan)
+        params.append("id_master_unit_tujuan", filters.id_master_unit_tujuan);
 
       if (filters.id_permintaan_distribusi)
         params.append("id_permintaan_distribusi", filters.id_permintaan_distribusi);

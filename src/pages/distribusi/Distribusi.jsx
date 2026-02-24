@@ -88,7 +88,7 @@ export default function Distribusi() {
             <PermintaanDistribusiTable
               onView={(item) => dispatch(openDistribusiModal(item))}
               onDistribusi={true}
-              filters={filters}
+              //filters={filters}
               onCountChange={setPermintaanCount}
             />
           </div>
