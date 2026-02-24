@@ -11,8 +11,8 @@ export const fetchStokOpname = createAsyncThunk(
       if (search) params.append("search", search);
 
       // Only append filters that actually have values
-      if (filters.id_master_unit?.value)
-        params.append("id_master_unit", filters.id_master_unit.value);
+      if (filters.id_master_unit)
+        params.append("id_master_unit", filters.id_master_unit);
 
       if (filters.start_date)
         params.append("start_date", filters.start_date);

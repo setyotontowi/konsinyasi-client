@@ -1,5 +1,6 @@
 import Select from "react-select";
 import { XMarkIcon } from "@heroicons/react/24/outline";
+import UnitSelect from "../../components/UnitSelect";
 
 export default function StokFilterModal({
   open,
@@ -72,13 +73,13 @@ export default function StokFilterModal({
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Unit
               </label>
-              <Select
-                options={unitsPBF}
-                value={filters.id_master_unit}
-                onChange={(v) =>
-                  setFilters((f) => ({ ...f, id_master_unit: v }))
-                }
-                isClearable
+              <UnitSelect
+                name="id_master_unit"
+                unitSelected={{value: filters.id_master_unit}}
+                onChange={(name, option) => {
+                  setFilters((f) => ({...f, id_master_unit: option.value}))
+                }}
+                isPbf="ya"
               />
             </div>
           </div>
