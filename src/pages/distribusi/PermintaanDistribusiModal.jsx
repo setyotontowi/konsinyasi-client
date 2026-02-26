@@ -149,11 +149,44 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
       .finally(() => setLoading((l) => ({ ...l, satuan: false })));
   }, [open]);
 
+   const loadBarangOptions = async (search, barang, { page }) => {
+      try {
+        console.log("ada refresh", search, barang, page)
+        const res = await axiosClient.get("/barang/items", {
+          params: {
+            page,
+            nama: search,
+            limit: 20,
+          },
+        });
+  
+        const list = res.data?.data || [];
+        const hasMore = res.data?.pagination.page < res.data?.pagination.total_pages
+  
+        return {
+          options: list.map((u) => ({
+            value: u.id,
+            label: u.barang_nama,
+          })),
+          hasMore,
+          additional: {
+            page: page + 1,
+          },
+        };
+      } catch (err) {
+        console.error(err);
+        return {
+          options: [],
+          hasMore: false,
+        };
+      }
+  };
+
   useEffect(() => {
     if (!formData.id_master_unit_tujuan) return;
 
     axiosClient
-      .get(`/barang/items?nama_pabrik=${formData.id_master_unit_tujuan}`)
+      .get(`/barang/items`)
       .then((res) => {
         setBarangOptions(
           (res.data?.data || []).map((b) => ({
@@ -175,6 +208,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
   // sum it all, named it as stock_available
 
   useEffect(()=>{
+    console.log(formData)
     setUnits({value: formData.id_master_unit})
   }, [formData])
 
@@ -184,7 +218,11 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
   };
 
   const handleSelectChange = (name, option) => {
-    setUnits(option)
+    if (name == 'id_master_unit_tujuan') {
+      setUnitsPBF(option)
+    } else if (name == 'id_master_unit') {
+      setUnits(option)
+    }
     setFormData((prev) => ({ ...prev, [name]: option ? option.value : "" }));
   };
 
@@ -237,7 +275,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
     const payload = {
       waktu: new Date(formData.waktu),
       id_master_unit: parseInt(formData.id_master_unit),
-      id_master_unit_tujuan: parseInt(formData.id_master_unit_tujuan),
+      id_master_unit_tujuan: parseInt(formData.id_master_unit_tujuan), // ini akan ditiadakan
       nomor_rm: formData.nomor_rm,
       nama_pasien: formData.nama_pasien,
       nama_ruang : formData.nama_ruang,
@@ -333,7 +371,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                 {/* Unit Asal */}
                 <div>
                   <label className="block text-sm font-medium">Unit Asal</label>
-                  <Select
+                  {/* <Select
                     options={unitsPBF}
                     placeholder="Pilih unit asal..."
                     isDisabled={isView || items.length > 0} 
@@ -341,6 +379,14 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                     //onChange={(opt) => handleSelectChange("id_master_unit_tujuan", opt)}
                     className="react-select-container"
                     classNamePrefix="react-select"
+                  /> */}
+
+                  <UnitSelect
+                    unitSelected={unitsPBF}
+                    name="id_master_unit_tujuan"
+                    onChange={handleSelectChange}
+                    isDisabled={isView || items.length > 0}
+                    isPbf="ya"
                   />
                 </div>
 
@@ -420,10 +466,10 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                 <button
                     type="button"
                     onClick={() => {
-                      if (!formData.id_master_unit_tujuan) {
-                        toast.error("Pilih unit tujuan terlebih dahulu sebelum menambah item.");
-                        return;
-                      }
+                      // if (!formData.id_master_unit_tujuan) {
+                      //   toast.error("Pilih unit tujuan terlebih dahulu sebelum menambah item.");
+                      //   return;
+                      // }
                       setStockAvailable(null);
                       setItemModalOpen(true);
                     }}
@@ -600,7 +646,8 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
               <div className="space-y-3">
                 <div>
                   <label className="block text-sm font-medium">Barang</label>
-                  <Select
+                  {/* Ini juga harus disesuaikan karena paginationnya tidak akan jalan */}
+                  {/* <Select 
                     isLoading={loading.barang}
                     options={barang}
                     placeholder="Pilih barang"
@@ -634,6 +681,44 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                     }}
                     className="react-select-container"
                     classNamePrefix="react-select"
+                  /> */}
+
+                  <AsyncPaginate
+                    //value={barang.find((u) => u.value === newItem.id_master_barang) || null}
+                    onChange={async (opt) => {
+                        const id = opt ? opt.value : "";
+
+                        handleItemOptionChange("id_master_barang", id);
+                        handleItemOptionChange("nama_barang", opt ? opt.label : "");
+                        handleItemOptionChange("id_master_satuan", opt ? opt.id_satuan_kecil : "");
+                        handleItemOptionChange("nama_satuan", opt ? opt.nama_satuan : "");
+
+                        setStockAvailable(null);   // reset before fetching
+                        setQtyError("");
+
+                        if (!id) return;
+
+                        try {
+                          const res = await axiosClient.get(`/inventory/get-all-stok?id_barang=${id}`);
+                          const list = res.data?.data || [];
+
+                          // sum sisa across all ed & batch
+                          const total = list.reduce((sum, row) => sum + Number(row.sisa || 0), 0);
+
+                          setStockAvailable(total);
+                        } catch (err) {
+                          console.error("failed to fetch stock:", err);
+                          setStockAvailable(0);
+                        }
+                    }}
+                    loadOptions={loadBarangOptions}
+                    debounceTimeout={500}
+                    additional={{
+                      page: 1,
+                    }}
+                    placeholder="Cari barang..."
+                    isDisabled={isView}
+                    loadOptionsOnMenuOpen
                   />
                 </div>
                 <div>
