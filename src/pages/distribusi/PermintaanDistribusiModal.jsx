@@ -95,6 +95,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
 
   const [newItem, setNewItem] = useState({
     id_master_barang: "",
+    id_pabrik:"",
     nama_barang : "",
     id_master_satuan: "",
     nama_satuan: "",
@@ -151,7 +152,6 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
 
    const loadBarangOptions = async (search, barang, { page }) => {
       try {
-        console.log("ada refresh", search, barang, page)
         const res = await axiosClient.get("/barang/items", {
           params: {
             page,
@@ -165,8 +165,12 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
   
         return {
           options: list.map((u) => ({
-            value: u.id,
+            value: u.barang_id,
             label: u.barang_nama,
+            id_pabrik: u.id_pabrik,
+            pabrik: u.nama_pabrik,
+            id_satuan_kecil: u.id_satuan_kecil,
+            nama_satuan: u.nama_satuan,
           })),
           hasMore,
           additional: {
@@ -182,33 +186,12 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
       }
   };
 
-  useEffect(() => {
-    if (!formData.id_master_unit_tujuan) return;
-
-    axiosClient
-      .get(`/barang/items`)
-      .then((res) => {
-        setBarangOptions(
-          (res.data?.data || []).map((b) => ({
-            value: b.barang_id,
-            label: b.barang_nama,
-            id_satuan_kecil: b.id_satuan_kecil,
-            nama_satuan : b.nama_satuan
-          }))
-        );
-      })
-      .catch((err) => {
-        console.error("Failed to load filtered barang:", err);
-        toast.error("Gagal memuat barang berdasarkan unit tujuan");
-      });
-  }, [formData.id_master_unit_tujuan]);
 
   // Use effect call get inventory/get-all-stok with filtered id_barang
   // it will return list of data on different ed and nobatch
   // sum it all, named it as stock_available
 
   useEffect(()=>{
-    console.log(formData)
     setUnits({value: formData.id_master_unit})
   }, [formData])
 
@@ -232,7 +215,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
     }))
   }
 
-
+  
 
   const handleAddItem = () => {
     if (!newItem.id_master_barang || !newItem.id_master_satuan || !newItem.qty) {
@@ -284,13 +267,12 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
         pdd_id : parseInt(it.pdd_id),
         id_master_barang: parseInt(it.id_master_barang),
         id_master_satuan: parseInt(it.id_master_satuan),
+        id_pabrik: parseInt(it.id_pabrik),
         qty: it.qty,
         qty_real: it.qty_real,
         serial_number: it.serial_number || [],
       })),
     };
-
-
     
     const action = mode === "add"
       ? addPermintaanDistribusi(payload)
@@ -325,7 +307,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
       //onClick={onClose}
       >
       <div 
-        className="bg-white w-full max-w-6xl rounded-lg shadow-lg p-6 relative animate-fadeIn"
+        className="bg-white w-full max-w-6xl rounded-lg shadow-lg p-6 relative animate-fadeIn max-h-[90vh] overflow-y-auto"
         onClick={(e) => {e.stopPropagation()}}
       >
         <button
@@ -368,28 +350,6 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                     className="w-full border border-gray-300 rounded p-2"
                   />
                 </div>
-                {/* Unit Asal */}
-                <div>
-                  <label className="block text-sm font-medium">Unit Asal</label>
-                  {/* <Select
-                    options={unitsPBF}
-                    placeholder="Pilih unit asal..."
-                    isDisabled={isView || items.length > 0} 
-                    value={unitsPBF.find((u) => u.value === formData.id_master_unit_tujuan) || null}
-                    //onChange={(opt) => handleSelectChange("id_master_unit_tujuan", opt)}
-                    className="react-select-container"
-                    classNamePrefix="react-select"
-                  /> */}
-
-                  <UnitSelect
-                    unitSelected={unitsPBF}
-                    name="id_master_unit_tujuan"
-                    onChange={handleSelectChange}
-                    isDisabled={isView || items.length > 0}
-                    isPbf="ya"
-                  />
-                </div>
-
                 {/* Unit Tujuan */}
                 <div>
                   <label className="block text-sm font-medium">Unit Tujuan</label>
@@ -646,43 +606,6 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
               <div className="space-y-3">
                 <div>
                   <label className="block text-sm font-medium">Barang</label>
-                  {/* Ini juga harus disesuaikan karena paginationnya tidak akan jalan */}
-                  {/* <Select 
-                    isLoading={loading.barang}
-                    options={barang}
-                    placeholder="Pilih barang"
-                    isDisabled={isView}
-                    value={barang.find((u) => u.value === newItem.id_master_barang) || null}
-                    onChange={async (opt) => {
-                        const id = opt ? opt.value : "";
-
-                        handleItemOptionChange("id_master_barang", id);
-                        handleItemOptionChange("nama_barang", opt ? opt.label : "");
-                        handleItemOptionChange("id_master_satuan", opt ? opt.id_satuan_kecil : "");
-                        handleItemOptionChange("nama_satuan", opt ? opt.nama_satuan : "");
-
-                        setStockAvailable(null);   // reset before fetching
-                        setQtyError("");
-
-                        if (!id) return;
-
-                        try {
-                          const res = await axiosClient.get(`/inventory/get-all-stok?id_barang=${id}`);
-                          const list = res.data?.data || [];
-
-                          // sum sisa across all ed & batch
-                          const total = list.reduce((sum, row) => sum + Number(row.sisa || 0), 0);
-
-                          setStockAvailable(total);
-                        } catch (err) {
-                          console.error("failed to fetch stock:", err);
-                          setStockAvailable(0);
-                        }
-                    }}
-                    className="react-select-container"
-                    classNamePrefix="react-select"
-                  /> */}
-
                   <AsyncPaginate
                     //value={barang.find((u) => u.value === newItem.id_master_barang) || null}
                     onChange={async (opt) => {
@@ -692,6 +615,7 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                         handleItemOptionChange("nama_barang", opt ? opt.label : "");
                         handleItemOptionChange("id_master_satuan", opt ? opt.id_satuan_kecil : "");
                         handleItemOptionChange("nama_satuan", opt ? opt.nama_satuan : "");
+                        handleItemOptionChange("id_pabrik", opt ? opt.id_pabrik : "");
 
                         setStockAvailable(null);   // reset before fetching
                         setQtyError("");
@@ -719,6 +643,16 @@ export default function PermintaanDistribusiModal({ open, mode, data, onClose })
                     placeholder="Cari barang..."
                     isDisabled={isView}
                     loadOptionsOnMenuOpen
+                    formatOptionLabel={(option) => (
+                      <div>
+                        <span>{option.label}</span>
+                        {option.pabrik && (
+                          <span className="text-gray-500 text-sm">
+                             { } - {option.pabrik}
+                          </span>
+                        )}
+                      </div>
+                    )}
                   />
                 </div>
                 <div>

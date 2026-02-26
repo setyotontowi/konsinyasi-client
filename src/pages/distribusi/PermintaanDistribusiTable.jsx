@@ -81,7 +81,6 @@ export default function PermintaanDistribusiTable({ search, filters, onView, onI
               <th className="px-6 py-3 font-medium border border-gray-200">Nomor RM</th>
               <th className="px-6 py-3 font-medium border border-gray-200">Nama Pasien</th>
               <th className="px-6 py-3 font-medium border border-gray-200">Waktu Permintaan</th>
-              <th className="px-6 py-3 font-medium border border-gray-200">Unit Asal</th>
               <th className="px-6 py-3 font-medium border border-gray-200">Unit Tujuan</th>
               <th className="px-6 py-3 font-medium border border-gray-200">Status</th>
               {
@@ -119,9 +118,6 @@ export default function PermintaanDistribusiTable({ search, filters, onView, onI
                 </td>
                 <td className="border border-gray-200 px-6 py-2 text-gray-700">
                   {new Date(d.waktu).toLocaleString("id-ID")}
-                </td>
-                <td className="border border-gray-200 px-6 py-2 text-gray-700">
-                  {d.unit_tujuan}
                 </td>
                 <td className="border border-gray-200 px-6 py-2 text-gray-700">
                   {d.unit_asal}
