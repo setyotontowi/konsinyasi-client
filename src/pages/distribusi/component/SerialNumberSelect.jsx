@@ -2,6 +2,7 @@ import { useState } from "react";
 import Select from "react-select";
 import axiosClient from "../../../api/axiosClient";
 import { toast } from "react-toastify";
+import { AsyncPaginate } from "react-select-async-paginate";
 
 export default function SerialNumberSelect({ onClose, idBarang, qty }) {
   const [options, setOptions] = useState([]);
@@ -9,7 +10,7 @@ export default function SerialNumberSelect({ onClose, idBarang, qty }) {
   const [loading, setLoading] = useState(false);
   const [loadedFor, setLoadedFor] = useState(null); // track which idBarang was loaded
 
-  const fetchSerialNumbers = async () => {
+  const loadOptions = async (search, loadedOptions, { page }) => {
     // ❗ Don’t fetch if idBarang is missing
     if (!idBarang) return;
 
@@ -29,8 +30,25 @@ export default function SerialNumberSelect({ onClose, idBarang, qty }) {
         label: item.serial_number,
       }));
 
-      setOptions(mappedOptions);
+      const list = res.data?.data || [];
+      const hasMore = res.data?.pagination.page < res.data?.pagination.total_pages
+
       setLoadedFor(idBarang);// optional callback
+
+      return {
+        options: list.map((u) => ({
+          value: u.id,
+          label: u.serial_number,
+        })),
+        hasMore,
+        additional: {
+          page: page + 1,
+        },
+      };
+
+
+      setOptions(mappedOptions);
+      
     } catch (err) {
       console.error("Failed to load serial numbers", err);
     } finally {
@@ -49,13 +67,12 @@ export default function SerialNumberSelect({ onClose, idBarang, qty }) {
   }
 
   return (
-    <Select
+    <AsyncPaginate
       isMulti
-      options={options}
+      loadOptions={loadOptions}
       value={value}
       isLoading={loading}
       onChange={handleChange}
-      onMenuOpen={fetchSerialNumbers}
       onMenuClose={()=> {
         onClose(value)}
       }
@@ -67,7 +84,11 @@ export default function SerialNumberSelect({ onClose, idBarang, qty }) {
           ? "Select serial numbers"
           : "Select barang first"
       }
+      additional={{
+        page: 1,
+      }}
       isDisabled={!idBarang}
+      loadOptionsOnMenuOpen
     />
   );
 }
